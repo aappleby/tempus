@@ -1,10 +1,10 @@
 // UART demo toplevel
 
 [types]
-simple_msg  = load("simple_msg.mt");
-simple_tx   = load("simple_tx.mt");
-simple_rx   = load("simple_rx.mt");
-simple_sink = load("simple_sink.mt");
+simple_msg  = load("simple_msg.tem");
+simple_tx   = load("simple_tx.tem");
+simple_rx   = load("simple_rx.tem");
+simple_sink = load("simple_sink.tem");
 
 [params]
 clocks_per_bit = 1;

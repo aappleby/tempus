@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-from matcheroni import *
-from mt_lexer import *
-import mt_constants
+import parser
+from parser.matcheroni import *
+from parser.tem_lexer import *
 
 #---------------------------------------------------------------------------------------------------
 
@@ -90,17 +90,17 @@ KW_UNSIGNED   = LexToAtom(LexemeType.LEX_KEYWORD, "unsigned")
 #---------------------------------------------------------------------------------------------------
 
 def match_assignop(span, ctx):
-  if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in mt_constants.mt_assignops:
+  if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in tem_constants.tem_assignops:
     return span[1:]
   return Fail(span)
 
 def match_declop(span, ctx):
-  if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in mt_constants.mt_declops:
+  if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in tem_constants.tem_declops:
     return span[1:]
   return Fail(span)
 
 def match_binop(span, ctx):
-  if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in mt_constants.mt_binops:
+  if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in tem_constants.tem_binops:
     return span[1:]
   return Fail(span)
 

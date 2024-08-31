@@ -6,7 +6,7 @@
 def longest_first(*args):
   return sorted(args, key=len, reverse=True)
 
-mt_keywords = longest_first(
+tem_keywords = longest_first(
 "break",
 "case",
 "const",
@@ -33,7 +33,7 @@ mt_keywords = longest_first(
 
 #------------------------------------------------------------------------------
 
-mt_binops = longest_first(
+tem_binops = longest_first(
   "-",
   "::",
   "!=",
@@ -57,7 +57,7 @@ mt_binops = longest_first(
   "||",
 )
 
-mt_assignops = longest_first(
+tem_assignops = longest_first(
   "-=",
   "*=",
   "/=",
@@ -71,13 +71,13 @@ mt_assignops = longest_first(
   "|=",
 )
 
-mt_declops = longest_first(
+tem_declops = longest_first(
   ":",  # not a port
   ":>", # output port
   ":<", # input port
 )
 
-mt_allops = longest_first(*(mt_binops + mt_assignops + mt_declops))
+tem_allops = longest_first(*(tem_binops + tem_assignops + tem_declops))
 
 #------------------------------------------------------------------------------
 

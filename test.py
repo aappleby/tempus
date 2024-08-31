@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 
-import mt_lexer
-import mt_parser
+import parser
 import pprint
 
-from mt_lexer import Lexeme
-from mt_parser import BaseNode
+from parser.tem_lexer import Lexeme
+from parser.tem_parser import BaseNode
 
-filename = "mt/scratch.mt"
+filename = "scratch.tem"
 
 #---------------------------------------------------------------------------------------------------
 
@@ -52,7 +51,7 @@ if __name__ == "__main__":
   print("test begin")
 
   source = open(filename).read()
-  lexemes = mt_lexer.lex_string(source)
+  lexemes = parser.tem_lexer.lex_string(source)
 
   print()
   print("# lexemes")
@@ -61,7 +60,7 @@ if __name__ == "__main__":
 
   print()
   print("# parsing")
-  trees = mt_parser.parse_lexemes(lexemes)
+  trees = parser.tem_parser.parse_lexemes(lexemes)
 
   failed = False
   for tree in trees:

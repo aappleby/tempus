@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
-import matcheroni
-from matcheroni import *
+import parser
+from parser.matcheroni import *
 from enum import Enum
-import mt_constants
 import re
 
 #---------------------------------------------------------------------------------------------------
@@ -34,7 +33,7 @@ def strcmp(str1, str2):
     else:
         return 0
 
-def atom_cmp(a, b, base = matcheroni.atom_cmp):
+def atom_cmp(a, b, base = parser.matcheroni.atom_cmp):
   if isinstance(a, Lexeme) and isinstance(b, Lexeme):
     if a.type.value != b.type.value:
       return b.type.value - a.type.value
@@ -44,7 +43,7 @@ def atom_cmp(a, b, base = matcheroni.atom_cmp):
     return b.value - a.type.value
   return base(a, b)
 
-matcheroni.atom_cmp = atom_cmp
+parser.matcheroni.atom_cmp = atom_cmp
 
 #---------------------------------------------------------------------------------------------------
 
@@ -150,7 +149,7 @@ match_comment = Oneof(
 match_punct = Charset(",;.()[]{}@")
 
 def match_op(span, ctx):
-  for op in mt_constants.mt_allops:
+  for op in parser.tem_constants.tem_allops:
     if span.startswith(op):
       return span[len(op):]
   return Fail(span)
@@ -168,7 +167,7 @@ def match_keyword(span, ctx):
   if isinstance(tail, Fail):
     return tail
   lexeme = span[:len(span) - len(tail)]
-  return tail if lexeme in mt_constants.mt_keywords else Fail(span)
+  return tail if lexeme in parser.tem_constants.tem_keywords else Fail(span)
 
 #---------------------------------------------------------------------------------------------------
 
