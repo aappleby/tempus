@@ -2,11 +2,10 @@
 
 import parser
 import pprint
+import glob
 
 from parser.tem_lexer import Lexeme
 from parser.tem_parser import BaseNode
-
-filename = "scratch.tem"
 
 #---------------------------------------------------------------------------------------------------
 
@@ -47,10 +46,28 @@ def dump_variant(variant, indent = 0):
 
 #---------------------------------------------------------------------------------------------------
 
-if __name__ == "__main__":
-  print("test begin")
+def test_parse(filename):
 
   source = open(filename).read()
+  lexemes = parser.tem_lexer.lex_string(source)
+  trees = parser.tem_parser.parse_lexemes(lexemes)
+
+  for item in trees:
+    if isinstance(item, parser.tem_lexer.Lexeme):
+      print(f"Parsing file {filename} failed @ {item}")
+      return False
+  print(f"Parsing {filename} OK")
+  return True
+
+#---------------------------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+  print("Test parsing of uart_tem/*.tem")
+  for filename in glob.glob("uart_tem/*.tem"):
+    test_parse(filename)
+
+  print("Test parsing of scratch.tem")
+  source = open("scratch.tem").read()
   lexemes = parser.tem_lexer.lex_string(source)
 
   print()
@@ -67,6 +84,10 @@ if __name__ == "__main__":
     if isinstance(tree, Lexeme):
       print(f"Parsing failed at {tree}")
       failed = True
+
+  for item in trees:
+    if isinstance(item, parser.tem_lexer.Lexeme):
+      print("LEXEME!")
 
   if not failed:
     print()

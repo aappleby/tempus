@@ -41,6 +41,6 @@ match (true) {
 
 if (delay == delay_mid) {
   @shift = in :: (shift >> 1);
-  # I think this is wrong...
+  // I think this is wrong...
   out.valid = @count == 8;
 }
