@@ -510,6 +510,58 @@ def List(*args):
 
   return match
 
+def Railway(railway):
+  """
+  Matches a complex pattern represented as a "railway diagram" of simpler patterns connected in a
+  graph. Matching starts with the "None" state and searches for a path to another "None" state.
+
+  The implementation is brute-force and recursive and can blow up badly in pathological cases.
+  However, in patterns like the example below where there can be initial ambiguity between
+  'parse_expr' and 'parse_decl', it is both more concise and more intelligible than the equivalent
+  tree of "Any(Seq(Opt(Seq(...." stuff.
+
+  This example parses parenthesized, comma-delimited lists of mixed expressions and declarations.
+  Trailing commas OK. Examples: (348, "foo", x : u32 = 7), (), (1,)
+
+  parse_paren_tuple = Railway({
+    None         : [PUNCT_LPAREN],
+    PUNCT_LPAREN : [parse_expr, parse_decl, PUNCT_RPAREN],
+    parse_expr   : [PUNCT_COMMA,            PUNCT_RPAREN],
+    parse_decl   : [PUNCT_COMMA,            PUNCT_RPAREN],
+    PUNCT_COMMA  : [parse_expr, parse_decl, PUNCT_RPAREN],
+    PUNCT_RPAREN : [None]
+  })
+  """
+
+  def step(state, tail, ctx):
+    top = len(ctx)
+    # If the current state doesn't match, we fail
+    if state is not None:
+      tail = state(tail, ctx)
+      if isinstance(tail, Fail):
+        del ctx[top:]
+        return tail
+
+    # Check all the possible next steps from this state
+    for next_state in railway[state]:
+      # If we reach a None, matching succeeds.
+      if next_state is None:
+        return tail
+
+      # If next_state matches, we succeed.
+      next_tail = step(next_state, tail, ctx)
+      if not isinstance(next_tail, Fail):
+        return next_tail
+
+    # If none of the next_state patterns match, we fail
+    del ctx[top:]
+    return Fail(tail)
+
+  def match(span, ctx):
+    return step(None, span, ctx)
+
+  return match
+
 #---------------------------------------------------------------------------------------------------
 
 import doctest

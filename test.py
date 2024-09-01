@@ -30,7 +30,7 @@ def dump_array(array, indent = 0):
     dump_variant(val, indent + 1)
 
 def dump_lexeme(lexeme, indent = 0):
-  print(f"{lexeme.type.name} = '{lexeme.text}'")
+  print(f"{lexeme.type.name} = {lexeme.text}")
 
 def dump_variant(variant, indent = 0):
   if isinstance(variant, BaseNode):
@@ -66,14 +66,18 @@ if __name__ == "__main__":
   for filename in glob.glob("uart_tem/*.tem"):
     test_parse(filename)
 
-  print("Test parsing of scratch.tem")
-  source = open("scratch.tem").read()
+  filename = "scratch.tem"
+  #filename = "tests/tem_good/functions.tem"
+  #filename = "uart_tem/simple_rx.tem"
+
+  print(f"Test parsing of {filename}")
+  source = open(filename).read()
   lexemes = parser.tem_lexer.lex_string(source)
 
-  print()
-  print("# lexemes")
-  for lexeme in lexemes:
-    print(lexeme)
+  #print()
+  #print("# lexemes")
+  #for lexeme in lexemes:
+  #  print(lexeme)
 
   print()
   print("# parsing")
@@ -84,10 +88,6 @@ if __name__ == "__main__":
     if isinstance(tree, Lexeme):
       print(f"Parsing failed at {tree}")
       failed = True
-
-  for item in trees:
-    if isinstance(item, parser.tem_lexer.Lexeme):
-      print("LEXEME!")
 
   if not failed:
     print()

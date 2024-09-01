@@ -3,6 +3,7 @@
 import parser
 from parser.matcheroni import *
 from parser.tem_lexer import *
+from functools import cache
 
 #---------------------------------------------------------------------------------------------------
 
@@ -72,10 +73,11 @@ PUNCT_SEMI    = LexToAtom(LexemeType.LEX_PUNCT, ";")
 PUNCT_DOT     = LexToAtom(LexemeType.LEX_PUNCT, ".")
 PUNCT_LPAREN  = LexToAtom(LexemeType.LEX_PUNCT, "(")
 PUNCT_RPAREN  = LexToAtom(LexemeType.LEX_PUNCT, ")")
-PUNCT_LBRACE  = LexToAtom(LexemeType.LEX_PUNCT, "[")
-PUNCT_RBRACE  = LexToAtom(LexemeType.LEX_PUNCT, "]")
-PUNCT_LBRACK  = LexToAtom(LexemeType.LEX_PUNCT, "{")
-PUNCT_RBRACK  = LexToAtom(LexemeType.LEX_PUNCT, "}")
+PUNCT_LBRACK  = LexToAtom(LexemeType.LEX_PUNCT, "[")
+PUNCT_RBRACK  = LexToAtom(LexemeType.LEX_PUNCT, "]")
+PUNCT_LBRACE  = LexToAtom(LexemeType.LEX_PUNCT, "{")
+PUNCT_RBRACE  = LexToAtom(LexemeType.LEX_PUNCT, "}")
+
 PUNCT_AT      = LexToAtom(LexemeType.LEX_PUNCT, "@")
 
 KW_MATCH      = LexToAtom(LexemeType.LEX_KEYWORD, "match")
@@ -104,6 +106,13 @@ def match_binop(span, ctx):
     return span[1:]
   return Fail(span)
 
+#ident_rail = {
+#  None       : [PUNCT_AT, ATOM_IDENT],
+#  PUNCT_AT   : [ATOM_IDENT],
+#  ATOM_IDENT : [PUNCT_DOT, None],
+#  PUNCT_DOT  : [ATOM_IDENT]
+#}
+
 match_ident = Seq(
   Opt(PUNCT_AT),
   ATOM_IDENT,
@@ -116,75 +125,62 @@ match_ident = Seq(
 #---------------------------------------------------------------------------------------------------
 # Forward decls
 
-def parse_statement(span, ctx):
-  return _parse_statement(span, ctx)
+def parse_stmt(span, ctx):
+  return _parse_stmt(span, ctx)
 
-def parse_expression_chain(span, ctx):
-  return _parse_expression_chain(span, ctx)
+def parse_expr_chain(span, ctx):
+  return _parse_expr_chain(span, ctx)
 
-def parse_expression(span, ctx):
-  return _parse_expression(span, ctx)
+def parse_expr(span, ctx):
+  return _parse_expr(span, ctx)
 
 def parse_decl(span, ctx):
   return _parse_decl(span, ctx)
 
 parse_ident = Capture(match_ident)
 
-parse_exp_or_decl = Oneof(
-  parse_expression,
+parse_expr_or_decl = Oneof(
+  parse_expr,
   parse_decl,
 )
 
 #---------------------------------------------------------------------------------------------------
 
-parse_paren_tuple = List(
-  PUNCT_LPAREN,
-  Oneof(
-    PUNCT_RPAREN,
-    Seq(
-      Any(
-        Seq(parse_expression, PUNCT_COMMA),
-        Seq(parse_decl,       PUNCT_COMMA),
-      ),
-      Oneof(
-        Seq(parse_expression, PUNCT_RPAREN),
-        Seq(parse_decl,       PUNCT_RPAREN)
-      )
-    )
-  )
+# Parenthesized, comma-delimited lists of mixed expressions and declarations. Trailing commas OK.
+# Examples: (348, "foo", x : u32 = 7), (), (1,)
+parse_paren_tuple = Railway({
+  None         : [PUNCT_LPAREN],
+  PUNCT_LPAREN : [parse_expr, parse_decl, PUNCT_RPAREN],
+  parse_expr   : [PUNCT_COMMA,            PUNCT_RPAREN],
+  parse_decl   : [PUNCT_COMMA,            PUNCT_RPAREN],
+  PUNCT_COMMA  : [parse_expr, parse_decl, PUNCT_RPAREN],
+  PUNCT_RPAREN : [None]
+})
 
-  #Cycle(parse_exp_or_decl, PUNCT_COMMA),
-  #PUNCT_RPAREN
-)
+# Same as above except []
+parse_brace_tuple = Railway({
+  None         : [PUNCT_LBRACK],
+  PUNCT_LBRACK : [parse_expr, parse_decl, PUNCT_RBRACK],
+  parse_expr   : [PUNCT_COMMA,            PUNCT_RBRACK],
+  parse_decl   : [PUNCT_COMMA,            PUNCT_RBRACK],
+  PUNCT_COMMA  : [parse_expr, parse_decl, PUNCT_RPAREN],
+  PUNCT_RBRACK : [None]
+})
 
-parse_bracket_tuple = List(
-  PUNCT_LBRACE,
-  Cycle(parse_exp_or_decl, PUNCT_COMMA),
-  PUNCT_RBRACE
-)
-
+# Curly-braced, semicolon-delimited lists of statements. Excess semicolons are OK. No semicolon
+# after the last statement is OK.
 parse_block = Seq(
-  PUNCT_LBRACK,
-  List(Any(parse_statement)),
-  PUNCT_RBRACK
+  PUNCT_LBRACE,
+  Any(parse_stmt),
+  PUNCT_RBRACE
 )
 
 parse_tuple = Oneof(
   parse_paren_tuple,
-  parse_bracket_tuple
+  parse_brace_tuple
 )
 
 #---------------------------------------------------------------------------------------------------
-
-
-#def parse_block(span, ctx):
-#  tail = PUNCT_LBRACK(span, ctx)
-#  if isinstance(tail, Fail): return Fail(span)
-#
-#  tail = List(Any(parse_statement))(tail, ctx)
-#  if isinstance(tail, Fail): return Fail(span)
-#
-#  pass
 
 parse_call = Node(CallNode,
   Field("func",   Capture(Oneof(match_ident, ATOM_KEYWORD))),
@@ -215,13 +211,13 @@ parse_binop = Capture(match_binop)
 
 
 # unit op unit op unit...
-_parse_expression_chain = List(
+_parse_expr_chain = List(
   parse_expression_unit,
   Any(Seq(parse_binop, parse_expression_unit))
 )
 
-_parse_expression = Node(ExpressionNode,
-  Field("exp", parse_expression_chain)
+_parse_expr = Node(ExpressionNode,
+  Field("exp", parse_expr_chain)
 )
 
 parse_else = Node(ElseNode,
@@ -250,14 +246,14 @@ parse_default = Node(DefaultNode,
 parse_match = Node(MatchNode,
   KW_MATCH,
   Field("condition", parse_tuple),
-  PUNCT_LBRACK,
+  PUNCT_LBRACE,
   Field("body",
     List(Any(Oneof(
       parse_case,
       parse_default,
     )))
   ),
-  PUNCT_RBRACK
+  PUNCT_RBRACE
 )
 
 parse_type = Node(TypeNode,
@@ -270,44 +266,45 @@ parse_type = Node(TypeNode,
 )
 
 _parse_decl = Node(DeclNode,
-  Field("name",    parse_ident),
-  OptSeq(
-    Field("dir",   Capture(match_declop)),
-    Field("type",  parse_type)
-  ),
-  OptSeq(
-    Field("eq",    Capture(match_assignop)),
-    Field("val",   parse_expression)
-  ),
+  Field("name", parse_ident),
+  # yuck
+  Oneof(
+    Seq(
+      Field("dir",   Capture(match_declop)),
+      Field("type",  parse_type),
+      Field("eq",    Capture(match_assignop)),
+      Field("val",   parse_expr)
+    ),
+    Seq(
+      Field("dir",   Capture(match_declop)),
+      Field("type",  parse_type)
+    ),
+    Seq(
+      Field("eq",    Capture(match_assignop)),
+      Field("val",   parse_expr)
+    ),
+  )
 )
 
 parse_return = Node(ReturnNode,
   KW_RETURN,
-  Field("val", Opt(parse_expression))
+  Field("val", Opt(parse_expr))
 )
 
-_parse_statement = Oneof(
+_parse_stmt = Oneof(
   parse_match,
   parse_if,
-  Seq(parse_return,     PUNCT_SEMI),
-  Seq(parse_call,       PUNCT_SEMI),
-  Seq(parse_expression, PUNCT_SEMI),
-  Seq(parse_decl,       PUNCT_SEMI),
-
-  PUNCT_SEMI,
-  PUNCT_NEWLINE,
+  parse_return,
+  parse_decl,
+  parse_expr,
+  PUNCT_SEMI
 )
 
 parse_section = Node(SectionNode,
-  PUNCT_LBRACE,
+  PUNCT_LBRACK,
   Field("name", parse_ident),
-  PUNCT_RBRACE,
-  Field("body", List(Any(parse_statement)))
-)
-
-parse_top = Oneof(
-  parse_section,
-  PUNCT_NEWLINE
+  PUNCT_RBRACK,
+  Field("body", Any(parse_stmt))
 )
 
 #---------------------------------------------------------------------------------------------------
@@ -316,7 +313,7 @@ def parse_lexemes(lexemes):
   span = lexemes
   ctx = []
   while span:
-    tail = parse_top(span, ctx)
+    tail = parse_section(span, ctx)
     if isinstance(tail, Fail):
       ctx.append(span[0])
       tail = span[1:]
