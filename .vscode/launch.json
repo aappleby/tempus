@@ -1,0 +1,15 @@
+// clang-format off
+{
+  "configurations": [
+
+    {
+      "name": "matcher",
+      "type": "debugpy",
+      "cwd": "${workspaceFolder}",
+      "request": "launch",
+      "program": "${workspaceFolder}/test.py",
+      "console": "integratedTerminal",
+    },
+  ]
+}
+// clang-format on
