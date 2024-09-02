@@ -1,11 +1,2 @@
-[update]
-a = (
-  x : int = 2,
-  x : int,
-  x = 2,
-  x:,
-  :int = 2,
-  :int,
-  =2,
-  :
-)
+[types]
+delay_reg : zag = foo + bar;
