@@ -13,11 +13,11 @@ count_reg = unsigned(max = count_max);
 shift_reg = u8;
 
 [ports]
-in :< u1;
+src >: u1;
 
-out.data  :> shift_reg = shift;
-out.valid :> u1 = 0;
-out.ready :< u1;
+dst.data  :> shift_reg = shift;
+dst.valid :> u1 = 0;
+dst.ready >: u1;
 
 [state]
 delay : delay_reg = delay_max;
@@ -33,14 +33,14 @@ match (true) {
     @delay = 0;
     @count = count + 1;
   }
-  case (in == 0) {
+  case (src == 0) {
     @delay = 0;
     @count = 0;
   }
 }
 
 if (delay == delay_mid) {
-  @shift = in :: (shift >> 1);
+  @shift = src :: (shift >> 1);
   // I think this is wrong...
-  out.valid = @count == 8;
+  dst.valid = @count == 8;
 }

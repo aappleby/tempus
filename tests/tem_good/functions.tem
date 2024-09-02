@@ -1,12 +1,12 @@
 [functions]
-max : int = {
-  a :< int;
-  b :< int;
+max = (a >: int, b >: int){
   if (a > b) {
-    return a;
+    .result = a;
   } else {
-    return b;
+    .result = b;
   }
 };
 
-max_or_3 : int = max(a :< int, 3);
+max_or_3 : int = max(a >: int, 3);
+
+blah = max_or_3(100);

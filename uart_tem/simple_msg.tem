@@ -5,9 +5,9 @@ max_delay  = 20;
 max_cursor = len(text) - 1;
 
 [ports]
-out.data  :> u8 = text[cursor];
-out.valid :> u1 = delay == 0;
-out.ready :< u1;
+dst.data  :> u8 = text[cursor];
+dst.valid :> u1 = delay == 0;
+dst.ready >: u1;
 
 [types]
 reg_delay  = unsigned(max_delay);
@@ -23,7 +23,7 @@ match (true) {
   case (delay > 0) {
     @delay = delay - 1;
   }
-  case (out.ready) {
+  case (dst.ready) {
     if (cursor == max_cursor) {
       @delay  = max_delay;
       @cursor = 0;

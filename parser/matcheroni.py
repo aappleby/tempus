@@ -409,8 +409,8 @@ def Node(node_type, *args):
     result = node_type()
 
     for field in values:
-      if not isinstance(field, (list, tuple)):
-        print(f"Field {field} is not a list or tuple")
+      if not isinstance(field, tuple):
+        print(f"Field {field} is not a tuple")
         assert False
       if field[0] in result:
         print(f"field {field[0]}:{field[1]} was already in {result}")
@@ -421,6 +421,35 @@ def Node(node_type, *args):
     return tail
 
   return match
+
+
+
+@cache
+def List2(node_type, *args):
+  def match(span, ctx):
+    top = len(ctx)
+    tail = span
+
+    for pattern in args:
+      tail = pattern(tail, ctx)
+      if isinstance(tail, Fail):
+        del ctx[top:]
+        return tail
+
+    values = ctx[top:]
+    del ctx[top:]
+
+    result = node_type()
+    for key, val in enumerate(values):
+      result[key] = val
+    ctx.append(result)
+    return tail
+
+  return match
+
+
+
+
 
 @cache
 def Field(key, val_pattern):
@@ -446,67 +475,6 @@ def Field(key, val_pattern):
 
     ctx.append(field)
     return val_tail
-
-  return match
-
-@cache
-def KeyVal(key_pattern, val_pattern):
-  """
-  Like Field(), except the name of the field comes from a pattern match.
-  """
-  def match(span, ctx):
-    top = len(ctx)
-    key_tail = key_pattern(span, ctx)
-    if isinstance(key_tail, Fail):
-      del ctx[top:]
-      return Fail(span)
-    key = ctx[top:]
-    del ctx[top:]
-
-    val_tail = val_pattern(key_tail, ctx)
-    if isinstance(val_tail, Fail):
-      del ctx[top:]
-      return Fail(span)
-    val = ctx[top:]
-    del ctx[top:]
-
-    if len(val) == 0:
-      field = (name, None)
-    elif len(val) == 1:
-      field = (name, val[0])
-    else:
-      field = (name, val)
-
-    ctx.append(field)
-    return val_tail
-
-  return match
-
-@cache
-def List(*args):
-  """
-  Turns the top of the context stack into a (name, value) tuple
-  """
-  def match(span, ctx):
-    top = len(ctx)
-    tail = span
-
-    for pattern in args:
-      tail = pattern(tail, ctx)
-      if isinstance(tail, Fail):
-        del ctx[top:]
-        return tail
-
-    values = ctx[top:]
-    del ctx[top:]
-
-    #if len(values) == 0:
-    #  values = None
-    #elif len(values) == 1:
-    #  values = values[0]
-
-    ctx.append(values)
-    return tail
 
   return match
 

@@ -1,16 +1,67 @@
-trees[]:
-  [0] : SectionNode:
-    name : LexemeType.LEX_IDENT = 'bleep'
-    body[]:
-      [0] : IfNode:
-        condition : ConstNode:
-          val : LexemeType.LEX_IDENT = 'true'
-        block: BlockNode
-          statements[]:
-            [0] : DeclNode:
-              name : LexemeType.LEX_IDENT = 'x'
-              dir : LexemeType.LEX_OP = ':'
-              type: <None>
-              eq : LexemeType.LEX_OP = '='
-              value: ConstNode:
-                val : LexemeType.LEX_INT = '2'
+
+x : int = 2
+x : int = _
+x : _   = 2
+x : _   = _
+_ : int = 2
+_ : int = _
+_ : _   = 2
+_ : _   = _
+
+
+x : int = 2
+x : int
+x = 2
+x:
+:int = 2
+:int
+=2
+
+
+vec3 = (x : f32, y : f32, z : f32)
+debug_print(vec3)
+(x : f32 = _, y : f32 = _, z : f32 = _)
+
+normal = vec3(1, 2, 3)
+normal = vec3(z = 1, 3, 4)
+normal : vec3 = (1, 2, 3)
+
+debug_print(normal)
+(x : f32 = 1, y : f32 = 2, z : f32 = 3)
+
+tuple = (1, 2, 3)
+debug_print(tuple)
+(_ : _ = 1, _ : _ = 2, _ : _ = 3)
+
+debug_print((:f32, :f32, :f32)tuple)
+(_ : f32 = 1, _ : f32 = 2, _ : f32 = 3)
+
+debug_print((x:, y:, z:)tuple)
+(x : _ = 1, y : _ = 2, z : _ = 3)
+
+normalized_vec3 = (x >: f32, y >: f32, z >: f32) {
+  length = sqrt(x*x + y*y + z*z);
+  .x = x / length;
+  .y = y / length;
+  .z = z / length;
+}
+
+dir = normalized_vec3(3, 4, 0)
+print(shape(dir))
+(x : f32, y : f32, z : f32)
+print(dir)
+(3/5, 4/5, 0)
+debug_print(dir)
+(x : f32 = 3/5, y : f32 = 4/5, z : f32 = 0)
+
+
+
+make_vec = {
+  t : type;
+  .x : t;
+  .y : t;
+  .z : t;
+}
+
+print(make_vec(:u32))
+(x : u32, y : u32, z : u32)

@@ -73,8 +73,8 @@ tem_assignops = longest_first(
 
 tem_declops = longest_first(
   ":",  # not a port
+  ">:", # input port
   ":>", # output port
-  ":<", # input port
 )
 
 tem_allops = longest_first(*(tem_binops + tem_assignops + tem_declops))
