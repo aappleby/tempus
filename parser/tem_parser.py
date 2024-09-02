@@ -205,23 +205,17 @@ squishable = Oneof(
   node_block,
   node_primed,
   parse_ident,
-  Capture(ATOM_KEYWORD)
-)
-
-squish_list = List2(SquishNode, Some(squishable))
-
-parse_expr_unit = Oneof(
-  #node_lambda,   # (){}
-  #node_call,     # identifier()
-  #node_tuple,    # ()
-  #node_block,    # {}
-  #node_primed,
-  #parse_ident,
-  #Some(squishable),
-  squish_list,
+  Capture(ATOM_KEYWORD),
   Capture(ATOM_INT),
   Capture(ATOM_FLOAT),
   Capture(ATOM_STRING),
+)
+
+squish_list = List2(SquishNode, AtLeast(2, squishable))
+
+parse_expr_unit = Oneof(
+  squish_list,
+  squishable
 )
 
 # unit op unit op unit...
@@ -329,4 +323,8 @@ def parse_lexemes(lexemes):
 #---------------------------------------------------------------------------------------------------
 
 import doctest
-doctest.testmod()
+import sys
+import os
+
+testresult = doctest.testmod(sys.modules[__name__])
+print(f"Testing {__name__} : {testresult}")

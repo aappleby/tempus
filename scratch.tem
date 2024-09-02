@@ -1,2 +1,4 @@
 [types]
-delay_reg : zag = foo + bar;
+
+vec3 = (x : f32, y : f32, z : f32)
+delay_reg = foo baz + bar

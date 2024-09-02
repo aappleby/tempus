@@ -216,4 +216,8 @@ def lex_string(source):
 #---------------------------------------------------------------------------------------------------
 
 import doctest
-doctest.testmod()
+import sys
+import os
+
+testresult = doctest.testmod(sys.modules[__name__])
+print(f"Testing {__name__} : {testresult}")

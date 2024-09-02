@@ -12,6 +12,9 @@ from parser import tem_parser
 from parser.tem_lexer import Lexeme
 from parser.tem_parser import BaseNode
 
+# Loading modules runs self-test, add a break after them
+print()
+
 #---------------------------------------------------------------------------------------------------
 
 def print_indent(indent):
