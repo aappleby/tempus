@@ -46,6 +46,7 @@ class MatchNode(BaseNode):    pass
 class PrimedNode(BaseNode):   pass
 class ReturnNode(BaseNode):   pass
 class SectionNode(BaseNode):  pass
+class TupleNode(BaseNode):    pass
 class TypeNode(BaseNode):     pass
 
 #---------------------------------------------------------------------------------------------------
@@ -179,27 +180,38 @@ node_block = List2(BlockNode,
   PUNCT_RBRACE
 )
 
-parse_tuple = Oneof(
-  parse_paren_tuple,
-  parse_brace_tuple
+node_tuple = List2(TupleNode,
+  Oneof(
+    parse_paren_tuple,
+    parse_brace_tuple
+  )
 )
 
 #---------------------------------------------------------------------------------------------------
 
 node_call = Node(CallNode,
   Field("func",   Capture(Oneof(match_ident, ATOM_KEYWORD))),
-  Field("params", parse_tuple)
+  Field("params", node_tuple)
 )
 
 node_lambda = Node(LambdaNode,
-  Field("params", parse_tuple),
+  Field("params", node_tuple),
   Field("body",   node_block)
 )
+
+squishable = Oneof(
+  node_tuple,
+  node_block,
+  node_primed,
+  parse_ident,
+)
+
+squish_list = List2(SquishNode, Any(squishable))
 
 parse_expr_unit = Oneof(
   node_lambda,   # (){}
   node_call,     # identifier()
-  parse_tuple,    # ()
+  node_tuple,    # ()
   node_block,    # {}
   node_primed,
   parse_ident,
@@ -221,14 +233,14 @@ node_else = Node(ElseNode,
 
 node_if = Node(IfNode,
   KW_IF,
-  Field("condition",  parse_tuple),
+  Field("condition",  node_tuple),
   Field("block",      node_block),
   Field("else",       Opt(node_else))
 )
 
 node_case = Node(CaseNode,
   KW_CASE,
-  Field("condition",  parse_tuple),
+  Field("condition",  node_tuple),
   Field("block",      node_block),
 )
 
@@ -239,7 +251,7 @@ node_default = Node(DefaultNode,
 
 node_match = Node(MatchNode,
   KW_MATCH,
-  Field("condition", parse_tuple),
+  Field("condition", node_tuple),
   PUNCT_LBRACE,
   Field("body",
     List2(BlockNode, Any(node_case, node_default))
@@ -250,10 +262,10 @@ node_match = Node(MatchNode,
 node_type = Node(TypeNode,
   Field("base", Oneof(
     node_call,
-    parse_tuple,
+    node_tuple,
     parse_ident
   )),
-  Opt(Field("suffix", parse_tuple))
+  Opt(Field("suffix", node_tuple))
 )
 
 #----------------------------------------

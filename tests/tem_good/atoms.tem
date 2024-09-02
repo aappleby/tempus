@@ -1,5 +1,6 @@
 [asdf]
 
+// Every atom shape with underscores
 x : int = 2
 x : int = _
 x : _   = 2
@@ -9,6 +10,7 @@ _ : int = _
 _ : _   = 2
 _ : _   = _
 
+// Every atom shape minus the underscores
 x : int = 2
 x : int
 x = 2
@@ -17,3 +19,15 @@ x:
 :int
 =2
 :
+
+// Every atom shape as a tuple element
+a = (
+  x : int = 2,
+  x : int,
+  x = 2,
+  x:,
+  :int = 2,
+  :int,
+  =2,
+  :
+)
