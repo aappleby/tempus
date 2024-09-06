@@ -14,23 +14,23 @@
 
 %%
 
-program    : expr_block;
+program     : expr_block;
 
-prefix     : '-' | '+' | '!';
-bin_op     : BIN_OP | prefix;
-const      : CONST_INT | CONST_FLOAT | CONST_STRING;
+prefix      : '-' | '+' | '!';
+bin_op      : BIN_OP | prefix;
+const       : CONST_INT | CONST_FLOAT | CONST_STRING;
 
-ident      : '@' IDENT | IDENT;
-parens     : '(' expr_tuple ')';
-braces     : '{' expr_block ')';
-bracks     : '[' expr_tuple ']';
+ident       : '@' IDENT | IDENT;
+parens      : '(' expr_tuple ')';
+braces      : '{' expr_block ')';
+bracks      : '[' expr_tuple ']';
 
-expr_atom  : ident | parens | braces | bracks;
-atom_link  : expr_atom | '.' expr_atom;
-atom_list  : atom_link | atom_link atom_list;
+expr_atom   : ident | parens | braces | bracks;
+atom_link   : expr_atom | '.' expr_atom;
+atom_list   : atom_link | atom_link atom_list;
 
-lhs_expr   : atom_list;
-type_expr  : atom_list;
+lhs_expr    : atom_list;
+type_expr   : atom_list;
 rhs_expr
   : prefix atom_list bin_op rhs_expr
   |        atom_list bin_op rhs_expr
@@ -42,14 +42,14 @@ rhs_expr
   |        const
 ;
 
-full_decl  : lhs_expr TYPE_OP type_expr ASSIGN_OP rhs_expr;
-empty_decl : lhs_expr TYPE_OP type_expr                   ;
-assignment : lhs_expr                   ASSIGN_OP rhs_expr;
-typed_val  :          TYPE_OP type_expr ASSIGN_OP rhs_expr;
-bare_name  : lhs_expr TYPE_OP                             ;
-bare_type  :          TYPE_OP type_expr                   ;
-bare_val   :                            ASSIGN_OP rhs_expr;
-bare_expr  :                                      rhs_expr;
+full_decl   : lhs_expr TYPE_OP type_expr ASSIGN_OP rhs_expr;
+empty_decl  : lhs_expr TYPE_OP type_expr                   ;
+assignment  : lhs_expr                   ASSIGN_OP rhs_expr;
+typed_val   :          TYPE_OP type_expr ASSIGN_OP rhs_expr;
+bare_name   : lhs_expr TYPE_OP                             ;
+bare_type   :          TYPE_OP type_expr                   ;
+bare_val    :                            ASSIGN_OP rhs_expr;
+bare_expr   :                                      rhs_expr;
 
 stmt_if     : KW_IF parens braces;
 stmt_ifelse : KW_IF parens braces KW_ELSE braces;
