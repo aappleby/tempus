@@ -32,10 +32,19 @@ class BaseNode:
     def __repr__(self):
         return type(self).__name__ + ":" + self.__dict__.__repr__()
 
+class AtomNode(BaseNode):
+  def __init__(self):
+    self.name = None
+    self.dir  = None
+    self.type = None
+    self.eq   = None
+    self.val  = None
+    pass
+  pass
+
 class BlockNode(BaseNode):    pass
 class CallNode(BaseNode):     pass
 class CaseNode(BaseNode):     pass
-class DeclNode(BaseNode):     pass
 class DefaultNode(BaseNode):  pass
 class ElseNode(BaseNode):     pass
 class ExprNode(BaseNode):     pass
@@ -219,9 +228,14 @@ parse_expr_unit = Oneof(
 )
 
 # unit op unit op unit...
-_node_expr = List2(ExprNode,
+_node_expr = Oneof(
+  List2(ExprNode,
+    parse_expr_unit,
+    Capture(match_binop),
+    parse_expr_unit,
+    Any(Seq(Capture(match_binop), parse_expr_unit))
+  ),
   parse_expr_unit,
-  Any(Seq(Capture(match_binop), parse_expr_unit))
 )
 
 node_else = Node(ElseNode,
@@ -274,7 +288,7 @@ decl_type = Field("type", node_type)
 decl_eq   = Field("eq",   Capture(match_assignop))
 decl_val  = Field("val",  node_expr)
 
-_node_decl = Node(DeclNode, Railway({
+_node_decl = Node(AtomNode, Railway({
   None      : [decl_name, decl_dir, decl_eq],
   decl_name : [decl_dir,  decl_eq],
   decl_dir  : [decl_type, None],

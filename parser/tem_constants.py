@@ -57,6 +57,15 @@ tem_binops = longest_first(
   "||",
 )
 
+tem_preops = longest_first(
+  "-",
+  "*",
+  "&",
+  "^",
+  "+",
+  "|",
+)
+
 tem_assignops = longest_first(
   "-=",
   "*=",

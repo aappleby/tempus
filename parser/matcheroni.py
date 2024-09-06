@@ -425,7 +425,7 @@ def Node(node_type, *args):
       if not isinstance(field, tuple):
         print(f"Field {field} is not a tuple")
         assert False
-      if field[0] in result:
+      if field[0] in result and result[field[0]] is not None:
         print(f"field {field[0]}:{field[1]} was already in {result}")
         assert False
       result[field[0]] = field[1]
