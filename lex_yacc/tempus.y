@@ -52,7 +52,12 @@ bare_val    :                            ASSIGN_OP rhs_expr;
 bare_expr   :                                      rhs_expr;
 
 stmt_if     : KW_IF parens braces;
-stmt_ifelse : KW_IF parens braces KW_ELSE braces;
+
+stmt_ifelse
+  : KW_IF parens braces KW_ELSE braces
+  | KW_IF parens braces KW_ELSE stmt_if
+;
+
 stmt_case   : KW_CASE parens braces
 case_block  : stmt_case | stmt_case case_block;
 stmt_match  : KW_MATCH parens '{' case_block '}';
