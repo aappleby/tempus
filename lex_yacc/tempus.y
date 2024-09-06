@@ -53,7 +53,7 @@ bare_expr   :                                      rhs_expr;
 
 stmt_if     : KW_IF parens braces;
 stmt_ifelse : KW_IF parens braces KW_ELSE braces;
-stmt_case   : KW_CASE braces
+stmt_case   : KW_CASE parens braces
 case_block  : stmt_case | stmt_case case_block;
 stmt_match  : KW_MATCH parens '{' case_block '}';
 stmt_for    : KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
