@@ -32,6 +32,8 @@ std::vector<std::string> string_stack;
 
 #include "tempus_yacc.h"
 #include "tempus_lex.c"
+
+#include "tempus_lex.h"
 #include "tempus_yacc.c"
 
 //------------------------------------------------------------------------------

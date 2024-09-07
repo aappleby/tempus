@@ -1,5 +1,5 @@
-/* don't generate functions we don't need */
-/*%option nounput noinput noyywrap*/
+%option nounput noinput noyywrap
+/*%option reentrant*/
 
 %{
 #include <stdio.h>

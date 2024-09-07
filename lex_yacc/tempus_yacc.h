@@ -69,35 +69,18 @@ extern int yydebug;
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Token kinds.  */
-#define YYEMPTY -2
-#define YYEOF 0
-#define YYerror 256
-#define YYUNDEF 257
-#define TOK_IDENT 258
-#define TOK_INT 259
-#define TOK_FLOAT 260
-#define TOK_STRING 261
-#define OP_TYPE 262
-#define OP_ASSIGN 263
-#define OP_BIN 264
-#define KW_IF 265
-#define KW_ELSE 266
-#define KW_MATCH 267
-#define KW_CASE 268
-#define KW_FOR 269
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 6 "tempus.y"
+#line 7 "tempus.y"
 
   int    val_int;
   double val_float;
   char*  val_str;
 
-#line 101 "tempus_yacc.h"
+#line 84 "tempus_yacc.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

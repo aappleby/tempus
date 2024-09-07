@@ -1,9 +1,9 @@
 echo "# Running lex"
-lex  --header-file=tempus_lex.h --outfile=tempus_lex.c tempus.l
+flex  --header-file=tempus_lex.h --outfile=tempus_lex.c tempus.l
 echo
 
 echo "# Running yacc"
-yacc --report=all --header=tempus_yacc.h --output=tempus_yacc.c tempus.y
+bison --report=all --header=tempus_yacc.h --output=tempus_yacc.c tempus.y
 echo
 
 echo "# GCC"

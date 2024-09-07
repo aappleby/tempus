@@ -1,5 +1,6 @@
-%{
-%}
+//%define api.pure full
+//%lex-param {yyscan_t scanner}
+//%parse-param {yyscan_t scanner}
 
 //------------------------------------------------------------------------------
 

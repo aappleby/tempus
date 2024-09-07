@@ -203,6 +203,9 @@ void yyfree ( void *  );
 
 /* Begin user sect3 */
 
+#define yywrap() (/*CONSTCOND*/1)
+#define YY_SKIP_YYWRAP
+
 extern int yylineno;
 
 extern char *yytext;
@@ -469,6 +472,6 @@ extern int yylex (void);
 #line 68 "tempus.l"
 
 
-#line 473 "tempus_lex.h"
+#line 476 "tempus_lex.h"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */
