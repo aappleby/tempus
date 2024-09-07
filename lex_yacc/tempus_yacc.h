@@ -74,7 +74,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 24 "tempus.y"
+#line 19 "tempus.y"
 
   int    val_int;
   double val_float;
@@ -89,10 +89,9 @@ typedef union YYSTYPE YYSTYPE;
 #endif
 
 
-extern YYSTYPE yylval;
 
 
-int yyparse (void);
+int yyparse (void *scanner);
 
 
 #endif /* !YY_YY_TEMPUS_YACC_H_INCLUDED  */

@@ -35,12 +35,12 @@ std::vector<std::string> string_stack;
 int main(int argc, char** argv) {
   printf("Hello World %d %p\n", argc, argv);
 
-  yyparse();
+  //yyparse();
 
-  //yyscan_t scanner;
-  //yylex_init(&scanner);
-  //yyparse(scanner);
-  //yylex_destroy(scanner);
+  yyscan_t scanner;
+  yylex_init(&scanner);
+  yyparse(scanner);
+  yylex_destroy(scanner);
 
   for (auto& s : string_stack) {
     printf("string stack %s\n", s.c_str());

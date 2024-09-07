@@ -1,21 +1,16 @@
-/*%define api.pure full*/
-//%lex-param {yyscan_t scanner}
-//%parse-param {yyscan_t scanner}
-
-//%param { YYSTYPE * yylval }
+%define api.pure full
+%lex-param {void *scanner}
+%parse-param {void *scanner}
 
 %{
+  #include "tempus_yacc.h"
   #include "tempus_lex.h"
 
   #include <string>
   #include <vector>
 
   extern std::vector<std::string> string_stack;
-
-  void yyerror(const char* c);
-
-  #define YY_DECL int yylex(YYSTYPE * yylval, yyscan_t scanner)
-
+  void yyerror(yyscan_t locp, char const *msg);
 
 %}
 
@@ -136,3 +131,7 @@ expr_tuple : /**/ | expr | expr ',' expr_tuple;
 %%
 
 //------------------------------------------------------------------------------
+
+void yyerror (yyscan_t locp, char const *msg) {
+	fprintf(stderr, "--> %s\n", msg);
+}
