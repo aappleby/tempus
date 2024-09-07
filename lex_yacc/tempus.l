@@ -1,3 +1,6 @@
+/* don't generate functions we don't need */
+/*%option nounput noinput noyywrap*/
+
 %{
 #include <stdio.h>
 #include "tempus_yacc.h"
@@ -16,51 +19,50 @@ E           [Ee][+-]?{D}+
 "case"      { return(KW_CASE); }
 "for"       { return(KW_FOR); }
 
-{L}({L}|{D})*      { return(TOK_IDENT); }
-0[xX]{H}+          { return(TOK_INT); }
-{D}+               { return(TOK_INT); }
-{D}+{E}            { return(TOK_FLOAT); }
-{D}+"."{D}*({E})?  { return(TOK_FLOAT); }
-\"(\\.|[^\\"])*\"  { return(TOK_STRING); }
+{L}({L}|{D})*      { yylval.val_str   = strdup(yytext);       return(TOK_IDENT); }
+0[xX]{H}+          { yylval.val_int   = atoi(yytext);         return(TOK_INT); }
+{D}+               { yylval.val_int   = atoi(yytext);         return(TOK_INT); }
+{D}+{E}            { yylval.val_float = atof(yytext);         return(TOK_FLOAT); }
+{D}+"."{D}*({E})?  { yylval.val_float = atof(yytext);         return(TOK_FLOAT); }
+\"(\\.|[^\\"])*\"  { yylval.val_str   = strdup(yytext);       return(TOK_STRING); }
 
-">>="       { return(OP_ASSIGN); }
-"<<="       { return(OP_ASSIGN); }
-"+="        { return(OP_ASSIGN); }
-"-="        { return(OP_ASSIGN); }
-"*="        { return(OP_ASSIGN); }
-"/="        { return(OP_ASSIGN); }
-"%="        { return(OP_ASSIGN); }
-"&="        { return(OP_ASSIGN); }
-"^="        { return(OP_ASSIGN); }
-"|="        { return(OP_ASSIGN); }
-"="         { return(OP_ASSIGN); }
+">>="       { yylval.val_str = strdup(yytext);       return(OP_ASSIGN); }
+"<<="       { yylval.val_str = strdup(yytext);       return(OP_ASSIGN); }
+"+="        { yylval.val_str = strdup(yytext);       return(OP_ASSIGN); }
+"-="        { yylval.val_str = strdup(yytext);       return(OP_ASSIGN); }
+"*="        { yylval.val_str = strdup(yytext);       return(OP_ASSIGN); }
+"/="        { yylval.val_str = strdup(yytext);       return(OP_ASSIGN); }
+"%="        { yylval.val_str = strdup(yytext);       return(OP_ASSIGN); }
+"&="        { yylval.val_str = strdup(yytext);       return(OP_ASSIGN); }
+"^="        { yylval.val_str = strdup(yytext);       return(OP_ASSIGN); }
+"|="        { yylval.val_str = strdup(yytext);       return(OP_ASSIGN); }
+"="         { yylval.val_str = strdup(yytext);       return(OP_ASSIGN); }
 
-">:"        { return(OP_TYPE); }
-"<:"        { return(OP_TYPE); }
-":"         { return(OP_TYPE); }
+">:"        { yylval.val_str = strdup(yytext);       return(OP_TYPE); }
+"<:"        { yylval.val_str = strdup(yytext);       return(OP_TYPE); }
+":"         { yylval.val_str = strdup(yytext);       return(OP_TYPE); }
 
-">>"        { return(OP_BIN); }
-"<<"        { return(OP_BIN); }
-"&&"        { return(OP_BIN); }
-"||"        { return(OP_BIN); }
-"<="        { return(OP_BIN); }
-">="        { return(OP_BIN); }
-"=="        { return(OP_BIN); }
-"!="        { return(OP_BIN); }
+">>"        { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"<<"        { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"&&"        { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"||"        { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"<="        { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+">="        { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"=="        { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"!="        { yylval.val_str = strdup(yytext);       return(OP_BIN); }
 
-"+"         { return(OP_BIN); }
-"-"         { return(OP_BIN); }
-"*"         { return(OP_BIN); }
-"/"         { return(OP_BIN); }
-"%"         { return(OP_BIN); }
-"&"         { return(OP_BIN); }
-"|"         { return(OP_BIN); }
-"^"         { return(OP_BIN); }
-"<"         { return(OP_BIN); }
-">"         { return(OP_BIN); }
+"+"         { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"-"         { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"*"         { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"/"         { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"%"         { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"&"         { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"|"         { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"^"         { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+"<"         { yylval.val_str = strdup(yytext);       return(OP_BIN); }
+">"         { yylval.val_str = strdup(yytext);       return(OP_BIN); }
 
 [ \t\v\n\f] { }
 .           { return yytext[0]; }
 
 %%
-int yywrap() { return(1); }

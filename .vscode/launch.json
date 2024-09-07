@@ -1,6 +1,30 @@
 // clang-format off
 {
   "configurations": [
+    {
+      "name": "(gdb) Launch tempus_main",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/lex_yacc/tempus_main",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+          {
+              "description": "Enable pretty-printing for gdb",
+              "text": "-enable-pretty-printing",
+              "ignoreFailures": true
+          },
+          {
+              "description": "Set Disassembly Flavor to Intel",
+              "text": "-gdb-set disassembly-flavor intel",
+              "ignoreFailures": true
+          }
+      ]
+    },
 
     {
       "name": "matcher",
