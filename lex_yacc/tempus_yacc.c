@@ -88,72 +88,7 @@
 #  endif
 # endif
 
-
-/* Debug traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
-#if YYDEBUG
-extern int yydebug;
-#endif
-
-/* Token kinds.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-  enum yytokentype
-  {
-    YYEMPTY = -2,
-    YYEOF = 0,                     /* "end of file"  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
-    IDENT = 258,                   /* IDENT  */
-    CONST_INT = 259,               /* CONST_INT  */
-    CONST_FLOAT = 260,             /* CONST_FLOAT  */
-    CONST_STRING = 261,            /* CONST_STRING  */
-    TYPE_OP = 262,                 /* TYPE_OP  */
-    ASSIGN_OP = 263,               /* ASSIGN_OP  */
-    BIN_OP = 264,                  /* BIN_OP  */
-    KW_IF = 265,                   /* KW_IF  */
-    KW_ELSE = 266,                 /* KW_ELSE  */
-    KW_MATCH = 267,                /* KW_MATCH  */
-    KW_CASE = 268,                 /* KW_CASE  */
-    KW_FOR = 269                   /* KW_FOR  */
-  };
-  typedef enum yytokentype yytoken_kind_t;
-#endif
-/* Token kinds.  */
-#define YYEMPTY -2
-#define YYEOF 0
-#define YYerror 256
-#define YYUNDEF 257
-#define IDENT 258
-#define CONST_INT 259
-#define CONST_FLOAT 260
-#define CONST_STRING 261
-#define TYPE_OP 262
-#define ASSIGN_OP 263
-#define BIN_OP 264
-#define KW_IF 265
-#define KW_ELSE 266
-#define KW_MATCH 267
-#define KW_CASE 268
-#define KW_FOR 269
-
-/* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
-#endif
-
-
-extern YYSTYPE yylval;
-
-
-int yyparse (void);
-
-
-
+#include "tempus_yacc.h"
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -161,13 +96,13 @@ enum yysymbol_kind_t
   YYSYMBOL_YYEOF = 0,                      /* "end of file"  */
   YYSYMBOL_YYerror = 1,                    /* error  */
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
-  YYSYMBOL_IDENT = 3,                      /* IDENT  */
-  YYSYMBOL_CONST_INT = 4,                  /* CONST_INT  */
-  YYSYMBOL_CONST_FLOAT = 5,                /* CONST_FLOAT  */
-  YYSYMBOL_CONST_STRING = 6,               /* CONST_STRING  */
-  YYSYMBOL_TYPE_OP = 7,                    /* TYPE_OP  */
-  YYSYMBOL_ASSIGN_OP = 8,                  /* ASSIGN_OP  */
-  YYSYMBOL_BIN_OP = 9,                     /* BIN_OP  */
+  YYSYMBOL_TOK_IDENT = 3,                  /* TOK_IDENT  */
+  YYSYMBOL_TOK_INT = 4,                    /* TOK_INT  */
+  YYSYMBOL_TOK_FLOAT = 5,                  /* TOK_FLOAT  */
+  YYSYMBOL_TOK_STRING = 6,                 /* TOK_STRING  */
+  YYSYMBOL_OP_TYPE = 7,                    /* OP_TYPE  */
+  YYSYMBOL_OP_ASSIGN = 8,                  /* OP_ASSIGN  */
+  YYSYMBOL_OP_BIN = 9,                     /* OP_BIN  */
   YYSYMBOL_KW_IF = 10,                     /* KW_IF  */
   YYSYMBOL_KW_ELSE = 11,                   /* KW_ELSE  */
   YYSYMBOL_KW_MATCH = 12,                  /* KW_MATCH  */
@@ -627,8 +562,8 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "\"end of file\"", "error", "\"invalid token\"", "IDENT", "CONST_INT",
-  "CONST_FLOAT", "CONST_STRING", "TYPE_OP", "ASSIGN_OP", "BIN_OP", "KW_IF",
+  "\"end of file\"", "error", "\"invalid token\"", "TOK_IDENT", "TOK_INT",
+  "TOK_FLOAT", "TOK_STRING", "OP_TYPE", "OP_ASSIGN", "OP_BIN", "KW_IF",
   "KW_ELSE", "KW_MATCH", "KW_CASE", "KW_FOR", "'-'", "'+'", "'!'", "'@'",
   "'('", "')'", "'{'", "'['", "']'", "'.'", "'}'", "';'", "','", "$accept",
   "program", "prefix", "bin_op", "const", "ident", "parens", "braces",
@@ -1254,7 +1189,7 @@ yyreduce:
   switch (yyn)
     {
 
-#line 1258 "y.tab.c"
+#line 1193 "tempus_yacc.c"
 
       default: break;
     }
@@ -1449,3 +1384,11 @@ yyreturnlab:
 
 #line 86 "tempus.y"
 
+
+#include <stdio.h>
+
+void yyerror(char* s)
+{
+  printf("yyerror %s\n", s);
+	fflush(stdout);
+}

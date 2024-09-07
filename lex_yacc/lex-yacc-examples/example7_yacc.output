@@ -1,0 +1,190 @@
+Grammar
+
+    0 $accept: commands $end
+
+    1 commands: command
+    2         | command commands
+
+    3 command: heat_switch
+    4        | target_set
+    5        | heater_select
+
+    6 heat_switch: KW_HEAT CONST_STATE
+
+    7 target_set: KW_TARGET KW_TEMP CONST_NUMBER
+
+    8 heater_select: KW_HEATER TOK_WORD
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    KW_HEATER (258) 8
+    KW_HEAT (259) 6
+    KW_TARGET (260) 7
+    KW_TEMP (261) 7
+    CONST_STATE <val_int> (262) 6
+    CONST_NUMBER <val_int> (263) 7
+    TOK_WORD <val_str> (264) 8
+
+
+Nonterminals, with rules where they appear
+
+    $accept (10)
+        on left: 0
+    commands (11)
+        on left: 1 2
+        on right: 0 2
+    command (12)
+        on left: 3 4 5
+        on right: 1 2
+    heat_switch (13)
+        on left: 6
+        on right: 3
+    target_set (14)
+        on left: 7
+        on right: 4
+    heater_select (15)
+        on left: 8
+        on right: 5
+
+
+State 0
+
+    0 $accept: • commands $end
+    1 commands: • command
+    2         | • command commands
+    3 command: • heat_switch
+    4        | • target_set
+    5        | • heater_select
+    6 heat_switch: • KW_HEAT CONST_STATE
+    7 target_set: • KW_TARGET KW_TEMP CONST_NUMBER
+    8 heater_select: • KW_HEATER TOK_WORD
+
+    KW_HEATER  shift, and go to state 1
+    KW_HEAT    shift, and go to state 2
+    KW_TARGET  shift, and go to state 3
+
+    commands       go to state 4
+    command        go to state 5
+    heat_switch    go to state 6
+    target_set     go to state 7
+    heater_select  go to state 8
+
+
+State 1
+
+    8 heater_select: KW_HEATER • TOK_WORD
+
+    TOK_WORD  shift, and go to state 9
+
+
+State 2
+
+    6 heat_switch: KW_HEAT • CONST_STATE
+
+    CONST_STATE  shift, and go to state 10
+
+
+State 3
+
+    7 target_set: KW_TARGET • KW_TEMP CONST_NUMBER
+
+    KW_TEMP  shift, and go to state 11
+
+
+State 4
+
+    0 $accept: commands • $end
+
+    $end  shift, and go to state 12
+
+
+State 5
+
+    1 commands: • command
+    1         | command •  [$end]
+    2         | • command commands
+    2         | command • commands
+    3 command: • heat_switch
+    4        | • target_set
+    5        | • heater_select
+    6 heat_switch: • KW_HEAT CONST_STATE
+    7 target_set: • KW_TARGET KW_TEMP CONST_NUMBER
+    8 heater_select: • KW_HEATER TOK_WORD
+
+    KW_HEATER  shift, and go to state 1
+    KW_HEAT    shift, and go to state 2
+    KW_TARGET  shift, and go to state 3
+
+    $default  reduce using rule 1 (commands)
+
+    commands       go to state 13
+    command        go to state 5
+    heat_switch    go to state 6
+    target_set     go to state 7
+    heater_select  go to state 8
+
+
+State 6
+
+    3 command: heat_switch •
+
+    $default  reduce using rule 3 (command)
+
+
+State 7
+
+    4 command: target_set •
+
+    $default  reduce using rule 4 (command)
+
+
+State 8
+
+    5 command: heater_select •
+
+    $default  reduce using rule 5 (command)
+
+
+State 9
+
+    8 heater_select: KW_HEATER TOK_WORD •
+
+    $default  reduce using rule 8 (heater_select)
+
+
+State 10
+
+    6 heat_switch: KW_HEAT CONST_STATE •
+
+    $default  reduce using rule 6 (heat_switch)
+
+
+State 11
+
+    7 target_set: KW_TARGET KW_TEMP • CONST_NUMBER
+
+    CONST_NUMBER  shift, and go to state 14
+
+
+State 12
+
+    0 $accept: commands $end •
+
+    $default  accept
+
+
+State 13
+
+    2 commands: command commands •
+
+    $default  reduce using rule 2 (commands)
+
+
+State 14
+
+    7 target_set: KW_TARGET KW_TEMP CONST_NUMBER •
+
+    $default  reduce using rule 7 (target_set)

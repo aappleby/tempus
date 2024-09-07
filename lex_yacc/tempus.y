@@ -1,10 +1,10 @@
-%token IDENT
-%token CONST_INT
-%token CONST_FLOAT
-%token CONST_STRING
-%token TYPE_OP
-%token ASSIGN_OP
-%token BIN_OP
+%token TOK_IDENT
+%token TOK_INT
+%token TOK_FLOAT
+%token TOK_STRING
+%token OP_TYPE
+%token OP_ASSIGN
+%token OP_BIN
 
 %token KW_IF
 %token KW_ELSE
@@ -17,10 +17,10 @@
 program     : expr_block;
 
 prefix      : '-' | '+' | '!';
-bin_op      : BIN_OP | prefix;
-const       : CONST_INT | CONST_FLOAT | CONST_STRING;
+bin_op      : OP_BIN | prefix;
+const       : TOK_INT | TOK_FLOAT | TOK_STRING;
 
-ident       : '@' IDENT | IDENT;
+ident       : '@' TOK_IDENT | TOK_IDENT;
 parens      : '(' expr_tuple ')';
 braces      : '{' expr_block ')';
 bracks      : '[' expr_tuple ']';
@@ -42,13 +42,13 @@ rhs_expr
   |        const
 ;
 
-full_decl   : lhs_expr TYPE_OP type_expr ASSIGN_OP rhs_expr;
-empty_decl  : lhs_expr TYPE_OP type_expr                   ;
-assignment  : lhs_expr                   ASSIGN_OP rhs_expr;
-typed_val   :          TYPE_OP type_expr ASSIGN_OP rhs_expr;
-bare_name   : lhs_expr TYPE_OP                             ;
-bare_type   :          TYPE_OP type_expr                   ;
-bare_val    :                            ASSIGN_OP rhs_expr;
+full_decl   : lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr;
+empty_decl  : lhs_expr OP_TYPE type_expr                   ;
+assignment  : lhs_expr                   OP_ASSIGN rhs_expr;
+typed_val   :          OP_TYPE type_expr OP_ASSIGN rhs_expr;
+bare_name   : lhs_expr OP_TYPE                             ;
+bare_type   :          OP_TYPE type_expr                   ;
+bare_val    :                            OP_ASSIGN rhs_expr;
 bare_expr   :                                      rhs_expr;
 
 stmt_if     : KW_IF parens braces;
@@ -84,3 +84,11 @@ expr_block : expr | expr ';' | expr ';' expr_block;
 expr_tuple : expr | expr ',' | expr ',' expr_tuple;
 
 %%
+
+#include <stdio.h>
+
+void yyerror(char* s)
+{
+  printf("yyerror %s\n", s);
+	fflush(stdout);
+}
