@@ -1,6 +1,23 @@
-//%define api.pure full
+/*%define api.pure full*/
 //%lex-param {yyscan_t scanner}
 //%parse-param {yyscan_t scanner}
+
+//%param { YYSTYPE * yylval }
+
+%{
+  #include "tempus_lex.h"
+
+  #include <string>
+  #include <vector>
+
+  extern std::vector<std::string> string_stack;
+
+  void yyerror(const char* c);
+
+  #define YY_DECL int yylex(YYSTYPE * yylval, yyscan_t scanner)
+
+
+%}
 
 //------------------------------------------------------------------------------
 
