@@ -44,6 +44,25 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 22 "tempus.y"
+
+	enum sexpr_type {
+		SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
+	};
+
+	struct sexpr
+	{
+		sexpr_type type;
+		union
+		{
+			int   num;
+			char *id;
+		} value;
+		sexpr *left, *right;
+	};
+
+#line 66 "tempus_yacc.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -74,13 +93,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 18 "tempus.y"
+#line 41 "tempus.y"
 
   int    val_int;
   double val_float;
   char*  val_str;
+  sexpr* val_node;
 
-#line 84 "tempus_yacc.h"
+#line 104 "tempus_yacc.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -91,7 +111,7 @@ typedef union YYSTYPE YYSTYPE;
 
 
 
-int yyparse (void *scanner);
+int yyparse (void *scanner, sexpr **result);
 
 
 #endif /* !YY_YY_TEMPUS_YACC_H_INCLUDED  */

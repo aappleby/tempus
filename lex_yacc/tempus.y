@@ -1,7 +1,12 @@
 %define api.pure full
-%param {void *scanner}
+%lex-param   {void *scanner}
+%parse-param {void *scanner}
 
-%{
+%define parse.error verbose
+
+//------------------------------------------------------------------------------
+
+%code top {
   #include "tempus_yacc.h"
   #include "tempus_lex.h"
 
@@ -9,9 +14,27 @@
   #include <vector>
 
   extern std::vector<std::string> string_stack;
-  void yyerror(yyscan_t locp, char const *msg);
+  void yyerror(yyscan_t locp, sexpr** result, char const *msg);
+}
 
-%}
+//------------------------------------------------------------------------------
+
+%code requires {
+	enum sexpr_type {
+		SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
+	};
+
+	struct sexpr
+	{
+		sexpr_type type;
+		union
+		{
+			int   num;
+			char *id;
+		} value;
+		sexpr *left, *right;
+	};
+}
 
 //------------------------------------------------------------------------------
 
@@ -19,7 +42,10 @@
   int    val_int;
   double val_float;
   char*  val_str;
+  sexpr* val_node;
 }
+
+%parse-param {sexpr **result}
 
 //------------------------------------------------------------------------------
 
@@ -40,10 +66,6 @@
 //------------------------------------------------------------------------------
 
 %%
-
-//program : stmt ';' { printf("program!\n"); }
-//stmt : ident OP_ASSIGN TOK_INT;
-//ident : TOK_IDENT { printf("ident %s\n", $1); }
 
 program     : expr_block;
 
@@ -130,7 +152,3 @@ expr_tuple : /**/ | expr | expr ',' expr_tuple;
 %%
 
 //------------------------------------------------------------------------------
-
-void yyerror (yyscan_t locp, char const *msg) {
-	fprintf(stderr, "--> %s\n", msg);
-}

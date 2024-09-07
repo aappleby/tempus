@@ -1,12 +1,8 @@
-%option nounput noinput noyywrap reentrant bison-bridge 
+%option nounput noinput noyywrap reentrant bison-bridge
 
 %{
 #include <stdio.h>
 #include "tempus_yacc.h"
-
-int yy_input(char* buf, int max_size);
-#define YY_INPUT(buf, result, max_size) { result = yy_input(buf, max_size); }
-
 %}
 
 D           [0-9]
