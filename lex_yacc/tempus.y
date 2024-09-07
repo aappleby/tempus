@@ -1,6 +1,5 @@
 %define api.pure full
-%lex-param {void *scanner}
-%parse-param {void *scanner}
+%param {void *scanner}
 
 %{
   #include "tempus_yacc.h"

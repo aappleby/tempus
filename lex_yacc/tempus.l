@@ -1,5 +1,4 @@
-
-%option reentrant bison-bridge noyywrap
+%option nounput noinput noyywrap reentrant bison-bridge 
 
 %{
 #include <stdio.h>

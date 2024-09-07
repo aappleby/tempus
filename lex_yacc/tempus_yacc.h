@@ -74,7 +74,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 19 "tempus.y"
+#line 18 "tempus.y"
 
   int    val_int;
   double val_float;

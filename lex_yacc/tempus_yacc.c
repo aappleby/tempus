@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 5 "tempus.y"
+#line 4 "tempus.y"
 
   #include "tempus_yacc.h"
   #include "tempus_lex.h"
@@ -554,13 +554,13 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    49,    49,    51,    51,    51,    52,    52,    53,    53,
-      53,    55,    55,    63,    64,    65,    67,    67,    67,    67,
-      68,    68,    69,    69,    71,    72,    74,    75,    76,    77,
-      78,    79,    80,    81,    84,    85,    87,    94,    95,    96,
-      97,    98,   100,   103,   104,   107,   108,   108,   109,   110,
-     113,   114,   115,   116,   117,   118,   119,   120,   121,   122,
-     123,   124,   126,   126,   128,   128,   128,   129,   129,   129
+       0,    48,    48,    50,    50,    50,    51,    51,    52,    52,
+      52,    54,    54,    62,    63,    64,    66,    66,    66,    66,
+      67,    67,    68,    68,    70,    71,    73,    74,    75,    76,
+      77,    78,    79,    80,    83,    84,    86,    93,    94,    95,
+      96,    97,    99,   102,   103,   106,   107,   107,   108,   109,
+     112,   113,   114,   115,   116,   117,   118,   119,   120,   121,
+     122,   123,   125,   125,   127,   127,   127,   128,   128,   128
 };
 #endif
 
@@ -1211,13 +1211,13 @@ yyreduce:
   switch (yyn)
     {
   case 11: /* ident: '@' TOK_IDENT  */
-#line 55 "tempus.y"
+#line 54 "tempus.y"
                             { printf("primed %s\n", (yyvsp[0].val_str)); string_stack.push_back((yyvsp[0].val_str)); }
 #line 1217 "tempus_yacc.c"
     break;
 
   case 12: /* ident: TOK_IDENT  */
-#line 56 "tempus.y"
+#line 55 "tempus.y"
 {
   int y = 0;
   printf("ident %s\n", (yyvsp[0].val_str));
@@ -1228,13 +1228,13 @@ yyreduce:
     break;
 
   case 24: /* lhs_expr: atom_list  */
-#line 71 "tempus.y"
+#line 70 "tempus.y"
                         { printf("lhs_expr\n"); }
 #line 1234 "tempus_yacc.c"
     break;
 
   case 36: /* assignment: lhs_expr OP_ASSIGN rhs_expr  */
-#line 87 "tempus.y"
+#line 86 "tempus.y"
                                                             {
   int x = 0;
   printf("Assignment %s\n", (yyvsp[-1].val_str));
@@ -1245,7 +1245,7 @@ yyreduce:
     break;
 
   case 52: /* expr: assignment  */
-#line 115 "tempus.y"
+#line 114 "tempus.y"
                { printf("expr assignment\n"); }
 #line 1251 "tempus_yacc.c"
     break;
@@ -1444,7 +1444,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 131 "tempus.y"
+#line 130 "tempus.y"
 
 
 //------------------------------------------------------------------------------
