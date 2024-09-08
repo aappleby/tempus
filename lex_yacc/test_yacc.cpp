@@ -34,26 +34,43 @@ void sexpr_free(sexpr *s)
 
 //------------------------------------------------------------------------------
 
-int main(int argc, char** argv) {
-  printf("Hello World %d %p\n", argc, argv);
-
+int test_parse(const char* source) {
   yyscan_t scanner;
   temlex_init(&scanner);
 
-  const char* source = R"(
-  @x = 1;
-  y : u32 = foo();
-  )";
-
   YY_BUFFER_STATE buffer = tem_scan_string(source, scanner);
-  sexpr* result = nullptr;
-  tem_parse(scanner, &result);
+  sexpr* node = nullptr;
+  auto result = tem_parse(scanner, &node);
 
   tem_delete_buffer(buffer, scanner);
   temlex_destroy(scanner);
+  return result;
+}
 
-  for (auto& s : string_stack) {
-    printf("string stack %s\n", s.c_str());
+//------------------------------------------------------------------------------
+
+const char* sources[] = {
+  "# foo  @x = 1; y : u32 = foo();",
+
+  // why u no work
+  //"# sign x = -y;",
+
+  "# bar  a.b.c = zarp(blah : type = 229)()()[1,3,2];",
+  "# asd  for (x : int = 0; x < 12; x = x + 1) { print(\"asldkflskjfd\") }",
+
+  // isolated dot doesn't work as ident
+  //"# func blah : func(int) = (x : int, y : int, z : int) { . = (x,y,z) };"
+
+  "# func blah : func(int) = (x : int, y : int, z : int) { .a = (x,y,z) };"
+};
+
+int main(int argc, char** argv) {
+  printf("Hello World %d %p\n", argc, argv);
+
+  for (auto source : sources) {
+    printf("Parsing '%.12s'...\n", source);
+    auto result = test_parse(source);
+    if (result) printf("FAIL\n");
   }
 
   return 0;

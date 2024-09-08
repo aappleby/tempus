@@ -33,7 +33,8 @@ TOK_IDENT     : [a-zA-Z_] [a-zA-Z0-9_]* ;
 
 //------------------------------------------------------------------------------
 
-program     : expr_block;
+program     : section | section program;
+section     : '#' TOK_IDENT expr_block;
 
 prefix      : '-' | '+' | '!';
 const       : TOK_INT | TOK_FLOAT | TOK_STRING;

@@ -7,31 +7,6 @@ from functools import cache
 
 #---------------------------------------------------------------------------------------------------
 
-class BaseNode:
-    def items(self):
-        return self.__dict__.items()
-
-    def keys(self):
-        return self.__dict__.keys()
-
-    def __contains__(self, key):
-        return key in self.__dict__
-
-    def __getitem__(self, key):
-        return self.__dict__[key]
-
-    def __setitem__(self, key, val):
-        self.__dict__[key] = val
-
-    def __getattr__(self, key):
-        return self.__dict__[key]
-
-    def __setattr__(self, key, val):
-        self.__dict__[key] = val
-
-    def __repr__(self):
-        return type(self).__name__ + ":" + self.__dict__.__repr__()
-
 class AtomNode(BaseNode):
   def __init__(self):
     self.name = None
@@ -88,6 +63,7 @@ PUNCT_LBRACK  = LexToAtom(LexemeType.LEX_PUNCT, "[")
 PUNCT_RBRACK  = LexToAtom(LexemeType.LEX_PUNCT, "]")
 PUNCT_LBRACE  = LexToAtom(LexemeType.LEX_PUNCT, "{")
 PUNCT_RBRACE  = LexToAtom(LexemeType.LEX_PUNCT, "}")
+PUNCT_POUND   = LexToAtom(LexemeType.LEX_PUNCT, "#")
 
 PUNCT_AT      = LexToAtom(LexemeType.LEX_PUNCT, "@")
 
@@ -102,29 +78,12 @@ KW_UNSIGNED   = LexToAtom(LexemeType.LEX_KEYWORD, "unsigned")
 
 #---------------------------------------------------------------------------------------------------
 
-def match_assignop(span, ctx):
-  if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in parser.tem_constants.tem_assignops:
-    return span[1:]
-  return Fail(span)
-
-def match_declop(span, ctx):
-  if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in parser.tem_constants.tem_declops:
-    return span[1:]
-  return Fail(span)
-
-def match_binop(span, ctx):
-  if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in parser.tem_constants.tem_binops:
-    return span[1:]
-  return Fail(span)
-
-#ident_rail = {
-#  None         : [PUNCT_AT, ATOM_IDENT],
-#  PUNCT_AT     : [ATOM_IDENT],
-#  ATOM_IDENT   : [PUNCT_DOT, None],
-#  PUNCT_DOT    : [ATOM_IDENT]
-#}
-
-# lvalue = Seq(Capture(match_ident), Any(array_suffix))
+def match_op(ops):
+  def match(span, ctx):
+    if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in ops:
+      return span[1:]
+    return Fail(span)
+  return match
 
 match_ident = Seq(
   Opt(PUNCT_DOT),
@@ -148,16 +107,8 @@ def node_decl(span, ctx):
   return _node_decl(span, ctx)
 
 parse_ident = Capture(match_ident)
-
-node_primed = Node(PrimedNode,
-  PUNCT_AT,
-  Field("ident", parse_ident)
-)
-
-parse_expr_or_decl = Oneof(
-  node_expr,
-  node_decl,
-)
+node_primed = Node(PrimedNode, PUNCT_AT, Field("ident", parse_ident))
+parse_expr_or_decl = Oneof(node_expr, node_decl)
 
 #---------------------------------------------------------------------------------------------------
 
@@ -184,18 +135,9 @@ parse_brace_tuple = Railway({
 
 # Curly-braced, semicolon-delimited lists of statements. Excess semicolons are OK. No semicolon
 # after the last statement is OK.
-node_block = List2(BlockNode,
-  PUNCT_LBRACE,
-  Any(parse_stmt),
-  PUNCT_RBRACE
-)
+node_block = List2(BlockNode, PUNCT_LBRACE, Any(parse_stmt), PUNCT_RBRACE)
 
-node_tuple = List2(TupleNode,
-  Oneof(
-    parse_paren_tuple,
-    parse_brace_tuple
-  )
-)
+node_tuple = List2(TupleNode, Oneof(parse_paren_tuple, parse_brace_tuple))
 
 #---------------------------------------------------------------------------------------------------
 
@@ -231,7 +173,7 @@ parse_expr_unit = Oneof(
 _node_expr = Oneof(
   List2(ExprNode,
     parse_expr_unit,
-    Capture(match_binop),
+    Capture(match_op(parser.tem_parser.tem_binops)),
     parse_expr_unit,
     Any(Seq(Capture(match_binop), parse_expr_unit))
   ),
@@ -283,9 +225,9 @@ node_type = Node(TypeNode,
 #----------------------------------------
 
 decl_name = Field("name", Oneof(node_primed, parse_ident))
-decl_dir  = Field("dir",  Capture(match_declop))
+decl_dir  = Field("dir",  Capture(match_op(parser.tem_parser.tem_declops)))
 decl_type = Field("type", node_type)
-decl_eq   = Field("eq",   Capture(match_assignop))
+decl_eq   = Field("eq",   Capture(match_op(parser.tem_constants.tem_assignops)))
 decl_val  = Field("val",  node_expr)
 
 _node_decl = Node(AtomNode, Railway({
@@ -315,9 +257,8 @@ _parse_stmt = Oneof(
 )
 
 node_section = Node(SectionNode,
-  PUNCT_LBRACK,
+  PUNCT_POUND,
   Field("name", parse_ident),
-  PUNCT_RBRACK,
   Field("body", Any(parse_stmt))
 )
 

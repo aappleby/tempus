@@ -39,7 +39,10 @@
 
 %%
 
-program     : expr_block;
+program     : section | section program;
+section     : marker expr_block;
+
+marker      : '#' TOK_IDENT;
 
 prefix      : '-' | '+' | '!';
 const       : TOK_INT | TOK_FLOAT | TOK_STRING;
@@ -47,7 +50,7 @@ const       : TOK_INT | TOK_FLOAT | TOK_STRING;
 ident       : '@' TOK_IDENT | TOK_IDENT;
 
 parens      : '(' expr_tuple ')';
-braces      : '{' expr_block ')';
+braces      : '{' expr_block '}';
 bracks      : '[' expr_tuple ']';
 
 expr_atom   : ident | parens | braces | bracks;

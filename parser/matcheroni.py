@@ -545,6 +545,33 @@ def Railway(railway):
 
 #---------------------------------------------------------------------------------------------------
 
+class BaseNode:
+    def items(self):
+        return self.__dict__.items()
+
+    def keys(self):
+        return self.__dict__.keys()
+
+    def __contains__(self, key):
+        return key in self.__dict__
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def __setitem__(self, key, val):
+        self.__dict__[key] = val
+
+    def __getattr__(self, key):
+        return self.__dict__[key]
+
+    def __setattr__(self, key, val):
+        self.__dict__[key] = val
+
+    def __repr__(self):
+        return type(self).__name__ + ":" + self.__dict__.__repr__()
+
+#---------------------------------------------------------------------------------------------------
+
 import doctest
 import sys
 import os

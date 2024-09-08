@@ -2,2294 +2,2358 @@ Grammar
 
     0 $accept: program $end
 
-    1 program: expr_block
+    1 program: section
+    2        | section program
 
-    2 prefix: '-'
-    3       | '+'
-    4       | '!'
+    3 section: marker expr_block
 
-    5 const: TOK_INT
-    6      | TOK_FLOAT
-    7      | TOK_STRING
+    4 marker: '#' TOK_IDENT
 
-    8 ident: '@' TOK_IDENT
-    9      | TOK_IDENT
+    5 prefix: '-'
+    6       | '+'
+    7       | '!'
 
-   10 parens: '(' expr_tuple ')'
+    8 const: TOK_INT
+    9      | TOK_FLOAT
+   10      | TOK_STRING
 
-   11 braces: '{' expr_block ')'
+   11 ident: '@' TOK_IDENT
+   12      | TOK_IDENT
 
-   12 bracks: '[' expr_tuple ']'
+   13 parens: '(' expr_tuple ')'
 
-   13 expr_atom: ident
-   14          | parens
-   15          | braces
-   16          | bracks
+   14 braces: '{' expr_block '}'
 
-   17 atom_link: expr_atom
-   18          | '.' expr_atom
+   15 bracks: '[' expr_tuple ']'
 
-   19 atom_chain: atom_link
-   20           | atom_link atom_chain
+   16 expr_atom: ident
+   17          | parens
+   18          | braces
+   19          | bracks
 
-   21 lhs_expr: atom_chain
+   20 atom_link: expr_atom
+   21          | '.' expr_atom
 
-   22 type_expr: atom_chain
+   22 atom_chain: atom_link
+   23           | atom_link atom_chain
 
-   23 rhs_expr: prefix rhs_expr2
-   24         | rhs_expr2
+   24 lhs_expr: atom_chain
 
-   25 rhs_expr2: atom_chain rhs_expr3
-   26          | const rhs_expr3
+   25 type_expr: atom_chain
 
-   27 rhs_expr3: OP_BIN rhs_expr
-   28          | ε
+   26 rhs_expr: prefix rhs_expr2
+   27         | rhs_expr2
 
-   29 full_decl: lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
+   28 rhs_expr2: atom_chain rhs_expr3
+   29          | const rhs_expr3
 
-   30 empty_decl: lhs_expr OP_TYPE type_expr
+   30 rhs_expr3: OP_BIN rhs_expr
+   31          | ε
 
-   31 assignment: lhs_expr OP_ASSIGN rhs_expr
+   32 full_decl: lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
 
-   32 typed_val: OP_TYPE type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: lhs_expr OP_TYPE type_expr
 
-   33 bare_name: lhs_expr OP_TYPE
+   34 assignment: lhs_expr OP_ASSIGN rhs_expr
 
-   34 bare_type: OP_TYPE type_expr
+   35 typed_val: OP_TYPE type_expr OP_ASSIGN rhs_expr
 
-   35 bare_val: OP_ASSIGN rhs_expr
+   36 bare_name: lhs_expr OP_TYPE
 
-   36 bare_expr: rhs_expr
+   37 bare_type: OP_TYPE type_expr
 
-   37 stmt_if: KW_IF parens braces
+   38 bare_val: OP_ASSIGN rhs_expr
 
-   38 stmt_ifelse: KW_IF parens braces KW_ELSE braces
-   39            | KW_IF parens braces KW_ELSE stmt_if
+   39 bare_expr: rhs_expr
 
-   40 stmt_case: KW_CASE parens braces
+   40 stmt_if: KW_IF parens braces
 
-   41 case_block: stmt_case
-   42           | stmt_case case_block
+   41 stmt_ifelse: KW_IF parens braces KW_ELSE braces
+   42            | KW_IF parens braces KW_ELSE stmt_if
 
-   43 stmt_match: KW_MATCH parens '{' case_block '}'
+   43 stmt_case: KW_CASE parens braces
 
-   44 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+   44 case_block: stmt_case
+   45           | stmt_case case_block
 
-   45 expr: full_decl
-   46     | empty_decl
-   47     | assignment
-   48     | typed_val
-   49     | bare_name
-   50     | bare_type
-   51     | bare_val
-   52     | bare_expr
-   53     | stmt_if
-   54     | stmt_ifelse
-   55     | stmt_match
-   56     | stmt_for
+   46 stmt_match: KW_MATCH parens '{' case_block '}'
 
-   57 opt_expr: expr
-   58         | ε
+   47 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
 
-   59 expr_block: ε
-   60           | expr
-   61           | expr ';' expr_block
+   48 expr: full_decl
+   49     | empty_decl
+   50     | assignment
+   51     | typed_val
+   52     | bare_name
+   53     | bare_type
+   54     | bare_val
+   55     | bare_expr
+   56     | stmt_if
+   57     | stmt_ifelse
+   58     | stmt_match
+   59     | stmt_for
 
-   62 expr_tuple: ε
+   60 opt_expr: expr
+   61         | ε
+
+   62 expr_block: ε
    63           | expr
-   64           | expr ',' expr_tuple
+   64           | expr ';' expr_block
+
+   65 expr_tuple: ε
+   66           | expr
+   67           | expr ',' expr_tuple
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    '!' (33) 4
-    '(' (40) 10 44
-    ')' (41) 10 11 44
-    '+' (43) 3
-    ',' (44) 64
-    '-' (45) 2
-    '.' (46) 18
-    ';' (59) 44 61
-    '@' (64) 8
-    '[' (91) 12
-    ']' (93) 12
-    '{' (123) 11 43
-    '}' (125) 43
+    '!' (33) 7
+    '#' (35) 4
+    '(' (40) 13 47
+    ')' (41) 13 47
+    '+' (43) 6
+    ',' (44) 67
+    '-' (45) 5
+    '.' (46) 21
+    ';' (59) 47 64
+    '@' (64) 11
+    '[' (91) 15
+    ']' (93) 15
+    '{' (123) 14 46
+    '}' (125) 14 46
     error (256)
-    TOK_IDENT <val_str> (258) 8 9
-    TOK_INT <val_int> (259) 5
-    TOK_FLOAT <val_float> (260) 6
-    TOK_STRING <val_str> (261) 7
-    OP_TYPE <val_str> (262) 29 30 32 33 34
-    OP_ASSIGN <val_str> (263) 29 31 32 35
-    OP_BIN <val_str> (264) 27
-    KW_IF (265) 37 38 39
-    KW_ELSE (266) 38 39
-    KW_MATCH (267) 43
-    KW_CASE (268) 40
-    KW_FOR (269) 44
+    TOK_IDENT <val_str> (258) 4 11 12
+    TOK_INT <val_int> (259) 8
+    TOK_FLOAT <val_float> (260) 9
+    TOK_STRING <val_str> (261) 10
+    OP_TYPE <val_str> (262) 32 33 35 36 37
+    OP_ASSIGN <val_str> (263) 32 34 35 38
+    OP_BIN <val_str> (264) 30
+    KW_IF (265) 40 41 42
+    KW_ELSE (266) 41 42
+    KW_MATCH (267) 46
+    KW_CASE (268) 43
+    KW_FOR (269) 47
 
 
 Nonterminals, with rules where they appear
 
-    $accept (28)
+    $accept (29)
         on left: 0
-    program (29)
-        on left: 1
-        on right: 0
-    prefix (30)
-        on left: 2 3 4
-        on right: 23
-    const (31)
+    program (30)
+        on left: 1 2
+        on right: 0 2
+    section (31)
+        on left: 3
+        on right: 1 2
+    marker (32)
+        on left: 4
+        on right: 3
+    prefix (33)
         on left: 5 6 7
         on right: 26
-    ident (32)
-        on left: 8 9
-        on right: 13
-    parens (33)
-        on left: 10
-        on right: 14 37 38 39 40 43
-    braces (34)
-        on left: 11
-        on right: 15 37 38 39 40 44
-    bracks (35)
-        on left: 12
+    const (34)
+        on left: 8 9 10
+        on right: 29
+    ident (35)
+        on left: 11 12
         on right: 16
-    expr_atom (36)
-        on left: 13 14 15 16
-        on right: 17 18
-    atom_link (37)
-        on left: 17 18
-        on right: 19 20
-    atom_chain (38)
-        on left: 19 20
-        on right: 20 21 22 25
-    lhs_expr (39)
-        on left: 21
-        on right: 29 30 31 33
-    type_expr (40)
-        on left: 22
-        on right: 29 30 32 34
-    rhs_expr (41)
-        on left: 23 24
-        on right: 27 29 31 32 35 36
-    rhs_expr2 (42)
-        on left: 25 26
-        on right: 23 24
-    rhs_expr3 (43)
-        on left: 27 28
-        on right: 25 26
-    full_decl (44)
-        on left: 29
-        on right: 45
-    empty_decl (45)
-        on left: 30
-        on right: 46
-    assignment (46)
-        on left: 31
-        on right: 47
-    typed_val (47)
+    parens (36)
+        on left: 13
+        on right: 17 40 41 42 43 46
+    braces (37)
+        on left: 14
+        on right: 18 40 41 42 43 47
+    bracks (38)
+        on left: 15
+        on right: 19
+    expr_atom (39)
+        on left: 16 17 18 19
+        on right: 20 21
+    atom_link (40)
+        on left: 20 21
+        on right: 22 23
+    atom_chain (41)
+        on left: 22 23
+        on right: 23 24 25 28
+    lhs_expr (42)
+        on left: 24
+        on right: 32 33 34 36
+    type_expr (43)
+        on left: 25
+        on right: 32 33 35 37
+    rhs_expr (44)
+        on left: 26 27
+        on right: 30 32 34 35 38 39
+    rhs_expr2 (45)
+        on left: 28 29
+        on right: 26 27
+    rhs_expr3 (46)
+        on left: 30 31
+        on right: 28 29
+    full_decl (47)
         on left: 32
         on right: 48
-    bare_name (48)
+    empty_decl (48)
         on left: 33
         on right: 49
-    bare_type (49)
+    assignment (49)
         on left: 34
         on right: 50
-    bare_val (50)
+    typed_val (50)
         on left: 35
         on right: 51
-    bare_expr (51)
+    bare_name (51)
         on left: 36
         on right: 52
-    stmt_if (52)
+    bare_type (52)
         on left: 37
-        on right: 39 53
-    stmt_ifelse (53)
-        on left: 38 39
+        on right: 53
+    bare_val (53)
+        on left: 38
         on right: 54
-    stmt_case (54)
-        on left: 40
-        on right: 41 42
-    case_block (55)
-        on left: 41 42
-        on right: 42 43
-    stmt_match (56)
-        on left: 43
+    bare_expr (54)
+        on left: 39
         on right: 55
-    stmt_for (57)
-        on left: 44
-        on right: 56
-    expr (58)
-        on left: 45 46 47 48 49 50 51 52 53 54 55 56
-        on right: 57 60 61 63 64
-    opt_expr (59)
-        on left: 57 58
-        on right: 44
-    expr_block (60)
-        on left: 59 60 61
-        on right: 1 11 61
-    expr_tuple (61)
+    stmt_if (55)
+        on left: 40
+        on right: 42 56
+    stmt_ifelse (56)
+        on left: 41 42
+        on right: 57
+    stmt_case (57)
+        on left: 43
+        on right: 44 45
+    case_block (58)
+        on left: 44 45
+        on right: 45 46
+    stmt_match (59)
+        on left: 46
+        on right: 58
+    stmt_for (60)
+        on left: 47
+        on right: 59
+    expr (61)
+        on left: 48 49 50 51 52 53 54 55 56 57 58 59
+        on right: 60 63 64 66 67
+    opt_expr (62)
+        on left: 60 61
+        on right: 47
+    expr_block (63)
         on left: 62 63 64
-        on right: 10 12 64
+        on right: 3 14 64
+    expr_tuple (64)
+        on left: 65 66 67
+        on right: 13 15 67
 
 
 State 0
 
     0 $accept: • program $end
-    1 program: • expr_block
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   21 lhs_expr: • atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   29 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
-   30 empty_decl: • lhs_expr OP_TYPE type_expr
-   31 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   32 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
-   33 bare_name: • lhs_expr OP_TYPE
-   34 bare_type: • OP_TYPE type_expr
-   35 bare_val: • OP_ASSIGN rhs_expr
-   36 bare_expr: • rhs_expr
-   37 stmt_if: • KW_IF parens braces
-   38 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
-   39            | • KW_IF parens braces KW_ELSE stmt_if
-   43 stmt_match: • KW_MATCH parens '{' case_block '}'
-   44 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
-   45 expr: • full_decl
-   46     | • empty_decl
-   47     | • assignment
-   48     | • typed_val
-   49     | • bare_name
-   50     | • bare_type
-   51     | • bare_val
-   52     | • bare_expr
-   53     | • stmt_if
-   54     | • stmt_ifelse
-   55     | • stmt_match
-   56     | • stmt_for
-   59 expr_block: ε •  [$end]
-   60           | • expr
-   61           | • expr ';' expr_block
+    1 program: • section
+    2        | • section program
+    3 section: • marker expr_block
+    4 marker: • '#' TOK_IDENT
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    KW_IF       shift, and go to state 7
-    KW_MATCH    shift, and go to state 8
-    KW_FOR      shift, and go to state 9
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
+    '#'  shift, and go to state 1
 
-    $default  reduce using rule 59 (expr_block)
-
-    program      go to state 18
-    prefix       go to state 19
-    const        go to state 20
-    ident        go to state 21
-    parens       go to state 22
-    braces       go to state 23
-    bracks       go to state 24
-    expr_atom    go to state 25
-    atom_link    go to state 26
-    atom_chain   go to state 27
-    lhs_expr     go to state 28
-    rhs_expr     go to state 29
-    rhs_expr2    go to state 30
-    full_decl    go to state 31
-    empty_decl   go to state 32
-    assignment   go to state 33
-    typed_val    go to state 34
-    bare_name    go to state 35
-    bare_type    go to state 36
-    bare_val     go to state 37
-    bare_expr    go to state 38
-    stmt_if      go to state 39
-    stmt_ifelse  go to state 40
-    stmt_match   go to state 41
-    stmt_for     go to state 42
-    expr         go to state 43
-    expr_block   go to state 44
+    program  go to state 2
+    section  go to state 3
+    marker   go to state 4
 
 
 State 1
 
-    9 ident: TOK_IDENT •
+    4 marker: '#' • TOK_IDENT
 
-    $default  reduce using rule 9 (ident)
+    TOK_IDENT  shift, and go to state 5
 
 
 State 2
 
-    5 const: TOK_INT •
+    0 $accept: program • $end
 
-    $default  reduce using rule 5 (const)
+    $end  shift, and go to state 6
 
 
 State 3
 
-    6 const: TOK_FLOAT •
+    1 program: • section
+    1        | section •  [$end]
+    2        | • section program
+    2        | section • program
+    3 section: • marker expr_block
+    4 marker: • '#' TOK_IDENT
 
-    $default  reduce using rule 6 (const)
+    '#'  shift, and go to state 1
+
+    $default  reduce using rule 1 (program)
+
+    program  go to state 7
+    section  go to state 3
+    marker   go to state 4
 
 
 State 4
 
-    7 const: TOK_STRING •
+    3 section: marker • expr_block
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   24 lhs_expr: • atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   32 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: • lhs_expr OP_TYPE type_expr
+   34 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   35 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
+   36 bare_name: • lhs_expr OP_TYPE
+   37 bare_type: • OP_TYPE type_expr
+   38 bare_val: • OP_ASSIGN rhs_expr
+   39 bare_expr: • rhs_expr
+   40 stmt_if: • KW_IF parens braces
+   41 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
+   42            | • KW_IF parens braces KW_ELSE stmt_if
+   46 stmt_match: • KW_MATCH parens '{' case_block '}'
+   47 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+   48 expr: • full_decl
+   49     | • empty_decl
+   50     | • assignment
+   51     | • typed_val
+   52     | • bare_name
+   53     | • bare_type
+   54     | • bare_val
+   55     | • bare_expr
+   56     | • stmt_if
+   57     | • stmt_ifelse
+   58     | • stmt_match
+   59     | • stmt_for
+   62 expr_block: ε •  [$end, '#']
+   63           | • expr
+   64           | • expr ';' expr_block
 
-    $default  reduce using rule 7 (const)
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_TYPE     shift, and go to state 12
+    OP_ASSIGN   shift, and go to state 13
+    KW_IF       shift, and go to state 14
+    KW_MATCH    shift, and go to state 15
+    KW_FOR      shift, and go to state 16
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    $default  reduce using rule 62 (expr_block)
+
+    prefix       go to state 25
+    const        go to state 26
+    ident        go to state 27
+    parens       go to state 28
+    braces       go to state 29
+    bracks       go to state 30
+    expr_atom    go to state 31
+    atom_link    go to state 32
+    atom_chain   go to state 33
+    lhs_expr     go to state 34
+    rhs_expr     go to state 35
+    rhs_expr2    go to state 36
+    full_decl    go to state 37
+    empty_decl   go to state 38
+    assignment   go to state 39
+    typed_val    go to state 40
+    bare_name    go to state 41
+    bare_type    go to state 42
+    bare_val     go to state 43
+    bare_expr    go to state 44
+    stmt_if      go to state 45
+    stmt_ifelse  go to state 46
+    stmt_match   go to state 47
+    stmt_for     go to state 48
+    expr         go to state 49
+    expr_block   go to state 50
 
 
 State 5
 
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   22 type_expr: • atom_chain
-   32 typed_val: OP_TYPE • type_expr OP_ASSIGN rhs_expr
-   34 bare_type: OP_TYPE • type_expr
+    4 marker: '#' TOK_IDENT •
 
-    TOK_IDENT  shift, and go to state 1
-    '@'        shift, and go to state 13
-    '('        shift, and go to state 14
-    '{'        shift, and go to state 15
-    '['        shift, and go to state 16
-    '.'        shift, and go to state 17
-
-    ident       go to state 21
-    parens      go to state 22
-    braces      go to state 23
-    bracks      go to state 24
-    expr_atom   go to state 25
-    atom_link   go to state 26
-    atom_chain  go to state 45
-    type_expr   go to state 46
+    $default  reduce using rule 4 (marker)
 
 
 State 6
-
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   35 bare_val: OP_ASSIGN • rhs_expr
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    prefix      go to state 19
-    const       go to state 20
-    ident       go to state 21
-    parens      go to state 22
-    braces      go to state 23
-    bracks      go to state 24
-    expr_atom   go to state 25
-    atom_link   go to state 26
-    atom_chain  go to state 47
-    rhs_expr    go to state 48
-    rhs_expr2   go to state 30
-
-
-State 7
-
-   10 parens: • '(' expr_tuple ')'
-   37 stmt_if: KW_IF • parens braces
-   38 stmt_ifelse: KW_IF • parens braces KW_ELSE braces
-   39            | KW_IF • parens braces KW_ELSE stmt_if
-
-    '('  shift, and go to state 14
-
-    parens  go to state 49
-
-
-State 8
-
-   10 parens: • '(' expr_tuple ')'
-   43 stmt_match: KW_MATCH • parens '{' case_block '}'
-
-    '('  shift, and go to state 14
-
-    parens  go to state 50
-
-
-State 9
-
-   44 stmt_for: KW_FOR • '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
-
-    '('  shift, and go to state 51
-
-
-State 10
-
-    2 prefix: '-' •
-
-    $default  reduce using rule 2 (prefix)
-
-
-State 11
-
-    3 prefix: '+' •
-
-    $default  reduce using rule 3 (prefix)
-
-
-State 12
-
-    4 prefix: '!' •
-
-    $default  reduce using rule 4 (prefix)
-
-
-State 13
-
-    8 ident: '@' • TOK_IDENT
-
-    TOK_IDENT  shift, and go to state 52
-
-
-State 14
-
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   10       | '(' • expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   21 lhs_expr: • atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   29 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
-   30 empty_decl: • lhs_expr OP_TYPE type_expr
-   31 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   32 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
-   33 bare_name: • lhs_expr OP_TYPE
-   34 bare_type: • OP_TYPE type_expr
-   35 bare_val: • OP_ASSIGN rhs_expr
-   36 bare_expr: • rhs_expr
-   37 stmt_if: • KW_IF parens braces
-   38 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
-   39            | • KW_IF parens braces KW_ELSE stmt_if
-   43 stmt_match: • KW_MATCH parens '{' case_block '}'
-   44 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
-   45 expr: • full_decl
-   46     | • empty_decl
-   47     | • assignment
-   48     | • typed_val
-   49     | • bare_name
-   50     | • bare_type
-   51     | • bare_val
-   52     | • bare_expr
-   53     | • stmt_if
-   54     | • stmt_ifelse
-   55     | • stmt_match
-   56     | • stmt_for
-   62 expr_tuple: ε •  [')']
-   63           | • expr
-   64           | • expr ',' expr_tuple
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    KW_IF       shift, and go to state 7
-    KW_MATCH    shift, and go to state 8
-    KW_FOR      shift, and go to state 9
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    $default  reduce using rule 62 (expr_tuple)
-
-    prefix       go to state 19
-    const        go to state 20
-    ident        go to state 21
-    parens       go to state 22
-    braces       go to state 23
-    bracks       go to state 24
-    expr_atom    go to state 25
-    atom_link    go to state 26
-    atom_chain   go to state 27
-    lhs_expr     go to state 28
-    rhs_expr     go to state 29
-    rhs_expr2    go to state 30
-    full_decl    go to state 31
-    empty_decl   go to state 32
-    assignment   go to state 33
-    typed_val    go to state 34
-    bare_name    go to state 35
-    bare_type    go to state 36
-    bare_val     go to state 37
-    bare_expr    go to state 38
-    stmt_if      go to state 39
-    stmt_ifelse  go to state 40
-    stmt_match   go to state 41
-    stmt_for     go to state 42
-    expr         go to state 53
-    expr_tuple   go to state 54
-
-
-State 15
-
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   11       | '{' • expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   21 lhs_expr: • atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   29 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
-   30 empty_decl: • lhs_expr OP_TYPE type_expr
-   31 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   32 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
-   33 bare_name: • lhs_expr OP_TYPE
-   34 bare_type: • OP_TYPE type_expr
-   35 bare_val: • OP_ASSIGN rhs_expr
-   36 bare_expr: • rhs_expr
-   37 stmt_if: • KW_IF parens braces
-   38 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
-   39            | • KW_IF parens braces KW_ELSE stmt_if
-   43 stmt_match: • KW_MATCH parens '{' case_block '}'
-   44 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
-   45 expr: • full_decl
-   46     | • empty_decl
-   47     | • assignment
-   48     | • typed_val
-   49     | • bare_name
-   50     | • bare_type
-   51     | • bare_val
-   52     | • bare_expr
-   53     | • stmt_if
-   54     | • stmt_ifelse
-   55     | • stmt_match
-   56     | • stmt_for
-   59 expr_block: ε •  [')']
-   60           | • expr
-   61           | • expr ';' expr_block
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    KW_IF       shift, and go to state 7
-    KW_MATCH    shift, and go to state 8
-    KW_FOR      shift, and go to state 9
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    $default  reduce using rule 59 (expr_block)
-
-    prefix       go to state 19
-    const        go to state 20
-    ident        go to state 21
-    parens       go to state 22
-    braces       go to state 23
-    bracks       go to state 24
-    expr_atom    go to state 25
-    atom_link    go to state 26
-    atom_chain   go to state 27
-    lhs_expr     go to state 28
-    rhs_expr     go to state 29
-    rhs_expr2    go to state 30
-    full_decl    go to state 31
-    empty_decl   go to state 32
-    assignment   go to state 33
-    typed_val    go to state 34
-    bare_name    go to state 35
-    bare_type    go to state 36
-    bare_val     go to state 37
-    bare_expr    go to state 38
-    stmt_if      go to state 39
-    stmt_ifelse  go to state 40
-    stmt_match   go to state 41
-    stmt_for     go to state 42
-    expr         go to state 43
-    expr_block   go to state 55
-
-
-State 16
-
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   12       | '[' • expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   21 lhs_expr: • atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   29 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
-   30 empty_decl: • lhs_expr OP_TYPE type_expr
-   31 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   32 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
-   33 bare_name: • lhs_expr OP_TYPE
-   34 bare_type: • OP_TYPE type_expr
-   35 bare_val: • OP_ASSIGN rhs_expr
-   36 bare_expr: • rhs_expr
-   37 stmt_if: • KW_IF parens braces
-   38 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
-   39            | • KW_IF parens braces KW_ELSE stmt_if
-   43 stmt_match: • KW_MATCH parens '{' case_block '}'
-   44 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
-   45 expr: • full_decl
-   46     | • empty_decl
-   47     | • assignment
-   48     | • typed_val
-   49     | • bare_name
-   50     | • bare_type
-   51     | • bare_val
-   52     | • bare_expr
-   53     | • stmt_if
-   54     | • stmt_ifelse
-   55     | • stmt_match
-   56     | • stmt_for
-   62 expr_tuple: ε •  [']']
-   63           | • expr
-   64           | • expr ',' expr_tuple
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    KW_IF       shift, and go to state 7
-    KW_MATCH    shift, and go to state 8
-    KW_FOR      shift, and go to state 9
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    $default  reduce using rule 62 (expr_tuple)
-
-    prefix       go to state 19
-    const        go to state 20
-    ident        go to state 21
-    parens       go to state 22
-    braces       go to state 23
-    bracks       go to state 24
-    expr_atom    go to state 25
-    atom_link    go to state 26
-    atom_chain   go to state 27
-    lhs_expr     go to state 28
-    rhs_expr     go to state 29
-    rhs_expr2    go to state 30
-    full_decl    go to state 31
-    empty_decl   go to state 32
-    assignment   go to state 33
-    typed_val    go to state 34
-    bare_name    go to state 35
-    bare_type    go to state 36
-    bare_val     go to state 37
-    bare_expr    go to state 38
-    stmt_if      go to state 39
-    stmt_ifelse  go to state 40
-    stmt_match   go to state 41
-    stmt_for     go to state 42
-    expr         go to state 53
-    expr_tuple   go to state 56
-
-
-State 17
-
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   18 atom_link: '.' • expr_atom
-
-    TOK_IDENT  shift, and go to state 1
-    '@'        shift, and go to state 13
-    '('        shift, and go to state 14
-    '{'        shift, and go to state 15
-    '['        shift, and go to state 16
-
-    ident      go to state 21
-    parens     go to state 22
-    braces     go to state 23
-    bracks     go to state 24
-    expr_atom  go to state 57
-
-
-State 18
-
-    0 $accept: program • $end
-
-    $end  shift, and go to state 58
-
-
-State 19
-
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   23 rhs_expr: prefix • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    const       go to state 20
-    ident       go to state 21
-    parens      go to state 22
-    braces      go to state 23
-    bracks      go to state 24
-    expr_atom   go to state 25
-    atom_link   go to state 26
-    atom_chain  go to state 47
-    rhs_expr2   go to state 59
-
-
-State 20
-
-   26 rhs_expr2: const • rhs_expr3
-   27 rhs_expr3: • OP_BIN rhs_expr
-   28          | ε •  [$end, ')', ']', ';', ',']
-
-    OP_BIN  shift, and go to state 60
-
-    $default  reduce using rule 28 (rhs_expr3)
-
-    rhs_expr3  go to state 61
-
-
-State 21
-
-   13 expr_atom: ident •
-
-    $default  reduce using rule 13 (expr_atom)
-
-
-State 22
-
-   14 expr_atom: parens •
-
-    $default  reduce using rule 14 (expr_atom)
-
-
-State 23
-
-   15 expr_atom: braces •
-
-    $default  reduce using rule 15 (expr_atom)
-
-
-State 24
-
-   16 expr_atom: bracks •
-
-    $default  reduce using rule 16 (expr_atom)
-
-
-State 25
-
-   17 atom_link: expr_atom •
-
-    $default  reduce using rule 17 (atom_link)
-
-
-State 26
-
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   19           | atom_link •  [$end, OP_TYPE, OP_ASSIGN, OP_BIN, ')', ']', ';', ',']
-   20           | • atom_link atom_chain
-   20           | atom_link • atom_chain
-
-    TOK_IDENT  shift, and go to state 1
-    '@'        shift, and go to state 13
-    '('        shift, and go to state 14
-    '{'        shift, and go to state 15
-    '['        shift, and go to state 16
-    '.'        shift, and go to state 17
-
-    $default  reduce using rule 19 (atom_chain)
-
-    ident       go to state 21
-    parens      go to state 22
-    braces      go to state 23
-    bracks      go to state 24
-    expr_atom   go to state 25
-    atom_link   go to state 26
-    atom_chain  go to state 62
-
-
-State 27
-
-   21 lhs_expr: atom_chain •  [OP_TYPE, OP_ASSIGN]
-   25 rhs_expr2: atom_chain • rhs_expr3
-   27 rhs_expr3: • OP_BIN rhs_expr
-   28          | ε •  [$end, ')', ']', ';', ',']
-
-    OP_BIN  shift, and go to state 60
-
-    OP_TYPE    reduce using rule 21 (lhs_expr)
-    OP_ASSIGN  reduce using rule 21 (lhs_expr)
-    $default   reduce using rule 28 (rhs_expr3)
-
-    rhs_expr3  go to state 63
-
-
-State 28
-
-   29 full_decl: lhs_expr • OP_TYPE type_expr OP_ASSIGN rhs_expr
-   30 empty_decl: lhs_expr • OP_TYPE type_expr
-   31 assignment: lhs_expr • OP_ASSIGN rhs_expr
-   33 bare_name: lhs_expr • OP_TYPE
-
-    OP_TYPE    shift, and go to state 64
-    OP_ASSIGN  shift, and go to state 65
-
-
-State 29
-
-   36 bare_expr: rhs_expr •
-
-    $default  reduce using rule 36 (bare_expr)
-
-
-State 30
-
-   24 rhs_expr: rhs_expr2 •
-
-    $default  reduce using rule 24 (rhs_expr)
-
-
-State 31
-
-   45 expr: full_decl •
-
-    $default  reduce using rule 45 (expr)
-
-
-State 32
-
-   46 expr: empty_decl •
-
-    $default  reduce using rule 46 (expr)
-
-
-State 33
-
-   47 expr: assignment •
-
-    $default  reduce using rule 47 (expr)
-
-
-State 34
-
-   48 expr: typed_val •
-
-    $default  reduce using rule 48 (expr)
-
-
-State 35
-
-   49 expr: bare_name •
-
-    $default  reduce using rule 49 (expr)
-
-
-State 36
-
-   50 expr: bare_type •
-
-    $default  reduce using rule 50 (expr)
-
-
-State 37
-
-   51 expr: bare_val •
-
-    $default  reduce using rule 51 (expr)
-
-
-State 38
-
-   52 expr: bare_expr •
-
-    $default  reduce using rule 52 (expr)
-
-
-State 39
-
-   53 expr: stmt_if •
-
-    $default  reduce using rule 53 (expr)
-
-
-State 40
-
-   54 expr: stmt_ifelse •
-
-    $default  reduce using rule 54 (expr)
-
-
-State 41
-
-   55 expr: stmt_match •
-
-    $default  reduce using rule 55 (expr)
-
-
-State 42
-
-   56 expr: stmt_for •
-
-    $default  reduce using rule 56 (expr)
-
-
-State 43
-
-   60 expr_block: expr •  [$end, ')']
-   61           | expr • ';' expr_block
-
-    ';'  shift, and go to state 66
-
-    $default  reduce using rule 60 (expr_block)
-
-
-State 44
-
-    1 program: expr_block •
-
-    $default  reduce using rule 1 (program)
-
-
-State 45
-
-   22 type_expr: atom_chain •
-
-    $default  reduce using rule 22 (type_expr)
-
-
-State 46
-
-   32 typed_val: OP_TYPE type_expr • OP_ASSIGN rhs_expr
-   34 bare_type: OP_TYPE type_expr •  [$end, ')', ']', ';', ',']
-
-    OP_ASSIGN  shift, and go to state 67
-
-    $default  reduce using rule 34 (bare_type)
-
-
-State 47
-
-   25 rhs_expr2: atom_chain • rhs_expr3
-   27 rhs_expr3: • OP_BIN rhs_expr
-   28          | ε •  [$end, ')', ']', ';', ',']
-
-    OP_BIN  shift, and go to state 60
-
-    $default  reduce using rule 28 (rhs_expr3)
-
-    rhs_expr3  go to state 63
-
-
-State 48
-
-   35 bare_val: OP_ASSIGN rhs_expr •
-
-    $default  reduce using rule 35 (bare_val)
-
-
-State 49
-
-   11 braces: • '{' expr_block ')'
-   37 stmt_if: KW_IF parens • braces
-   38 stmt_ifelse: KW_IF parens • braces KW_ELSE braces
-   39            | KW_IF parens • braces KW_ELSE stmt_if
-
-    '{'  shift, and go to state 15
-
-    braces  go to state 68
-
-
-State 50
-
-   43 stmt_match: KW_MATCH parens • '{' case_block '}'
-
-    '{'  shift, and go to state 69
-
-
-State 51
-
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   21 lhs_expr: • atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   29 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
-   30 empty_decl: • lhs_expr OP_TYPE type_expr
-   31 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   32 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
-   33 bare_name: • lhs_expr OP_TYPE
-   34 bare_type: • OP_TYPE type_expr
-   35 bare_val: • OP_ASSIGN rhs_expr
-   36 bare_expr: • rhs_expr
-   37 stmt_if: • KW_IF parens braces
-   38 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
-   39            | • KW_IF parens braces KW_ELSE stmt_if
-   43 stmt_match: • KW_MATCH parens '{' case_block '}'
-   44 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
-   44         | KW_FOR '(' • opt_expr ';' opt_expr ';' opt_expr ')' braces
-   45 expr: • full_decl
-   46     | • empty_decl
-   47     | • assignment
-   48     | • typed_val
-   49     | • bare_name
-   50     | • bare_type
-   51     | • bare_val
-   52     | • bare_expr
-   53     | • stmt_if
-   54     | • stmt_ifelse
-   55     | • stmt_match
-   56     | • stmt_for
-   57 opt_expr: • expr
-   58         | ε •  [';']
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    KW_IF       shift, and go to state 7
-    KW_MATCH    shift, and go to state 8
-    KW_FOR      shift, and go to state 9
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    $default  reduce using rule 58 (opt_expr)
-
-    prefix       go to state 19
-    const        go to state 20
-    ident        go to state 21
-    parens       go to state 22
-    braces       go to state 23
-    bracks       go to state 24
-    expr_atom    go to state 25
-    atom_link    go to state 26
-    atom_chain   go to state 27
-    lhs_expr     go to state 28
-    rhs_expr     go to state 29
-    rhs_expr2    go to state 30
-    full_decl    go to state 31
-    empty_decl   go to state 32
-    assignment   go to state 33
-    typed_val    go to state 34
-    bare_name    go to state 35
-    bare_type    go to state 36
-    bare_val     go to state 37
-    bare_expr    go to state 38
-    stmt_if      go to state 39
-    stmt_ifelse  go to state 40
-    stmt_match   go to state 41
-    stmt_for     go to state 42
-    expr         go to state 70
-    opt_expr     go to state 71
-
-
-State 52
-
-    8 ident: '@' TOK_IDENT •
-
-    $default  reduce using rule 8 (ident)
-
-
-State 53
-
-   63 expr_tuple: expr •  [')', ']']
-   64           | expr • ',' expr_tuple
-
-    ','  shift, and go to state 72
-
-    $default  reduce using rule 63 (expr_tuple)
-
-
-State 54
-
-   10 parens: '(' expr_tuple • ')'
-
-    ')'  shift, and go to state 73
-
-
-State 55
-
-   11 braces: '{' expr_block • ')'
-
-    ')'  shift, and go to state 74
-
-
-State 56
-
-   12 bracks: '[' expr_tuple • ']'
-
-    ']'  shift, and go to state 75
-
-
-State 57
-
-   18 atom_link: '.' expr_atom •
-
-    $default  reduce using rule 18 (atom_link)
-
-
-State 58
 
     0 $accept: program $end •
 
     $default  accept
 
 
+State 7
+
+    2 program: section program •
+
+    $default  reduce using rule 2 (program)
+
+
+State 8
+
+   12 ident: TOK_IDENT •
+
+    $default  reduce using rule 12 (ident)
+
+
+State 9
+
+    8 const: TOK_INT •
+
+    $default  reduce using rule 8 (const)
+
+
+State 10
+
+    9 const: TOK_FLOAT •
+
+    $default  reduce using rule 9 (const)
+
+
+State 11
+
+   10 const: TOK_STRING •
+
+    $default  reduce using rule 10 (const)
+
+
+State 12
+
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   25 type_expr: • atom_chain
+   35 typed_val: OP_TYPE • type_expr OP_ASSIGN rhs_expr
+   37 bare_type: OP_TYPE • type_expr
+
+    TOK_IDENT  shift, and go to state 8
+    '@'        shift, and go to state 20
+    '('        shift, and go to state 21
+    '{'        shift, and go to state 22
+    '['        shift, and go to state 23
+    '.'        shift, and go to state 24
+
+    ident       go to state 27
+    parens      go to state 28
+    braces      go to state 29
+    bracks      go to state 30
+    expr_atom   go to state 31
+    atom_link   go to state 32
+    atom_chain  go to state 51
+    type_expr   go to state 52
+
+
+State 13
+
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   38 bare_val: OP_ASSIGN • rhs_expr
+
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    prefix      go to state 25
+    const       go to state 26
+    ident       go to state 27
+    parens      go to state 28
+    braces      go to state 29
+    bracks      go to state 30
+    expr_atom   go to state 31
+    atom_link   go to state 32
+    atom_chain  go to state 53
+    rhs_expr    go to state 54
+    rhs_expr2   go to state 36
+
+
+State 14
+
+   13 parens: • '(' expr_tuple ')'
+   40 stmt_if: KW_IF • parens braces
+   41 stmt_ifelse: KW_IF • parens braces KW_ELSE braces
+   42            | KW_IF • parens braces KW_ELSE stmt_if
+
+    '('  shift, and go to state 21
+
+    parens  go to state 55
+
+
+State 15
+
+   13 parens: • '(' expr_tuple ')'
+   46 stmt_match: KW_MATCH • parens '{' case_block '}'
+
+    '('  shift, and go to state 21
+
+    parens  go to state 56
+
+
+State 16
+
+   47 stmt_for: KW_FOR • '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+
+    '('  shift, and go to state 57
+
+
+State 17
+
+    5 prefix: '-' •
+
+    $default  reduce using rule 5 (prefix)
+
+
+State 18
+
+    6 prefix: '+' •
+
+    $default  reduce using rule 6 (prefix)
+
+
+State 19
+
+    7 prefix: '!' •
+
+    $default  reduce using rule 7 (prefix)
+
+
+State 20
+
+   11 ident: '@' • TOK_IDENT
+
+    TOK_IDENT  shift, and go to state 58
+
+
+State 21
+
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   13       | '(' • expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   24 lhs_expr: • atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   32 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: • lhs_expr OP_TYPE type_expr
+   34 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   35 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
+   36 bare_name: • lhs_expr OP_TYPE
+   37 bare_type: • OP_TYPE type_expr
+   38 bare_val: • OP_ASSIGN rhs_expr
+   39 bare_expr: • rhs_expr
+   40 stmt_if: • KW_IF parens braces
+   41 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
+   42            | • KW_IF parens braces KW_ELSE stmt_if
+   46 stmt_match: • KW_MATCH parens '{' case_block '}'
+   47 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+   48 expr: • full_decl
+   49     | • empty_decl
+   50     | • assignment
+   51     | • typed_val
+   52     | • bare_name
+   53     | • bare_type
+   54     | • bare_val
+   55     | • bare_expr
+   56     | • stmt_if
+   57     | • stmt_ifelse
+   58     | • stmt_match
+   59     | • stmt_for
+   65 expr_tuple: ε •  [')']
+   66           | • expr
+   67           | • expr ',' expr_tuple
+
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_TYPE     shift, and go to state 12
+    OP_ASSIGN   shift, and go to state 13
+    KW_IF       shift, and go to state 14
+    KW_MATCH    shift, and go to state 15
+    KW_FOR      shift, and go to state 16
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    $default  reduce using rule 65 (expr_tuple)
+
+    prefix       go to state 25
+    const        go to state 26
+    ident        go to state 27
+    parens       go to state 28
+    braces       go to state 29
+    bracks       go to state 30
+    expr_atom    go to state 31
+    atom_link    go to state 32
+    atom_chain   go to state 33
+    lhs_expr     go to state 34
+    rhs_expr     go to state 35
+    rhs_expr2    go to state 36
+    full_decl    go to state 37
+    empty_decl   go to state 38
+    assignment   go to state 39
+    typed_val    go to state 40
+    bare_name    go to state 41
+    bare_type    go to state 42
+    bare_val     go to state 43
+    bare_expr    go to state 44
+    stmt_if      go to state 45
+    stmt_ifelse  go to state 46
+    stmt_match   go to state 47
+    stmt_for     go to state 48
+    expr         go to state 59
+    expr_tuple   go to state 60
+
+
+State 22
+
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   14       | '{' • expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   24 lhs_expr: • atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   32 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: • lhs_expr OP_TYPE type_expr
+   34 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   35 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
+   36 bare_name: • lhs_expr OP_TYPE
+   37 bare_type: • OP_TYPE type_expr
+   38 bare_val: • OP_ASSIGN rhs_expr
+   39 bare_expr: • rhs_expr
+   40 stmt_if: • KW_IF parens braces
+   41 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
+   42            | • KW_IF parens braces KW_ELSE stmt_if
+   46 stmt_match: • KW_MATCH parens '{' case_block '}'
+   47 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+   48 expr: • full_decl
+   49     | • empty_decl
+   50     | • assignment
+   51     | • typed_val
+   52     | • bare_name
+   53     | • bare_type
+   54     | • bare_val
+   55     | • bare_expr
+   56     | • stmt_if
+   57     | • stmt_ifelse
+   58     | • stmt_match
+   59     | • stmt_for
+   62 expr_block: ε •  ['}']
+   63           | • expr
+   64           | • expr ';' expr_block
+
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_TYPE     shift, and go to state 12
+    OP_ASSIGN   shift, and go to state 13
+    KW_IF       shift, and go to state 14
+    KW_MATCH    shift, and go to state 15
+    KW_FOR      shift, and go to state 16
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    $default  reduce using rule 62 (expr_block)
+
+    prefix       go to state 25
+    const        go to state 26
+    ident        go to state 27
+    parens       go to state 28
+    braces       go to state 29
+    bracks       go to state 30
+    expr_atom    go to state 31
+    atom_link    go to state 32
+    atom_chain   go to state 33
+    lhs_expr     go to state 34
+    rhs_expr     go to state 35
+    rhs_expr2    go to state 36
+    full_decl    go to state 37
+    empty_decl   go to state 38
+    assignment   go to state 39
+    typed_val    go to state 40
+    bare_name    go to state 41
+    bare_type    go to state 42
+    bare_val     go to state 43
+    bare_expr    go to state 44
+    stmt_if      go to state 45
+    stmt_ifelse  go to state 46
+    stmt_match   go to state 47
+    stmt_for     go to state 48
+    expr         go to state 49
+    expr_block   go to state 61
+
+
+State 23
+
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   15       | '[' • expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   24 lhs_expr: • atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   32 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: • lhs_expr OP_TYPE type_expr
+   34 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   35 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
+   36 bare_name: • lhs_expr OP_TYPE
+   37 bare_type: • OP_TYPE type_expr
+   38 bare_val: • OP_ASSIGN rhs_expr
+   39 bare_expr: • rhs_expr
+   40 stmt_if: • KW_IF parens braces
+   41 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
+   42            | • KW_IF parens braces KW_ELSE stmt_if
+   46 stmt_match: • KW_MATCH parens '{' case_block '}'
+   47 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+   48 expr: • full_decl
+   49     | • empty_decl
+   50     | • assignment
+   51     | • typed_val
+   52     | • bare_name
+   53     | • bare_type
+   54     | • bare_val
+   55     | • bare_expr
+   56     | • stmt_if
+   57     | • stmt_ifelse
+   58     | • stmt_match
+   59     | • stmt_for
+   65 expr_tuple: ε •  [']']
+   66           | • expr
+   67           | • expr ',' expr_tuple
+
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_TYPE     shift, and go to state 12
+    OP_ASSIGN   shift, and go to state 13
+    KW_IF       shift, and go to state 14
+    KW_MATCH    shift, and go to state 15
+    KW_FOR      shift, and go to state 16
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    $default  reduce using rule 65 (expr_tuple)
+
+    prefix       go to state 25
+    const        go to state 26
+    ident        go to state 27
+    parens       go to state 28
+    braces       go to state 29
+    bracks       go to state 30
+    expr_atom    go to state 31
+    atom_link    go to state 32
+    atom_chain   go to state 33
+    lhs_expr     go to state 34
+    rhs_expr     go to state 35
+    rhs_expr2    go to state 36
+    full_decl    go to state 37
+    empty_decl   go to state 38
+    assignment   go to state 39
+    typed_val    go to state 40
+    bare_name    go to state 41
+    bare_type    go to state 42
+    bare_val     go to state 43
+    bare_expr    go to state 44
+    stmt_if      go to state 45
+    stmt_ifelse  go to state 46
+    stmt_match   go to state 47
+    stmt_for     go to state 48
+    expr         go to state 59
+    expr_tuple   go to state 62
+
+
+State 24
+
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   21 atom_link: '.' • expr_atom
+
+    TOK_IDENT  shift, and go to state 8
+    '@'        shift, and go to state 20
+    '('        shift, and go to state 21
+    '{'        shift, and go to state 22
+    '['        shift, and go to state 23
+
+    ident      go to state 27
+    parens     go to state 28
+    braces     go to state 29
+    bracks     go to state 30
+    expr_atom  go to state 63
+
+
+State 25
+
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   26 rhs_expr: prefix • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    const       go to state 26
+    ident       go to state 27
+    parens      go to state 28
+    braces      go to state 29
+    bracks      go to state 30
+    expr_atom   go to state 31
+    atom_link   go to state 32
+    atom_chain  go to state 53
+    rhs_expr2   go to state 64
+
+
+State 26
+
+   29 rhs_expr2: const • rhs_expr3
+   30 rhs_expr3: • OP_BIN rhs_expr
+   31          | ε •  [$end, '#', ')', '}', ']', ';', ',']
+
+    OP_BIN  shift, and go to state 65
+
+    $default  reduce using rule 31 (rhs_expr3)
+
+    rhs_expr3  go to state 66
+
+
+State 27
+
+   16 expr_atom: ident •
+
+    $default  reduce using rule 16 (expr_atom)
+
+
+State 28
+
+   17 expr_atom: parens •
+
+    $default  reduce using rule 17 (expr_atom)
+
+
+State 29
+
+   18 expr_atom: braces •
+
+    $default  reduce using rule 18 (expr_atom)
+
+
+State 30
+
+   19 expr_atom: bracks •
+
+    $default  reduce using rule 19 (expr_atom)
+
+
+State 31
+
+   20 atom_link: expr_atom •
+
+    $default  reduce using rule 20 (atom_link)
+
+
+State 32
+
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   22           | atom_link •  [$end, OP_TYPE, OP_ASSIGN, OP_BIN, '#', ')', '}', ']', ';', ',']
+   23           | • atom_link atom_chain
+   23           | atom_link • atom_chain
+
+    TOK_IDENT  shift, and go to state 8
+    '@'        shift, and go to state 20
+    '('        shift, and go to state 21
+    '{'        shift, and go to state 22
+    '['        shift, and go to state 23
+    '.'        shift, and go to state 24
+
+    $default  reduce using rule 22 (atom_chain)
+
+    ident       go to state 27
+    parens      go to state 28
+    braces      go to state 29
+    bracks      go to state 30
+    expr_atom   go to state 31
+    atom_link   go to state 32
+    atom_chain  go to state 67
+
+
+State 33
+
+   24 lhs_expr: atom_chain •  [OP_TYPE, OP_ASSIGN]
+   28 rhs_expr2: atom_chain • rhs_expr3
+   30 rhs_expr3: • OP_BIN rhs_expr
+   31          | ε •  [$end, '#', ')', '}', ']', ';', ',']
+
+    OP_BIN  shift, and go to state 65
+
+    OP_TYPE    reduce using rule 24 (lhs_expr)
+    OP_ASSIGN  reduce using rule 24 (lhs_expr)
+    $default   reduce using rule 31 (rhs_expr3)
+
+    rhs_expr3  go to state 68
+
+
+State 34
+
+   32 full_decl: lhs_expr • OP_TYPE type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: lhs_expr • OP_TYPE type_expr
+   34 assignment: lhs_expr • OP_ASSIGN rhs_expr
+   36 bare_name: lhs_expr • OP_TYPE
+
+    OP_TYPE    shift, and go to state 69
+    OP_ASSIGN  shift, and go to state 70
+
+
+State 35
+
+   39 bare_expr: rhs_expr •
+
+    $default  reduce using rule 39 (bare_expr)
+
+
+State 36
+
+   27 rhs_expr: rhs_expr2 •
+
+    $default  reduce using rule 27 (rhs_expr)
+
+
+State 37
+
+   48 expr: full_decl •
+
+    $default  reduce using rule 48 (expr)
+
+
+State 38
+
+   49 expr: empty_decl •
+
+    $default  reduce using rule 49 (expr)
+
+
+State 39
+
+   50 expr: assignment •
+
+    $default  reduce using rule 50 (expr)
+
+
+State 40
+
+   51 expr: typed_val •
+
+    $default  reduce using rule 51 (expr)
+
+
+State 41
+
+   52 expr: bare_name •
+
+    $default  reduce using rule 52 (expr)
+
+
+State 42
+
+   53 expr: bare_type •
+
+    $default  reduce using rule 53 (expr)
+
+
+State 43
+
+   54 expr: bare_val •
+
+    $default  reduce using rule 54 (expr)
+
+
+State 44
+
+   55 expr: bare_expr •
+
+    $default  reduce using rule 55 (expr)
+
+
+State 45
+
+   56 expr: stmt_if •
+
+    $default  reduce using rule 56 (expr)
+
+
+State 46
+
+   57 expr: stmt_ifelse •
+
+    $default  reduce using rule 57 (expr)
+
+
+State 47
+
+   58 expr: stmt_match •
+
+    $default  reduce using rule 58 (expr)
+
+
+State 48
+
+   59 expr: stmt_for •
+
+    $default  reduce using rule 59 (expr)
+
+
+State 49
+
+   63 expr_block: expr •  [$end, '#', '}']
+   64           | expr • ';' expr_block
+
+    ';'  shift, and go to state 71
+
+    $default  reduce using rule 63 (expr_block)
+
+
+State 50
+
+    3 section: marker expr_block •
+
+    $default  reduce using rule 3 (section)
+
+
+State 51
+
+   25 type_expr: atom_chain •
+
+    $default  reduce using rule 25 (type_expr)
+
+
+State 52
+
+   35 typed_val: OP_TYPE type_expr • OP_ASSIGN rhs_expr
+   37 bare_type: OP_TYPE type_expr •  [$end, '#', ')', '}', ']', ';', ',']
+
+    OP_ASSIGN  shift, and go to state 72
+
+    $default  reduce using rule 37 (bare_type)
+
+
+State 53
+
+   28 rhs_expr2: atom_chain • rhs_expr3
+   30 rhs_expr3: • OP_BIN rhs_expr
+   31          | ε •  [$end, '#', ')', '}', ']', ';', ',']
+
+    OP_BIN  shift, and go to state 65
+
+    $default  reduce using rule 31 (rhs_expr3)
+
+    rhs_expr3  go to state 68
+
+
+State 54
+
+   38 bare_val: OP_ASSIGN rhs_expr •
+
+    $default  reduce using rule 38 (bare_val)
+
+
+State 55
+
+   14 braces: • '{' expr_block '}'
+   40 stmt_if: KW_IF parens • braces
+   41 stmt_ifelse: KW_IF parens • braces KW_ELSE braces
+   42            | KW_IF parens • braces KW_ELSE stmt_if
+
+    '{'  shift, and go to state 22
+
+    braces  go to state 73
+
+
+State 56
+
+   46 stmt_match: KW_MATCH parens • '{' case_block '}'
+
+    '{'  shift, and go to state 74
+
+
+State 57
+
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   24 lhs_expr: • atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   32 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: • lhs_expr OP_TYPE type_expr
+   34 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   35 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
+   36 bare_name: • lhs_expr OP_TYPE
+   37 bare_type: • OP_TYPE type_expr
+   38 bare_val: • OP_ASSIGN rhs_expr
+   39 bare_expr: • rhs_expr
+   40 stmt_if: • KW_IF parens braces
+   41 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
+   42            | • KW_IF parens braces KW_ELSE stmt_if
+   46 stmt_match: • KW_MATCH parens '{' case_block '}'
+   47 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+   47         | KW_FOR '(' • opt_expr ';' opt_expr ';' opt_expr ')' braces
+   48 expr: • full_decl
+   49     | • empty_decl
+   50     | • assignment
+   51     | • typed_val
+   52     | • bare_name
+   53     | • bare_type
+   54     | • bare_val
+   55     | • bare_expr
+   56     | • stmt_if
+   57     | • stmt_ifelse
+   58     | • stmt_match
+   59     | • stmt_for
+   60 opt_expr: • expr
+   61         | ε •  [';']
+
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_TYPE     shift, and go to state 12
+    OP_ASSIGN   shift, and go to state 13
+    KW_IF       shift, and go to state 14
+    KW_MATCH    shift, and go to state 15
+    KW_FOR      shift, and go to state 16
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    $default  reduce using rule 61 (opt_expr)
+
+    prefix       go to state 25
+    const        go to state 26
+    ident        go to state 27
+    parens       go to state 28
+    braces       go to state 29
+    bracks       go to state 30
+    expr_atom    go to state 31
+    atom_link    go to state 32
+    atom_chain   go to state 33
+    lhs_expr     go to state 34
+    rhs_expr     go to state 35
+    rhs_expr2    go to state 36
+    full_decl    go to state 37
+    empty_decl   go to state 38
+    assignment   go to state 39
+    typed_val    go to state 40
+    bare_name    go to state 41
+    bare_type    go to state 42
+    bare_val     go to state 43
+    bare_expr    go to state 44
+    stmt_if      go to state 45
+    stmt_ifelse  go to state 46
+    stmt_match   go to state 47
+    stmt_for     go to state 48
+    expr         go to state 75
+    opt_expr     go to state 76
+
+
+State 58
+
+   11 ident: '@' TOK_IDENT •
+
+    $default  reduce using rule 11 (ident)
+
+
 State 59
 
-   23 rhs_expr: prefix rhs_expr2 •
+   66 expr_tuple: expr •  [')', ']']
+   67           | expr • ',' expr_tuple
 
-    $default  reduce using rule 23 (rhs_expr)
+    ','  shift, and go to state 77
+
+    $default  reduce using rule 66 (expr_tuple)
 
 
 State 60
 
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   27 rhs_expr3: OP_BIN • rhs_expr
+   13 parens: '(' expr_tuple • ')'
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    prefix      go to state 19
-    const       go to state 20
-    ident       go to state 21
-    parens      go to state 22
-    braces      go to state 23
-    bracks      go to state 24
-    expr_atom   go to state 25
-    atom_link   go to state 26
-    atom_chain  go to state 47
-    rhs_expr    go to state 76
-    rhs_expr2   go to state 30
+    ')'  shift, and go to state 78
 
 
 State 61
 
-   26 rhs_expr2: const rhs_expr3 •
+   14 braces: '{' expr_block • '}'
 
-    $default  reduce using rule 26 (rhs_expr2)
+    '}'  shift, and go to state 79
 
 
 State 62
 
-   20 atom_chain: atom_link atom_chain •
+   15 bracks: '[' expr_tuple • ']'
 
-    $default  reduce using rule 20 (atom_chain)
+    ']'  shift, and go to state 80
 
 
 State 63
 
-   25 rhs_expr2: atom_chain rhs_expr3 •
+   21 atom_link: '.' expr_atom •
 
-    $default  reduce using rule 25 (rhs_expr2)
+    $default  reduce using rule 21 (atom_link)
 
 
 State 64
 
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   22 type_expr: • atom_chain
-   29 full_decl: lhs_expr OP_TYPE • type_expr OP_ASSIGN rhs_expr
-   30 empty_decl: lhs_expr OP_TYPE • type_expr
-   33 bare_name: lhs_expr OP_TYPE •  [$end, ')', ']', ';', ',']
+   26 rhs_expr: prefix rhs_expr2 •
 
-    TOK_IDENT  shift, and go to state 1
-    '@'        shift, and go to state 13
-    '('        shift, and go to state 14
-    '{'        shift, and go to state 15
-    '['        shift, and go to state 16
-    '.'        shift, and go to state 17
-
-    $default  reduce using rule 33 (bare_name)
-
-    ident       go to state 21
-    parens      go to state 22
-    braces      go to state 23
-    bracks      go to state 24
-    expr_atom   go to state 25
-    atom_link   go to state 26
-    atom_chain  go to state 45
-    type_expr   go to state 77
+    $default  reduce using rule 26 (rhs_expr)
 
 
 State 65
 
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   31 assignment: lhs_expr OP_ASSIGN • rhs_expr
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   30 rhs_expr3: OP_BIN • rhs_expr
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
 
-    prefix      go to state 19
-    const       go to state 20
-    ident       go to state 21
-    parens      go to state 22
-    braces      go to state 23
-    bracks      go to state 24
-    expr_atom   go to state 25
-    atom_link   go to state 26
-    atom_chain  go to state 47
-    rhs_expr    go to state 78
-    rhs_expr2   go to state 30
+    prefix      go to state 25
+    const       go to state 26
+    ident       go to state 27
+    parens      go to state 28
+    braces      go to state 29
+    bracks      go to state 30
+    expr_atom   go to state 31
+    atom_link   go to state 32
+    atom_chain  go to state 53
+    rhs_expr    go to state 81
+    rhs_expr2   go to state 36
 
 
 State 66
 
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   21 lhs_expr: • atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   29 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
-   30 empty_decl: • lhs_expr OP_TYPE type_expr
-   31 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   32 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
-   33 bare_name: • lhs_expr OP_TYPE
-   34 bare_type: • OP_TYPE type_expr
-   35 bare_val: • OP_ASSIGN rhs_expr
-   36 bare_expr: • rhs_expr
-   37 stmt_if: • KW_IF parens braces
-   38 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
-   39            | • KW_IF parens braces KW_ELSE stmt_if
-   43 stmt_match: • KW_MATCH parens '{' case_block '}'
-   44 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
-   45 expr: • full_decl
-   46     | • empty_decl
-   47     | • assignment
-   48     | • typed_val
-   49     | • bare_name
-   50     | • bare_type
-   51     | • bare_val
-   52     | • bare_expr
-   53     | • stmt_if
-   54     | • stmt_ifelse
-   55     | • stmt_match
-   56     | • stmt_for
-   59 expr_block: ε •  [$end, ')']
-   60           | • expr
-   61           | • expr ';' expr_block
-   61           | expr ';' • expr_block
+   29 rhs_expr2: const rhs_expr3 •
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    KW_IF       shift, and go to state 7
-    KW_MATCH    shift, and go to state 8
-    KW_FOR      shift, and go to state 9
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    $default  reduce using rule 59 (expr_block)
-
-    prefix       go to state 19
-    const        go to state 20
-    ident        go to state 21
-    parens       go to state 22
-    braces       go to state 23
-    bracks       go to state 24
-    expr_atom    go to state 25
-    atom_link    go to state 26
-    atom_chain   go to state 27
-    lhs_expr     go to state 28
-    rhs_expr     go to state 29
-    rhs_expr2    go to state 30
-    full_decl    go to state 31
-    empty_decl   go to state 32
-    assignment   go to state 33
-    typed_val    go to state 34
-    bare_name    go to state 35
-    bare_type    go to state 36
-    bare_val     go to state 37
-    bare_expr    go to state 38
-    stmt_if      go to state 39
-    stmt_ifelse  go to state 40
-    stmt_match   go to state 41
-    stmt_for     go to state 42
-    expr         go to state 43
-    expr_block   go to state 79
+    $default  reduce using rule 29 (rhs_expr2)
 
 
 State 67
 
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   32 typed_val: OP_TYPE type_expr OP_ASSIGN • rhs_expr
+   23 atom_chain: atom_link atom_chain •
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    prefix      go to state 19
-    const       go to state 20
-    ident       go to state 21
-    parens      go to state 22
-    braces      go to state 23
-    bracks      go to state 24
-    expr_atom   go to state 25
-    atom_link   go to state 26
-    atom_chain  go to state 47
-    rhs_expr    go to state 80
-    rhs_expr2   go to state 30
+    $default  reduce using rule 23 (atom_chain)
 
 
 State 68
 
-   37 stmt_if: KW_IF parens braces •  [$end, ')', ']', ';', ',']
-   38 stmt_ifelse: KW_IF parens braces • KW_ELSE braces
-   39            | KW_IF parens braces • KW_ELSE stmt_if
+   28 rhs_expr2: atom_chain rhs_expr3 •
 
-    KW_ELSE  shift, and go to state 81
-
-    $default  reduce using rule 37 (stmt_if)
+    $default  reduce using rule 28 (rhs_expr2)
 
 
 State 69
 
-   40 stmt_case: • KW_CASE parens braces
-   41 case_block: • stmt_case
-   42           | • stmt_case case_block
-   43 stmt_match: KW_MATCH parens '{' • case_block '}'
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   25 type_expr: • atom_chain
+   32 full_decl: lhs_expr OP_TYPE • type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: lhs_expr OP_TYPE • type_expr
+   36 bare_name: lhs_expr OP_TYPE •  [$end, '#', ')', '}', ']', ';', ',']
 
-    KW_CASE  shift, and go to state 82
+    TOK_IDENT  shift, and go to state 8
+    '@'        shift, and go to state 20
+    '('        shift, and go to state 21
+    '{'        shift, and go to state 22
+    '['        shift, and go to state 23
+    '.'        shift, and go to state 24
 
-    stmt_case   go to state 83
-    case_block  go to state 84
+    $default  reduce using rule 36 (bare_name)
+
+    ident       go to state 27
+    parens      go to state 28
+    braces      go to state 29
+    bracks      go to state 30
+    expr_atom   go to state 31
+    atom_link   go to state 32
+    atom_chain  go to state 51
+    type_expr   go to state 82
 
 
 State 70
 
-   57 opt_expr: expr •
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   34 assignment: lhs_expr OP_ASSIGN • rhs_expr
 
-    $default  reduce using rule 57 (opt_expr)
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    prefix      go to state 25
+    const       go to state 26
+    ident       go to state 27
+    parens      go to state 28
+    braces      go to state 29
+    bracks      go to state 30
+    expr_atom   go to state 31
+    atom_link   go to state 32
+    atom_chain  go to state 53
+    rhs_expr    go to state 83
+    rhs_expr2   go to state 36
 
 
 State 71
 
-   44 stmt_for: KW_FOR '(' opt_expr • ';' opt_expr ';' opt_expr ')' braces
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   24 lhs_expr: • atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   32 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: • lhs_expr OP_TYPE type_expr
+   34 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   35 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
+   36 bare_name: • lhs_expr OP_TYPE
+   37 bare_type: • OP_TYPE type_expr
+   38 bare_val: • OP_ASSIGN rhs_expr
+   39 bare_expr: • rhs_expr
+   40 stmt_if: • KW_IF parens braces
+   41 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
+   42            | • KW_IF parens braces KW_ELSE stmt_if
+   46 stmt_match: • KW_MATCH parens '{' case_block '}'
+   47 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+   48 expr: • full_decl
+   49     | • empty_decl
+   50     | • assignment
+   51     | • typed_val
+   52     | • bare_name
+   53     | • bare_type
+   54     | • bare_val
+   55     | • bare_expr
+   56     | • stmt_if
+   57     | • stmt_ifelse
+   58     | • stmt_match
+   59     | • stmt_for
+   62 expr_block: ε •  [$end, '#', '}']
+   63           | • expr
+   64           | • expr ';' expr_block
+   64           | expr ';' • expr_block
 
-    ';'  shift, and go to state 85
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_TYPE     shift, and go to state 12
+    OP_ASSIGN   shift, and go to state 13
+    KW_IF       shift, and go to state 14
+    KW_MATCH    shift, and go to state 15
+    KW_FOR      shift, and go to state 16
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    $default  reduce using rule 62 (expr_block)
+
+    prefix       go to state 25
+    const        go to state 26
+    ident        go to state 27
+    parens       go to state 28
+    braces       go to state 29
+    bracks       go to state 30
+    expr_atom    go to state 31
+    atom_link    go to state 32
+    atom_chain   go to state 33
+    lhs_expr     go to state 34
+    rhs_expr     go to state 35
+    rhs_expr2    go to state 36
+    full_decl    go to state 37
+    empty_decl   go to state 38
+    assignment   go to state 39
+    typed_val    go to state 40
+    bare_name    go to state 41
+    bare_type    go to state 42
+    bare_val     go to state 43
+    bare_expr    go to state 44
+    stmt_if      go to state 45
+    stmt_ifelse  go to state 46
+    stmt_match   go to state 47
+    stmt_for     go to state 48
+    expr         go to state 49
+    expr_block   go to state 84
 
 
 State 72
 
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   21 lhs_expr: • atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   29 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
-   30 empty_decl: • lhs_expr OP_TYPE type_expr
-   31 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   32 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
-   33 bare_name: • lhs_expr OP_TYPE
-   34 bare_type: • OP_TYPE type_expr
-   35 bare_val: • OP_ASSIGN rhs_expr
-   36 bare_expr: • rhs_expr
-   37 stmt_if: • KW_IF parens braces
-   38 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
-   39            | • KW_IF parens braces KW_ELSE stmt_if
-   43 stmt_match: • KW_MATCH parens '{' case_block '}'
-   44 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
-   45 expr: • full_decl
-   46     | • empty_decl
-   47     | • assignment
-   48     | • typed_val
-   49     | • bare_name
-   50     | • bare_type
-   51     | • bare_val
-   52     | • bare_expr
-   53     | • stmt_if
-   54     | • stmt_ifelse
-   55     | • stmt_match
-   56     | • stmt_for
-   62 expr_tuple: ε •  [')', ']']
-   63           | • expr
-   64           | • expr ',' expr_tuple
-   64           | expr ',' • expr_tuple
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   35 typed_val: OP_TYPE type_expr OP_ASSIGN • rhs_expr
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    KW_IF       shift, and go to state 7
-    KW_MATCH    shift, and go to state 8
-    KW_FOR      shift, and go to state 9
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
 
-    $default  reduce using rule 62 (expr_tuple)
-
-    prefix       go to state 19
-    const        go to state 20
-    ident        go to state 21
-    parens       go to state 22
-    braces       go to state 23
-    bracks       go to state 24
-    expr_atom    go to state 25
-    atom_link    go to state 26
-    atom_chain   go to state 27
-    lhs_expr     go to state 28
-    rhs_expr     go to state 29
-    rhs_expr2    go to state 30
-    full_decl    go to state 31
-    empty_decl   go to state 32
-    assignment   go to state 33
-    typed_val    go to state 34
-    bare_name    go to state 35
-    bare_type    go to state 36
-    bare_val     go to state 37
-    bare_expr    go to state 38
-    stmt_if      go to state 39
-    stmt_ifelse  go to state 40
-    stmt_match   go to state 41
-    stmt_for     go to state 42
-    expr         go to state 53
-    expr_tuple   go to state 86
+    prefix      go to state 25
+    const       go to state 26
+    ident       go to state 27
+    parens      go to state 28
+    braces      go to state 29
+    bracks      go to state 30
+    expr_atom   go to state 31
+    atom_link   go to state 32
+    atom_chain  go to state 53
+    rhs_expr    go to state 85
+    rhs_expr2   go to state 36
 
 
 State 73
 
-   10 parens: '(' expr_tuple ')' •
+   40 stmt_if: KW_IF parens braces •  [$end, '#', ')', '}', ']', ';', ',']
+   41 stmt_ifelse: KW_IF parens braces • KW_ELSE braces
+   42            | KW_IF parens braces • KW_ELSE stmt_if
 
-    $default  reduce using rule 10 (parens)
+    KW_ELSE  shift, and go to state 86
+
+    $default  reduce using rule 40 (stmt_if)
 
 
 State 74
 
-   11 braces: '{' expr_block ')' •
+   43 stmt_case: • KW_CASE parens braces
+   44 case_block: • stmt_case
+   45           | • stmt_case case_block
+   46 stmt_match: KW_MATCH parens '{' • case_block '}'
 
-    $default  reduce using rule 11 (braces)
+    KW_CASE  shift, and go to state 87
+
+    stmt_case   go to state 88
+    case_block  go to state 89
 
 
 State 75
 
-   12 bracks: '[' expr_tuple ']' •
+   60 opt_expr: expr •
 
-    $default  reduce using rule 12 (bracks)
+    $default  reduce using rule 60 (opt_expr)
 
 
 State 76
 
-   27 rhs_expr3: OP_BIN rhs_expr •
+   47 stmt_for: KW_FOR '(' opt_expr • ';' opt_expr ';' opt_expr ')' braces
 
-    $default  reduce using rule 27 (rhs_expr3)
+    ';'  shift, and go to state 90
 
 
 State 77
 
-   29 full_decl: lhs_expr OP_TYPE type_expr • OP_ASSIGN rhs_expr
-   30 empty_decl: lhs_expr OP_TYPE type_expr •  [$end, ')', ']', ';', ',']
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   24 lhs_expr: • atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   32 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: • lhs_expr OP_TYPE type_expr
+   34 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   35 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
+   36 bare_name: • lhs_expr OP_TYPE
+   37 bare_type: • OP_TYPE type_expr
+   38 bare_val: • OP_ASSIGN rhs_expr
+   39 bare_expr: • rhs_expr
+   40 stmt_if: • KW_IF parens braces
+   41 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
+   42            | • KW_IF parens braces KW_ELSE stmt_if
+   46 stmt_match: • KW_MATCH parens '{' case_block '}'
+   47 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+   48 expr: • full_decl
+   49     | • empty_decl
+   50     | • assignment
+   51     | • typed_val
+   52     | • bare_name
+   53     | • bare_type
+   54     | • bare_val
+   55     | • bare_expr
+   56     | • stmt_if
+   57     | • stmt_ifelse
+   58     | • stmt_match
+   59     | • stmt_for
+   65 expr_tuple: ε •  [')', ']']
+   66           | • expr
+   67           | • expr ',' expr_tuple
+   67           | expr ',' • expr_tuple
 
-    OP_ASSIGN  shift, and go to state 87
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_TYPE     shift, and go to state 12
+    OP_ASSIGN   shift, and go to state 13
+    KW_IF       shift, and go to state 14
+    KW_MATCH    shift, and go to state 15
+    KW_FOR      shift, and go to state 16
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
 
-    $default  reduce using rule 30 (empty_decl)
+    $default  reduce using rule 65 (expr_tuple)
+
+    prefix       go to state 25
+    const        go to state 26
+    ident        go to state 27
+    parens       go to state 28
+    braces       go to state 29
+    bracks       go to state 30
+    expr_atom    go to state 31
+    atom_link    go to state 32
+    atom_chain   go to state 33
+    lhs_expr     go to state 34
+    rhs_expr     go to state 35
+    rhs_expr2    go to state 36
+    full_decl    go to state 37
+    empty_decl   go to state 38
+    assignment   go to state 39
+    typed_val    go to state 40
+    bare_name    go to state 41
+    bare_type    go to state 42
+    bare_val     go to state 43
+    bare_expr    go to state 44
+    stmt_if      go to state 45
+    stmt_ifelse  go to state 46
+    stmt_match   go to state 47
+    stmt_for     go to state 48
+    expr         go to state 59
+    expr_tuple   go to state 91
 
 
 State 78
 
-   31 assignment: lhs_expr OP_ASSIGN rhs_expr •
+   13 parens: '(' expr_tuple ')' •
 
-    $default  reduce using rule 31 (assignment)
+    $default  reduce using rule 13 (parens)
 
 
 State 79
 
-   61 expr_block: expr ';' expr_block •
+   14 braces: '{' expr_block '}' •
 
-    $default  reduce using rule 61 (expr_block)
+    $default  reduce using rule 14 (braces)
 
 
 State 80
 
-   32 typed_val: OP_TYPE type_expr OP_ASSIGN rhs_expr •
+   15 bracks: '[' expr_tuple ']' •
 
-    $default  reduce using rule 32 (typed_val)
+    $default  reduce using rule 15 (bracks)
 
 
 State 81
 
-   11 braces: • '{' expr_block ')'
-   37 stmt_if: • KW_IF parens braces
-   38 stmt_ifelse: KW_IF parens braces KW_ELSE • braces
-   39            | KW_IF parens braces KW_ELSE • stmt_if
+   30 rhs_expr3: OP_BIN rhs_expr •
 
-    KW_IF  shift, and go to state 88
-    '{'    shift, and go to state 15
-
-    braces   go to state 89
-    stmt_if  go to state 90
+    $default  reduce using rule 30 (rhs_expr3)
 
 
 State 82
 
-   10 parens: • '(' expr_tuple ')'
-   40 stmt_case: KW_CASE • parens braces
+   32 full_decl: lhs_expr OP_TYPE type_expr • OP_ASSIGN rhs_expr
+   33 empty_decl: lhs_expr OP_TYPE type_expr •  [$end, '#', ')', '}', ']', ';', ',']
 
-    '('  shift, and go to state 14
+    OP_ASSIGN  shift, and go to state 92
 
-    parens  go to state 91
+    $default  reduce using rule 33 (empty_decl)
 
 
 State 83
 
-   40 stmt_case: • KW_CASE parens braces
-   41 case_block: • stmt_case
-   41           | stmt_case •  ['}']
-   42           | • stmt_case case_block
-   42           | stmt_case • case_block
+   34 assignment: lhs_expr OP_ASSIGN rhs_expr •
 
-    KW_CASE  shift, and go to state 82
-
-    $default  reduce using rule 41 (case_block)
-
-    stmt_case   go to state 83
-    case_block  go to state 92
+    $default  reduce using rule 34 (assignment)
 
 
 State 84
 
-   43 stmt_match: KW_MATCH parens '{' case_block • '}'
+   64 expr_block: expr ';' expr_block •
 
-    '}'  shift, and go to state 93
+    $default  reduce using rule 64 (expr_block)
 
 
 State 85
 
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   21 lhs_expr: • atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   29 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
-   30 empty_decl: • lhs_expr OP_TYPE type_expr
-   31 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   32 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
-   33 bare_name: • lhs_expr OP_TYPE
-   34 bare_type: • OP_TYPE type_expr
-   35 bare_val: • OP_ASSIGN rhs_expr
-   36 bare_expr: • rhs_expr
-   37 stmt_if: • KW_IF parens braces
-   38 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
-   39            | • KW_IF parens braces KW_ELSE stmt_if
-   43 stmt_match: • KW_MATCH parens '{' case_block '}'
-   44 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
-   44         | KW_FOR '(' opt_expr ';' • opt_expr ';' opt_expr ')' braces
-   45 expr: • full_decl
-   46     | • empty_decl
-   47     | • assignment
-   48     | • typed_val
-   49     | • bare_name
-   50     | • bare_type
-   51     | • bare_val
-   52     | • bare_expr
-   53     | • stmt_if
-   54     | • stmt_ifelse
-   55     | • stmt_match
-   56     | • stmt_for
-   57 opt_expr: • expr
-   58         | ε •  [';']
+   35 typed_val: OP_TYPE type_expr OP_ASSIGN rhs_expr •
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    KW_IF       shift, and go to state 7
-    KW_MATCH    shift, and go to state 8
-    KW_FOR      shift, and go to state 9
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    $default  reduce using rule 58 (opt_expr)
-
-    prefix       go to state 19
-    const        go to state 20
-    ident        go to state 21
-    parens       go to state 22
-    braces       go to state 23
-    bracks       go to state 24
-    expr_atom    go to state 25
-    atom_link    go to state 26
-    atom_chain   go to state 27
-    lhs_expr     go to state 28
-    rhs_expr     go to state 29
-    rhs_expr2    go to state 30
-    full_decl    go to state 31
-    empty_decl   go to state 32
-    assignment   go to state 33
-    typed_val    go to state 34
-    bare_name    go to state 35
-    bare_type    go to state 36
-    bare_val     go to state 37
-    bare_expr    go to state 38
-    stmt_if      go to state 39
-    stmt_ifelse  go to state 40
-    stmt_match   go to state 41
-    stmt_for     go to state 42
-    expr         go to state 70
-    opt_expr     go to state 94
+    $default  reduce using rule 35 (typed_val)
 
 
 State 86
 
-   64 expr_tuple: expr ',' expr_tuple •
+   14 braces: • '{' expr_block '}'
+   40 stmt_if: • KW_IF parens braces
+   41 stmt_ifelse: KW_IF parens braces KW_ELSE • braces
+   42            | KW_IF parens braces KW_ELSE • stmt_if
 
-    $default  reduce using rule 64 (expr_tuple)
+    KW_IF  shift, and go to state 93
+    '{'    shift, and go to state 22
+
+    braces   go to state 94
+    stmt_if  go to state 95
 
 
 State 87
 
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   29 full_decl: lhs_expr OP_TYPE type_expr OP_ASSIGN • rhs_expr
+   13 parens: • '(' expr_tuple ')'
+   43 stmt_case: KW_CASE • parens braces
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    prefix      go to state 19
-    const       go to state 20
-    ident       go to state 21
-    parens      go to state 22
-    braces      go to state 23
-    bracks      go to state 24
-    expr_atom   go to state 25
-    atom_link   go to state 26
-    atom_chain  go to state 47
-    rhs_expr    go to state 95
-    rhs_expr2   go to state 30
-
-
-State 88
-
-   10 parens: • '(' expr_tuple ')'
-   37 stmt_if: KW_IF • parens braces
-
-    '('  shift, and go to state 14
+    '('  shift, and go to state 21
 
     parens  go to state 96
 
 
+State 88
+
+   43 stmt_case: • KW_CASE parens braces
+   44 case_block: • stmt_case
+   44           | stmt_case •  ['}']
+   45           | • stmt_case case_block
+   45           | stmt_case • case_block
+
+    KW_CASE  shift, and go to state 87
+
+    $default  reduce using rule 44 (case_block)
+
+    stmt_case   go to state 88
+    case_block  go to state 97
+
+
 State 89
 
-   38 stmt_ifelse: KW_IF parens braces KW_ELSE braces •
+   46 stmt_match: KW_MATCH parens '{' case_block • '}'
 
-    $default  reduce using rule 38 (stmt_ifelse)
+    '}'  shift, and go to state 98
 
 
 State 90
 
-   39 stmt_ifelse: KW_IF parens braces KW_ELSE stmt_if •
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   24 lhs_expr: • atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   32 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: • lhs_expr OP_TYPE type_expr
+   34 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   35 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
+   36 bare_name: • lhs_expr OP_TYPE
+   37 bare_type: • OP_TYPE type_expr
+   38 bare_val: • OP_ASSIGN rhs_expr
+   39 bare_expr: • rhs_expr
+   40 stmt_if: • KW_IF parens braces
+   41 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
+   42            | • KW_IF parens braces KW_ELSE stmt_if
+   46 stmt_match: • KW_MATCH parens '{' case_block '}'
+   47 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+   47         | KW_FOR '(' opt_expr ';' • opt_expr ';' opt_expr ')' braces
+   48 expr: • full_decl
+   49     | • empty_decl
+   50     | • assignment
+   51     | • typed_val
+   52     | • bare_name
+   53     | • bare_type
+   54     | • bare_val
+   55     | • bare_expr
+   56     | • stmt_if
+   57     | • stmt_ifelse
+   58     | • stmt_match
+   59     | • stmt_for
+   60 opt_expr: • expr
+   61         | ε •  [';']
 
-    $default  reduce using rule 39 (stmt_ifelse)
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_TYPE     shift, and go to state 12
+    OP_ASSIGN   shift, and go to state 13
+    KW_IF       shift, and go to state 14
+    KW_MATCH    shift, and go to state 15
+    KW_FOR      shift, and go to state 16
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    $default  reduce using rule 61 (opt_expr)
+
+    prefix       go to state 25
+    const        go to state 26
+    ident        go to state 27
+    parens       go to state 28
+    braces       go to state 29
+    bracks       go to state 30
+    expr_atom    go to state 31
+    atom_link    go to state 32
+    atom_chain   go to state 33
+    lhs_expr     go to state 34
+    rhs_expr     go to state 35
+    rhs_expr2    go to state 36
+    full_decl    go to state 37
+    empty_decl   go to state 38
+    assignment   go to state 39
+    typed_val    go to state 40
+    bare_name    go to state 41
+    bare_type    go to state 42
+    bare_val     go to state 43
+    bare_expr    go to state 44
+    stmt_if      go to state 45
+    stmt_ifelse  go to state 46
+    stmt_match   go to state 47
+    stmt_for     go to state 48
+    expr         go to state 75
+    opt_expr     go to state 99
 
 
 State 91
 
-   11 braces: • '{' expr_block ')'
-   40 stmt_case: KW_CASE parens • braces
+   67 expr_tuple: expr ',' expr_tuple •
 
-    '{'  shift, and go to state 15
-
-    braces  go to state 97
+    $default  reduce using rule 67 (expr_tuple)
 
 
 State 92
 
-   42 case_block: stmt_case case_block •
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   32 full_decl: lhs_expr OP_TYPE type_expr OP_ASSIGN • rhs_expr
 
-    $default  reduce using rule 42 (case_block)
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    prefix      go to state 25
+    const       go to state 26
+    ident       go to state 27
+    parens      go to state 28
+    braces      go to state 29
+    bracks      go to state 30
+    expr_atom   go to state 31
+    atom_link   go to state 32
+    atom_chain  go to state 53
+    rhs_expr    go to state 100
+    rhs_expr2   go to state 36
 
 
 State 93
 
-   43 stmt_match: KW_MATCH parens '{' case_block '}' •
+   13 parens: • '(' expr_tuple ')'
+   40 stmt_if: KW_IF • parens braces
 
-    $default  reduce using rule 43 (stmt_match)
+    '('  shift, and go to state 21
+
+    parens  go to state 101
 
 
 State 94
 
-   44 stmt_for: KW_FOR '(' opt_expr ';' opt_expr • ';' opt_expr ')' braces
+   41 stmt_ifelse: KW_IF parens braces KW_ELSE braces •
 
-    ';'  shift, and go to state 98
+    $default  reduce using rule 41 (stmt_ifelse)
 
 
 State 95
 
-   29 full_decl: lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr •
+   42 stmt_ifelse: KW_IF parens braces KW_ELSE stmt_if •
 
-    $default  reduce using rule 29 (full_decl)
+    $default  reduce using rule 42 (stmt_ifelse)
 
 
 State 96
 
-   11 braces: • '{' expr_block ')'
-   37 stmt_if: KW_IF parens • braces
+   14 braces: • '{' expr_block '}'
+   43 stmt_case: KW_CASE parens • braces
 
-    '{'  shift, and go to state 15
-
-    braces  go to state 99
-
-
-State 97
-
-   40 stmt_case: KW_CASE parens braces •
-
-    $default  reduce using rule 40 (stmt_case)
-
-
-State 98
-
-    2 prefix: • '-'
-    3       | • '+'
-    4       | • '!'
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block ')'
-   12 bracks: • '[' expr_tuple ']'
-   13 expr_atom: • ident
-   14          | • parens
-   15          | • braces
-   16          | • bracks
-   17 atom_link: • expr_atom
-   18          | • '.' expr_atom
-   19 atom_chain: • atom_link
-   20           | • atom_link atom_chain
-   21 lhs_expr: • atom_chain
-   23 rhs_expr: • prefix rhs_expr2
-   24         | • rhs_expr2
-   25 rhs_expr2: • atom_chain rhs_expr3
-   26          | • const rhs_expr3
-   29 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
-   30 empty_decl: • lhs_expr OP_TYPE type_expr
-   31 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   32 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
-   33 bare_name: • lhs_expr OP_TYPE
-   34 bare_type: • OP_TYPE type_expr
-   35 bare_val: • OP_ASSIGN rhs_expr
-   36 bare_expr: • rhs_expr
-   37 stmt_if: • KW_IF parens braces
-   38 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
-   39            | • KW_IF parens braces KW_ELSE stmt_if
-   43 stmt_match: • KW_MATCH parens '{' case_block '}'
-   44 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
-   44         | KW_FOR '(' opt_expr ';' opt_expr ';' • opt_expr ')' braces
-   45 expr: • full_decl
-   46     | • empty_decl
-   47     | • assignment
-   48     | • typed_val
-   49     | • bare_name
-   50     | • bare_type
-   51     | • bare_val
-   52     | • bare_expr
-   53     | • stmt_if
-   54     | • stmt_ifelse
-   55     | • stmt_match
-   56     | • stmt_for
-   57 opt_expr: • expr
-   58         | ε •  [')']
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    KW_IF       shift, and go to state 7
-    KW_MATCH    shift, and go to state 8
-    KW_FOR      shift, and go to state 9
-    '-'         shift, and go to state 10
-    '+'         shift, and go to state 11
-    '!'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    '('         shift, and go to state 14
-    '{'         shift, and go to state 15
-    '['         shift, and go to state 16
-    '.'         shift, and go to state 17
-
-    $default  reduce using rule 58 (opt_expr)
-
-    prefix       go to state 19
-    const        go to state 20
-    ident        go to state 21
-    parens       go to state 22
-    braces       go to state 23
-    bracks       go to state 24
-    expr_atom    go to state 25
-    atom_link    go to state 26
-    atom_chain   go to state 27
-    lhs_expr     go to state 28
-    rhs_expr     go to state 29
-    rhs_expr2    go to state 30
-    full_decl    go to state 31
-    empty_decl   go to state 32
-    assignment   go to state 33
-    typed_val    go to state 34
-    bare_name    go to state 35
-    bare_type    go to state 36
-    bare_val     go to state 37
-    bare_expr    go to state 38
-    stmt_if      go to state 39
-    stmt_ifelse  go to state 40
-    stmt_match   go to state 41
-    stmt_for     go to state 42
-    expr         go to state 70
-    opt_expr     go to state 100
-
-
-State 99
-
-   37 stmt_if: KW_IF parens braces •
-
-    $default  reduce using rule 37 (stmt_if)
-
-
-State 100
-
-   44 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr • ')' braces
-
-    ')'  shift, and go to state 101
-
-
-State 101
-
-   11 braces: • '{' expr_block ')'
-   44 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' • braces
-
-    '{'  shift, and go to state 15
+    '{'  shift, and go to state 22
 
     braces  go to state 102
 
 
+State 97
+
+   45 case_block: stmt_case case_block •
+
+    $default  reduce using rule 45 (case_block)
+
+
+State 98
+
+   46 stmt_match: KW_MATCH parens '{' case_block '}' •
+
+    $default  reduce using rule 46 (stmt_match)
+
+
+State 99
+
+   47 stmt_for: KW_FOR '(' opt_expr ';' opt_expr • ';' opt_expr ')' braces
+
+    ';'  shift, and go to state 103
+
+
+State 100
+
+   32 full_decl: lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr •
+
+    $default  reduce using rule 32 (full_decl)
+
+
+State 101
+
+   14 braces: • '{' expr_block '}'
+   40 stmt_if: KW_IF parens • braces
+
+    '{'  shift, and go to state 22
+
+    braces  go to state 104
+
+
 State 102
 
-   44 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces •
+   43 stmt_case: KW_CASE parens braces •
 
-    $default  reduce using rule 44 (stmt_for)
+    $default  reduce using rule 43 (stmt_case)
+
+
+State 103
+
+    5 prefix: • '-'
+    6       | • '+'
+    7       | • '!'
+    8 const: • TOK_INT
+    9      | • TOK_FLOAT
+   10      | • TOK_STRING
+   11 ident: • '@' TOK_IDENT
+   12      | • TOK_IDENT
+   13 parens: • '(' expr_tuple ')'
+   14 braces: • '{' expr_block '}'
+   15 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   24 lhs_expr: • atom_chain
+   26 rhs_expr: • prefix rhs_expr2
+   27         | • rhs_expr2
+   28 rhs_expr2: • atom_chain rhs_expr3
+   29          | • const rhs_expr3
+   32 full_decl: • lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr
+   33 empty_decl: • lhs_expr OP_TYPE type_expr
+   34 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   35 typed_val: • OP_TYPE type_expr OP_ASSIGN rhs_expr
+   36 bare_name: • lhs_expr OP_TYPE
+   37 bare_type: • OP_TYPE type_expr
+   38 bare_val: • OP_ASSIGN rhs_expr
+   39 bare_expr: • rhs_expr
+   40 stmt_if: • KW_IF parens braces
+   41 stmt_ifelse: • KW_IF parens braces KW_ELSE braces
+   42            | • KW_IF parens braces KW_ELSE stmt_if
+   46 stmt_match: • KW_MATCH parens '{' case_block '}'
+   47 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+   47         | KW_FOR '(' opt_expr ';' opt_expr ';' • opt_expr ')' braces
+   48 expr: • full_decl
+   49     | • empty_decl
+   50     | • assignment
+   51     | • typed_val
+   52     | • bare_name
+   53     | • bare_type
+   54     | • bare_val
+   55     | • bare_expr
+   56     | • stmt_if
+   57     | • stmt_ifelse
+   58     | • stmt_match
+   59     | • stmt_for
+   60 opt_expr: • expr
+   61         | ε •  [')']
+
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_TYPE     shift, and go to state 12
+    OP_ASSIGN   shift, and go to state 13
+    KW_IF       shift, and go to state 14
+    KW_MATCH    shift, and go to state 15
+    KW_FOR      shift, and go to state 16
+    '-'         shift, and go to state 17
+    '+'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    '@'         shift, and go to state 20
+    '('         shift, and go to state 21
+    '{'         shift, and go to state 22
+    '['         shift, and go to state 23
+    '.'         shift, and go to state 24
+
+    $default  reduce using rule 61 (opt_expr)
+
+    prefix       go to state 25
+    const        go to state 26
+    ident        go to state 27
+    parens       go to state 28
+    braces       go to state 29
+    bracks       go to state 30
+    expr_atom    go to state 31
+    atom_link    go to state 32
+    atom_chain   go to state 33
+    lhs_expr     go to state 34
+    rhs_expr     go to state 35
+    rhs_expr2    go to state 36
+    full_decl    go to state 37
+    empty_decl   go to state 38
+    assignment   go to state 39
+    typed_val    go to state 40
+    bare_name    go to state 41
+    bare_type    go to state 42
+    bare_val     go to state 43
+    bare_expr    go to state 44
+    stmt_if      go to state 45
+    stmt_ifelse  go to state 46
+    stmt_match   go to state 47
+    stmt_for     go to state 48
+    expr         go to state 75
+    opt_expr     go to state 105
+
+
+State 104
+
+   40 stmt_if: KW_IF parens braces •
+
+    $default  reduce using rule 40 (stmt_if)
+
+
+State 105
+
+   47 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr • ')' braces
+
+    ')'  shift, and go to state 106
+
+
+State 106
+
+   14 braces: • '{' expr_block '}'
+   47 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' • braces
+
+    '{'  shift, and go to state 22
+
+    braces  go to state 107
+
+
+State 107
+
+   47 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces •
+
+    $default  reduce using rule 47 (stmt_for)

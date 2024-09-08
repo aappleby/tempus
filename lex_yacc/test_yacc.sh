@@ -1,4 +1,4 @@
-rm -f tempus_main
+rm -f test_yacc
 rm -f tempus_lex.c tempus_lex.h
 rm -f tempus_yacc.c tempus_yacc.h
 rm -f *.o
@@ -16,8 +16,10 @@ echo "# Compiling parser"
 g++ -Wall -O0 -g -c tempus_yacc.c   -o tempus_yacc.o
 
 echo "# Compiling main"
-g++ -Wall -O0 -g -c tempus_main.cpp -o tempus_main.o
+g++ -Wall -O0 -g -c test_yacc.cpp -o test_yacc.o
 
 echo "# Linking"
-g++ -O0 -g tempus_main.o tempus_lex.o tempus_yacc.o -o tempus_main
-echo
+g++ -O0 -g test_yacc.o tempus_lex.o tempus_yacc.o -o test_yacc
+
+echo "# Testing"
+./test_yacc
