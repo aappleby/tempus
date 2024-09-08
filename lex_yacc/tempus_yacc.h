@@ -61,9 +61,7 @@ extern int temdebug;
 #define YYLTYPE TEMLTYPE
 union TEMSTYPE;
 struct TEMLTYPE;
-#ifndef FLEX_SCANNER
-#include "tempus_lex.h"
-#endif
+typedef void* yyscan_t;
 
 enum sexpr_type {
   SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
@@ -88,7 +86,7 @@ int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
 
 // #*#*#---------- END REQUIRES
 
-#line 92 "tempus_yacc.h"
+#line 90 "tempus_yacc.h"
 
 /* Token kinds.  */
 #ifndef TEMTOKENTYPE
@@ -119,14 +117,14 @@ int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
 #if ! defined TEMSTYPE && ! defined TEMSTYPE_IS_DECLARED
 union TEMSTYPE
 {
-#line 60 "tempus.y"
+#line 57 "tempus.y"
 
   int    val_int;
   double val_float;
   char*  val_str;
   sexpr* val_node;
 
-#line 130 "tempus_yacc.h"
+#line 128 "tempus_yacc.h"
 
 };
 typedef union TEMSTYPE TEMSTYPE;

@@ -13,9 +13,7 @@
 #define YYLTYPE TEMLTYPE
 union TEMSTYPE;
 struct TEMLTYPE;
-#ifndef FLEX_SCANNER
-#include "tempus_lex.h"
-#endif
+typedef void* yyscan_t;
 
 enum sexpr_type {
   SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
@@ -44,15 +42,14 @@ int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
 //------------------------------------------------------------------------------
 
 %code top {
-// #*#*#--------- BEGIN TOP
+// #*#*#--------- BEGIN YACC TOP
 
 // This goes at the top of tempus_yacc.c before any includes
 #include <string>
 #include <vector>
-#include "tempus_yacc.h"
 extern std::vector<std::string> string_stack;
 
-// #*#*#--------- END TOP
+// #*#*#--------- END YACC TOP
 }
 
 //------------------------------------------------------------------------------

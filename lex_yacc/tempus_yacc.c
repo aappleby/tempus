@@ -64,19 +64,18 @@
 #define YYPULL 1
 
 /* "%code top" blocks.  */
-#line 46 "tempus.y"
+#line 44 "tempus.y"
 
-// #*#*#--------- BEGIN TOP
+// #*#*#--------- BEGIN YACC TOP
 
 // This goes at the top of tempus_yacc.c before any includes
 #include <string>
 #include <vector>
-#include "tempus_yacc.h"
 extern std::vector<std::string> string_stack;
 
-// #*#*#--------- END TOP
+// #*#*#--------- END YACC TOP
 
-#line 80 "tempus_yacc.c"
+#line 79 "tempus_yacc.c"
 /* Substitute the type names.  */
 #define YYSTYPE         TEMSTYPE
 #define YYLTYPE         TEMLTYPE
@@ -564,13 +563,13 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    87,    87,    89,    89,    89,    90,    90,    91,    91,
-      91,    93,    93,   101,   102,   103,   105,   105,   105,   105,
-     106,   106,   107,   107,   109,   110,   112,   113,   114,   115,
-     116,   117,   118,   119,   122,   123,   125,   132,   133,   134,
-     135,   136,   138,   141,   142,   145,   146,   146,   147,   148,
-     151,   152,   153,   154,   155,   156,   157,   158,   159,   160,
-     161,   162,   164,   164,   166,   166,   166,   167,   167,   167
+       0,    84,    84,    86,    86,    86,    87,    87,    88,    88,
+      88,    90,    90,    98,    99,   100,   102,   102,   102,   102,
+     103,   103,   104,   104,   106,   107,   109,   110,   111,   112,
+     113,   114,   115,   116,   119,   120,   122,   129,   130,   131,
+     132,   133,   135,   138,   139,   142,   143,   143,   144,   145,
+     148,   149,   150,   151,   152,   153,   154,   155,   156,   157,
+     158,   159,   161,   161,   163,   163,   163,   164,   164,   164
 };
 #endif
 
@@ -1609,47 +1608,47 @@ yyreduce:
   switch (yyn)
     {
   case 11: /* ident: '@' TOK_IDENT  */
-#line 93 "tempus.y"
+#line 90 "tempus.y"
                             { printf("primed %s\n", (yyvsp[0].val_str)); string_stack.push_back((yyvsp[0].val_str)); }
-#line 1615 "tempus_yacc.c"
+#line 1614 "tempus_yacc.c"
     break;
 
   case 12: /* ident: TOK_IDENT  */
-#line 94 "tempus.y"
+#line 91 "tempus.y"
 {
   int y = 0;
   printf("ident %s\n", (yyvsp[0].val_str));
   string_stack.push_back((yyvsp[0].val_str));
   y++;
 }
-#line 1626 "tempus_yacc.c"
+#line 1625 "tempus_yacc.c"
     break;
 
   case 24: /* lhs_expr: atom_list  */
-#line 109 "tempus.y"
+#line 106 "tempus.y"
                         { printf("lhs_expr\n"); }
-#line 1632 "tempus_yacc.c"
+#line 1631 "tempus_yacc.c"
     break;
 
   case 36: /* assignment: lhs_expr OP_ASSIGN rhs_expr  */
-#line 125 "tempus.y"
+#line 122 "tempus.y"
                                                             {
   int x = 0;
   printf("Assignment %s\n", (yyvsp[-1].val_str));
   string_stack.push_back((yyvsp[-1].val_str));
   x++;
 }
-#line 1643 "tempus_yacc.c"
+#line 1642 "tempus_yacc.c"
     break;
 
   case 52: /* expr: assignment  */
-#line 153 "tempus.y"
+#line 150 "tempus.y"
                { printf("expr assignment\n"); }
-#line 1649 "tempus_yacc.c"
+#line 1648 "tempus_yacc.c"
     break;
 
 
-#line 1653 "tempus_yacc.c"
+#line 1652 "tempus_yacc.c"
 
       default: break;
     }
@@ -1878,7 +1877,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 169 "tempus.y"
+#line 166 "tempus.y"
 
 
 //------------------------------------------------------------------------------
