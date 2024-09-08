@@ -52,6 +52,20 @@ int test_parse(const char* source) {
 const char* sources[] = {
   "# foo  @x = 1; y : u32 = foo();",
 
+  "# prefix ++x",
+  "# suffix x++",
+  "# prefix --x",
+  "# suffix x--",
+  "# prefix !x",
+  "# suffix x!",
+
+  "# if1 if (x) {}",
+  "# if2 if (x) {} else {}",
+  "# if3 if (x) {} else if () {}",
+  "# if4 if (x) {} else if () {} else {}",
+  "# if5 if (x) {} else if () {} else if () {}",
+  "# if6 if (x) {} else if () {} else if () {} else {}",
+
   // why u no work
   //"# sign x = -y;",
 

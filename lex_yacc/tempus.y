@@ -28,6 +28,7 @@
 %token <val_str>   OP_TYPE
 %token <val_str>   OP_ASSIGN
 %token <val_str>   OP_BIN
+%token <val_str>   OP_AFFIX
 
 %token KW_IF
 %token KW_ELSE
@@ -44,7 +45,6 @@ section     : marker expr_block;
 
 marker      : '#' TOK_IDENT;
 
-prefix      : '-' | '+' | '!';
 const       : TOK_INT | TOK_FLOAT | TOK_STRING;
 
 ident       : '@' TOK_IDENT | TOK_IDENT;
@@ -56,13 +56,13 @@ bracks      : '[' expr_tuple ']';
 expr_atom   : ident | parens | braces | bracks;
 atom_link   : expr_atom | '.' expr_atom;
 atom_chain  : atom_link | atom_link atom_chain;
+affixed_chain : atom_chain | OP_AFFIX atom_chain | atom_chain OP_AFFIX;
 
 lhs_expr    : atom_chain;
 type_expr   : atom_chain;
 
-rhs_expr  : prefix    rhs_expr2 |       rhs_expr2;
-rhs_expr2 : atom_chain rhs_expr3 | const rhs_expr3;
-rhs_expr3 : OP_BIN    rhs_expr  | /**/;
+rhs_expr    : affixed_chain expr_tail | const expr_tail;
+expr_tail   : OP_BIN rhs_expr  | /**/;
 
 full_decl   : lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr;
 empty_decl  : lhs_expr OP_TYPE type_expr                   ;
@@ -75,12 +75,8 @@ bare_type   :          OP_TYPE type_expr                   ;
 bare_val    :                            OP_ASSIGN rhs_expr;
 bare_expr   :                                      rhs_expr;
 
-stmt_if     : KW_IF parens braces;
-
-stmt_ifelse
-  : KW_IF parens braces KW_ELSE braces
-  | KW_IF parens braces KW_ELSE stmt_if
-;
+stmt_if     : KW_IF parens braces | KW_IF parens braces else_chain;
+else_chain  : KW_ELSE braces | KW_ELSE stmt_if;
 
 stmt_case   : KW_CASE parens braces
 case_block  : stmt_case | stmt_case case_block;
@@ -97,7 +93,6 @@ expr
   | bare_val
   | bare_expr
   | stmt_if
-  | stmt_ifelse
   | stmt_match
   | stmt_for;
 

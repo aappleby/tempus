@@ -39,6 +39,9 @@ E           [Ee][+-]?{D}+
 "|="        { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 "="         { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 
+"++"        { yylval->val_str = strdup(yytext);       return(OP_AFFIX); }
+"--"        { yylval->val_str = strdup(yytext);       return(OP_AFFIX); }
+
 ">:"        { yylval->val_str = strdup(yytext);       return(OP_TYPE); }
 "<:"        { yylval->val_str = strdup(yytext);       return(OP_TYPE); }
 ":"         { yylval->val_str = strdup(yytext);       return(OP_TYPE); }
@@ -51,6 +54,8 @@ E           [Ee][+-]?{D}+
 ">="        { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 "=="        { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 "!="        { yylval->val_str = strdup(yytext);       return(OP_BIN); }
+
+"!"         { yylval->val_str = strdup(yytext);       return(OP_AFFIX); }
 
 "+"         { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 "-"         { yylval->val_str = strdup(yytext);       return(OP_BIN); }

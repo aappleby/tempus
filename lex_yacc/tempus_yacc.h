@@ -69,11 +69,12 @@ extern int tem_debug;
     OP_TYPE = 262,                 /* OP_TYPE  */
     OP_ASSIGN = 263,               /* OP_ASSIGN  */
     OP_BIN = 264,                  /* OP_BIN  */
-    KW_IF = 265,                   /* KW_IF  */
-    KW_ELSE = 266,                 /* KW_ELSE  */
-    KW_MATCH = 267,                /* KW_MATCH  */
-    KW_CASE = 268,                 /* KW_CASE  */
-    KW_FOR = 269                   /* KW_FOR  */
+    OP_AFFIX = 265,                /* OP_AFFIX  */
+    KW_IF = 266,                   /* KW_IF  */
+    KW_ELSE = 267,                 /* KW_ELSE  */
+    KW_MATCH = 268,                /* KW_MATCH  */
+    KW_CASE = 269,                 /* KW_CASE  */
+    KW_FOR = 270                   /* KW_FOR  */
   };
   typedef enum tem_tokentype tem_token_kind_t;
 #endif
@@ -89,7 +90,7 @@ union TEM_STYPE
   char*  val_str;
   sexpr* val_node;
 
-#line 93 "tempus_yacc.h"
+#line 94 "tempus_yacc.h"
 
 };
 typedef union TEM_STYPE TEM_STYPE;

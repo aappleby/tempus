@@ -7,7 +7,7 @@ echo "# Running lex"
 flex  --header-file=tempus_lex.h --outfile=tempus_lex.c tempus.l
 
 echo "# Running yacc"
-bison --report=all --header=tempus_yacc.h --output=tempus_yacc.c tempus.y
+bison -Wcounterexamples --report=all --header=tempus_yacc.h --output=tempus_yacc.c tempus.y
 
 echo "# Compiling lexer"
 g++ -Wall -O0 -g -c tempus_lex.c    -o tempus_lex.o
