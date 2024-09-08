@@ -7,57 +7,60 @@
 %locations
 
 %code requires{
-// ---------- BEGIN REQUIRES
-#define YYSTYPE         TEMSTYPE
-#define YYLTYPE         TEMLTYPE
 
+// #*#*#---------- BEGIN REQUIRES
+#define YYSTYPE TEMSTYPE
 union TEMSTYPE;
-struct TEMLTYPE;
 
-#ifndef FLEX_SCANNER
-#include "tempus_lex.h"
-#endif
-// ---------- END REQUIRES
+enum sexpr_type {
+  SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
+};
+
+struct sexpr
+{
+  sexpr_type type;
+  union
+  {
+    int   num;
+    char *id;
+  } value;
+  sexpr *left, *right;
+};
+
+// #*#*#---------- END REQUIRES
 }
 
 %code provides{
-// ---------- BEGIN PROVIDES
+// #*#*#---------- BEGIN PROVIDES
+
 #undef  YY_DECL
 #define YY_DECL int temlex (TEMSTYPE* yylval_param, TEMLTYPE* asdlfksj, yyscan_t yyscanner)
 
 int temlex  (TEMSTYPE*, TEMLTYPE*, yyscan_t);
 int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
-// ---------- END PROVIDES
+
+// #*#*#---------- END PROVIDES
 }
 
 //------------------------------------------------------------------------------
 
 %code top {
-  // --------- BEGIN TOP
-  #include <string>
-  #include <vector>
+// #*#*#--------- BEGIN TOP
 
-  extern std::vector<std::string> string_stack;
-  // --------- END TOP
-}
+// This goes at the top of tempus_yacc.c before any includes
+#include <string>
+#include <vector>
 
-//------------------------------------------------------------------------------
+#define YYSTYPE TEMSTYPE
+union TEMSTYPE;
 
-%code requires {
-	enum sexpr_type {
-		SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
-	};
+#ifndef FLEX_SCANNER
+#include "tempus_lex.h"
+#endif
 
-	struct sexpr
-	{
-		sexpr_type type;
-		union
-		{
-			int   num;
-			char *id;
-		} value;
-		sexpr *left, *right;
-	};
+extern std::vector<std::string> string_stack;
+
+// #*#*#--------- END TOP
 }
 
 //------------------------------------------------------------------------------

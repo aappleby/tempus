@@ -3,23 +3,14 @@
 %option prefix="tem"
 
 %{
-// ---------- BEGIN TOP
-#define YYSTYPE         TEMSTYPE
-#define YYLTYPE         TEMLTYPE
-
+// #*#*#---------- BEGIN TOP
+#define YYSTYPE TEMSTYPE
+union TEMSTYPE;
 #ifndef FLEX_SCANNER
 #include "tempus_lex.h"
 #endif
-
-#undef TEMSTYPE
-#undef TEMLTYPE
-
-
 #include "tempus_yacc.h"
-#include <stdio.h>
-
-
-// ---------- END TOP
+// #*#*#---------- END TOP
 %}
 
 D           [0-9]

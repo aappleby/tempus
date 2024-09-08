@@ -1,11 +1,10 @@
 #define YYSTYPE TEMSTYPE
-#define YYLTYPE TEMLTYPE
-
-struct TEMLTYPE;
 union TEMSTYPE;
+#ifndef FLEX_SCANNER
+#include "tempus_lex.h"
+#endif
 
 #include "tempus_yacc.h"
-#include "tempus_lex.h"
 
 #include <stdio.h>
 #include <vector>
