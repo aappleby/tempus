@@ -17,6 +17,24 @@ class tempusListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by tempusParser#prefix.
+    def enterPrefix(self, ctx:tempusParser.PrefixContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#prefix.
+    def exitPrefix(self, ctx:tempusParser.PrefixContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#const.
+    def enterConst(self, ctx:tempusParser.ConstContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#const.
+    def exitConst(self, ctx:tempusParser.ConstContext):
+        pass
+
+
     # Enter a parse tree produced by tempusParser#ident.
     def enterIdent(self, ctx:tempusParser.IdentContext):
         pass
@@ -26,30 +44,75 @@ class tempusListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by tempusParser#uninit_decl.
-    def enterUninit_decl(self, ctx:tempusParser.Uninit_declContext):
+    # Enter a parse tree produced by tempusParser#parens.
+    def enterParens(self, ctx:tempusParser.ParensContext):
         pass
 
-    # Exit a parse tree produced by tempusParser#uninit_decl.
-    def exitUninit_decl(self, ctx:tempusParser.Uninit_declContext):
-        pass
-
-
-    # Enter a parse tree produced by tempusParser#untyped_decl.
-    def enterUntyped_decl(self, ctx:tempusParser.Untyped_declContext):
-        pass
-
-    # Exit a parse tree produced by tempusParser#untyped_decl.
-    def exitUntyped_decl(self, ctx:tempusParser.Untyped_declContext):
+    # Exit a parse tree produced by tempusParser#parens.
+    def exitParens(self, ctx:tempusParser.ParensContext):
         pass
 
 
-    # Enter a parse tree produced by tempusParser#typed_expr.
-    def enterTyped_expr(self, ctx:tempusParser.Typed_exprContext):
+    # Enter a parse tree produced by tempusParser#braces.
+    def enterBraces(self, ctx:tempusParser.BracesContext):
         pass
 
-    # Exit a parse tree produced by tempusParser#typed_expr.
-    def exitTyped_expr(self, ctx:tempusParser.Typed_exprContext):
+    # Exit a parse tree produced by tempusParser#braces.
+    def exitBraces(self, ctx:tempusParser.BracesContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#bracks.
+    def enterBracks(self, ctx:tempusParser.BracksContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#bracks.
+    def exitBracks(self, ctx:tempusParser.BracksContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#expr_atom.
+    def enterExpr_atom(self, ctx:tempusParser.Expr_atomContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#expr_atom.
+    def exitExpr_atom(self, ctx:tempusParser.Expr_atomContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#atom_chain.
+    def enterAtom_chain(self, ctx:tempusParser.Atom_chainContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#atom_chain.
+    def exitAtom_chain(self, ctx:tempusParser.Atom_chainContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#lhs_expr.
+    def enterLhs_expr(self, ctx:tempusParser.Lhs_exprContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#lhs_expr.
+    def exitLhs_expr(self, ctx:tempusParser.Lhs_exprContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#type_expr.
+    def enterType_expr(self, ctx:tempusParser.Type_exprContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#type_expr.
+    def exitType_expr(self, ctx:tempusParser.Type_exprContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#rhs_expr.
+    def enterRhs_expr(self, ctx:tempusParser.Rhs_exprContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#rhs_expr.
+    def exitRhs_expr(self, ctx:tempusParser.Rhs_exprContext):
         pass
 
 
@@ -62,21 +125,102 @@ class tempusListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by tempusParser#constant.
-    def enterConstant(self, ctx:tempusParser.ConstantContext):
+    # Enter a parse tree produced by tempusParser#empty_decl.
+    def enterEmpty_decl(self, ctx:tempusParser.Empty_declContext):
         pass
 
-    # Exit a parse tree produced by tempusParser#constant.
-    def exitConstant(self, ctx:tempusParser.ConstantContext):
+    # Exit a parse tree produced by tempusParser#empty_decl.
+    def exitEmpty_decl(self, ctx:tempusParser.Empty_declContext):
         pass
 
 
-    # Enter a parse tree produced by tempusParser#atom.
-    def enterAtom(self, ctx:tempusParser.AtomContext):
+    # Enter a parse tree produced by tempusParser#assignment.
+    def enterAssignment(self, ctx:tempusParser.AssignmentContext):
         pass
 
-    # Exit a parse tree produced by tempusParser#atom.
-    def exitAtom(self, ctx:tempusParser.AtomContext):
+    # Exit a parse tree produced by tempusParser#assignment.
+    def exitAssignment(self, ctx:tempusParser.AssignmentContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#typed_val.
+    def enterTyped_val(self, ctx:tempusParser.Typed_valContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#typed_val.
+    def exitTyped_val(self, ctx:tempusParser.Typed_valContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#bare_name.
+    def enterBare_name(self, ctx:tempusParser.Bare_nameContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#bare_name.
+    def exitBare_name(self, ctx:tempusParser.Bare_nameContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#bare_type.
+    def enterBare_type(self, ctx:tempusParser.Bare_typeContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#bare_type.
+    def exitBare_type(self, ctx:tempusParser.Bare_typeContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#bare_val.
+    def enterBare_val(self, ctx:tempusParser.Bare_valContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#bare_val.
+    def exitBare_val(self, ctx:tempusParser.Bare_valContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#bare_expr.
+    def enterBare_expr(self, ctx:tempusParser.Bare_exprContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#bare_expr.
+    def exitBare_expr(self, ctx:tempusParser.Bare_exprContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#stmt_if.
+    def enterStmt_if(self, ctx:tempusParser.Stmt_ifContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#stmt_if.
+    def exitStmt_if(self, ctx:tempusParser.Stmt_ifContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#stmt_case.
+    def enterStmt_case(self, ctx:tempusParser.Stmt_caseContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#stmt_case.
+    def exitStmt_case(self, ctx:tempusParser.Stmt_caseContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#stmt_match.
+    def enterStmt_match(self, ctx:tempusParser.Stmt_matchContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#stmt_match.
+    def exitStmt_match(self, ctx:tempusParser.Stmt_matchContext):
+        pass
+
+
+    # Enter a parse tree produced by tempusParser#stmt_for.
+    def enterStmt_for(self, ctx:tempusParser.Stmt_forContext):
+        pass
+
+    # Exit a parse tree produced by tempusParser#stmt_for.
+    def exitStmt_for(self, ctx:tempusParser.Stmt_forContext):
         pass
 
 
@@ -89,75 +233,21 @@ class tempusListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by tempusParser#if_stmt.
-    def enterIf_stmt(self, ctx:tempusParser.If_stmtContext):
+    # Enter a parse tree produced by tempusParser#expr_block.
+    def enterExpr_block(self, ctx:tempusParser.Expr_blockContext):
         pass
 
-    # Exit a parse tree produced by tempusParser#if_stmt.
-    def exitIf_stmt(self, ctx:tempusParser.If_stmtContext):
-        pass
-
-
-    # Enter a parse tree produced by tempusParser#match_stmt.
-    def enterMatch_stmt(self, ctx:tempusParser.Match_stmtContext):
-        pass
-
-    # Exit a parse tree produced by tempusParser#match_stmt.
-    def exitMatch_stmt(self, ctx:tempusParser.Match_stmtContext):
+    # Exit a parse tree produced by tempusParser#expr_block.
+    def exitExpr_block(self, ctx:tempusParser.Expr_blockContext):
         pass
 
 
-    # Enter a parse tree produced by tempusParser#case_stmt.
-    def enterCase_stmt(self, ctx:tempusParser.Case_stmtContext):
+    # Enter a parse tree produced by tempusParser#expr_tuple.
+    def enterExpr_tuple(self, ctx:tempusParser.Expr_tupleContext):
         pass
 
-    # Exit a parse tree produced by tempusParser#case_stmt.
-    def exitCase_stmt(self, ctx:tempusParser.Case_stmtContext):
-        pass
-
-
-    # Enter a parse tree produced by tempusParser#stmt.
-    def enterStmt(self, ctx:tempusParser.StmtContext):
-        pass
-
-    # Exit a parse tree produced by tempusParser#stmt.
-    def exitStmt(self, ctx:tempusParser.StmtContext):
-        pass
-
-
-    # Enter a parse tree produced by tempusParser#stmt_list.
-    def enterStmt_list(self, ctx:tempusParser.Stmt_listContext):
-        pass
-
-    # Exit a parse tree produced by tempusParser#stmt_list.
-    def exitStmt_list(self, ctx:tempusParser.Stmt_listContext):
-        pass
-
-
-    # Enter a parse tree produced by tempusParser#paren_list.
-    def enterParen_list(self, ctx:tempusParser.Paren_listContext):
-        pass
-
-    # Exit a parse tree produced by tempusParser#paren_list.
-    def exitParen_list(self, ctx:tempusParser.Paren_listContext):
-        pass
-
-
-    # Enter a parse tree produced by tempusParser#brace_list.
-    def enterBrace_list(self, ctx:tempusParser.Brace_listContext):
-        pass
-
-    # Exit a parse tree produced by tempusParser#brace_list.
-    def exitBrace_list(self, ctx:tempusParser.Brace_listContext):
-        pass
-
-
-    # Enter a parse tree produced by tempusParser#brack_list.
-    def enterBrack_list(self, ctx:tempusParser.Brack_listContext):
-        pass
-
-    # Exit a parse tree produced by tempusParser#brack_list.
-    def exitBrack_list(self, ctx:tempusParser.Brack_listContext):
+    # Exit a parse tree produced by tempusParser#expr_tuple.
+    def exitExpr_tuple(self, ctx:tempusParser.Expr_tupleContext):
         pass
 
 

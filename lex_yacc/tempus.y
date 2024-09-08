@@ -42,16 +42,9 @@
 program     : expr_block;
 
 prefix      : '-' | '+' | '!';
-bin_op      : OP_BIN | prefix;
 const       : TOK_INT | TOK_FLOAT | TOK_STRING;
 
-ident       : '@' TOK_IDENT { printf("primed %s\n", $2); string_stack.push_back($2); } | TOK_IDENT
-{
-  int y = 0;
-  printf("ident %s\n", $1);
-  string_stack.push_back($1);
-  y++;
-};
+ident       : '@' TOK_IDENT | TOK_IDENT;
 
 parens      : '(' expr_tuple ')';
 braces      : '{' expr_block ')';
@@ -59,30 +52,19 @@ bracks      : '[' expr_tuple ']';
 
 expr_atom   : ident | parens | braces | bracks;
 atom_link   : expr_atom | '.' expr_atom;
-atom_list   : atom_link | atom_link atom_list;
+atom_chain  : atom_link | atom_link atom_chain;
 
-lhs_expr    : atom_list { printf("lhs_expr\n"); };
-type_expr   : atom_list;
-rhs_expr
-  : prefix atom_list bin_op rhs_expr
-  |        atom_list bin_op rhs_expr
-  | prefix const     bin_op rhs_expr
-  |        const     bin_op rhs_expr
-  | prefix atom_list
-  |        atom_list
-  | prefix const
-  |        const
-;
+lhs_expr    : atom_chain;
+type_expr   : atom_chain;
+
+rhs_expr  : prefix    rhs_expr2 |       rhs_expr2;
+rhs_expr2 : atom_chain rhs_expr3 | const rhs_expr3;
+rhs_expr3 : OP_BIN    rhs_expr  | /**/;
 
 full_decl   : lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr;
 empty_decl  : lhs_expr OP_TYPE type_expr                   ;
 
-assignment  : lhs_expr                   OP_ASSIGN rhs_expr {
-  int x = 0;
-  printf("Assignment %s\n", $2);
-  string_stack.push_back($2);
-  x++;
-}
+assignment  : lhs_expr                   OP_ASSIGN rhs_expr;
 
 typed_val   :          OP_TYPE type_expr OP_ASSIGN rhs_expr;
 bare_name   : lhs_expr OP_TYPE                             ;
@@ -105,7 +87,7 @@ stmt_for    : KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
 expr
   : full_decl
   | empty_decl
-  | assignment { printf("expr assignment\n"); }
+  | assignment
   | typed_val
   | bare_name
   | bare_type

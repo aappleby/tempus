@@ -20,63 +20,67 @@ KW_IF     : 'if' ;
 KW_ELSE   : 'else' ;
 KW_MATCH  : 'match' ;
 KW_CASE   : 'case' ;
+KW_FOR    : 'for' ;
 
-TYPE_OP   : (':' | '>:' | '<:') ;
-BINARY_OP : ('+' | '-' | '*' | '/' | '<' | '>' | '<<' | '>>' | '&' | '|' | '^') ;
-ASSIGN_OP : ('=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '^=' | '|=') ;
+OP_TYPE   : (':' | '>:' | '<:') ;
+OP_BIN    : ('+' | '-' | '*' | '/' | '<' | '>' | '<<' | '>>' | '&' | '|' | '^') ;
+OP_ASSIGN : ('=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '^=' | '|=') ;
 
-INT       : [+-]? [1-9][0-9]* ;
-FLOAT     : [+-]? [0-9]+ '.' [0-9]+ ([eE] [+-]? [0-9]+)? [fF]? ;
-STRING    : '"' ~["\\\r\n]* '"';
-IDENT     : [a-zA-Z_] [a-zA-Z0-9_]* ;
+TOK_INT       : [+-]? [1-9][0-9]* ;
+TOK_FLOAT     : [+-]? [0-9]+ '.' [0-9]+ ([eE] [+-]? [0-9]+)? [fF]? ;
+TOK_STRING    : '"' ~["\\\r\n]* '"';
+TOK_IDENT     : [a-zA-Z_] [a-zA-Z0-9_]* ;
 
 //------------------------------------------------------------------------------
 
-program:	(stmt ';')* ;
+program     : expr_block;
 
-ident        : '@'? '.'? IDENT ('.' IDENT)* ;
-//bare_ident   : ident ':' ;
-//bare_type    : ':' expr  ;
-//bare_value   : '(' '=' expr ')' ;
-uninit_decl  : ident TYPE_OP expr ;
-untyped_decl : ident ASSIGN_OP expr ;
-typed_expr   : TYPE_OP expr ASSIGN_OP expr ;
-full_decl    : ident TYPE_OP expr ASSIGN_OP expr ;
-constant     : INT | FLOAT | STRING ;
+prefix      : '-' | '+' | '!';
+const       : TOK_INT | TOK_FLOAT | TOK_STRING;
 
-atom
-  : full_decl
-  | uninit_decl
-  | untyped_decl
-  | typed_expr
-//  | '(' bare_type ')'
-//  | '(' bare_ident ')'
-//  | '(' '=' expr ')'
-  | ident
-  | constant
-  | paren_list
-  | brack_list
-  | brace_list
-;
+ident       : '@'? TOK_IDENT;
 
-expr  : atom+ (BINARY_OP atom+)* ;
+parens      : '(' expr_tuple? ')';
+braces      : '{' expr_block? ')';
+bracks      : '[' expr_tuple? ']';
 
-if_stmt
-  : KW_IF paren_list stmt 'else' stmt
-  | KW_IF paren_list stmt ;
+expr_atom   : ident | parens | braces | bracks;
+atom_chain  : ('.'? expr_atom)+;
 
-match_stmt : KW_MATCH paren_list brace_list;
-case_stmt  : KW_CASE paren_list brace_list;
+lhs_expr    : atom_chain;
+type_expr   : atom_chain;
 
-stmt : atom | if_stmt | match_stmt | case_stmt;
+rhs_expr    : prefix? (atom_chain | const) (OP_BIN rhs_expr)?;
 
-stmt_list
-  : stmt (',' stmt)*
-  | stmt (';' stmt)* ';'? ;
+full_decl   : lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr;
+empty_decl  : lhs_expr OP_TYPE type_expr                   ;
+assignment  : lhs_expr                   OP_ASSIGN rhs_expr;
+typed_val   :          OP_TYPE type_expr OP_ASSIGN rhs_expr;
+bare_name   : lhs_expr OP_TYPE                             ;
+bare_type   :          OP_TYPE type_expr                   ;
+bare_val    :                            OP_ASSIGN rhs_expr;
+bare_expr   :                                      rhs_expr;
 
-paren_list  : '(' stmt_list? ')' ;
-brace_list  : '{' stmt_list? '}' ;
-brack_list  : '[' stmt_list? ']' ;
+stmt_if     : KW_IF parens braces (KW_ELSE (braces | stmt_if))?;
+
+stmt_case   : KW_CASE parens braces;
+stmt_match  : KW_MATCH parens '{' stmt_case+ '}';
+stmt_for    : KW_FOR '(' expr? ';' expr? ';' expr? ')' braces;
+
+expr : full_decl
+  | empty_decl
+  | assignment
+  | typed_val
+  | bare_name
+  | bare_type
+  | bare_val
+  | bare_expr
+  | stmt_if
+  | stmt_match
+  | stmt_for;
+
+expr_block : expr (';' expr)*;
+expr_tuple : expr (',' expr)*;
 
 //------------------------------------------------------------------------------
 
