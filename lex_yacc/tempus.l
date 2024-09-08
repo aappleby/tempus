@@ -4,11 +4,6 @@
 
 %{
 // #*#*#---------- BEGIN TOP
-#define YYSTYPE TEMSTYPE
-union TEMSTYPE;
-#ifndef FLEX_SCANNER
-#include "tempus_lex.h"
-#endif
 #include "tempus_yacc.h"
 // #*#*#---------- END TOP
 %}

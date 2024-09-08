@@ -10,7 +10,12 @@
 
 // #*#*#---------- BEGIN REQUIRES
 #define YYSTYPE TEMSTYPE
+#define YYLTYPE TEMLTYPE
 union TEMSTYPE;
+struct TEMLTYPE;
+#ifndef FLEX_SCANNER
+#include "tempus_lex.h"
+#endif
 
 enum sexpr_type {
   SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
@@ -27,19 +32,13 @@ struct sexpr
   sexpr *left, *right;
 };
 
-// #*#*#---------- END REQUIRES
-}
-
-%code provides{
-// #*#*#---------- BEGIN PROVIDES
+int temlex  (TEMSTYPE*, TEMLTYPE*, yyscan_t);
+int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
 
 #undef  YY_DECL
 #define YY_DECL int temlex (TEMSTYPE* yylval_param, TEMLTYPE* asdlfksj, yyscan_t yyscanner)
 
-int temlex  (TEMSTYPE*, TEMLTYPE*, yyscan_t);
-int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
-
-// #*#*#---------- END PROVIDES
+// #*#*#---------- END REQUIRES
 }
 
 //------------------------------------------------------------------------------
@@ -50,14 +49,7 @@ int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
 // This goes at the top of tempus_yacc.c before any includes
 #include <string>
 #include <vector>
-
-#define YYSTYPE TEMSTYPE
-union TEMSTYPE;
-
-#ifndef FLEX_SCANNER
-#include "tempus_lex.h"
-#endif
-
+#include "tempus_yacc.h"
 extern std::vector<std::string> string_stack;
 
 // #*#*#--------- END TOP

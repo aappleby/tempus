@@ -58,7 +58,12 @@ extern int temdebug;
 
 // #*#*#---------- BEGIN REQUIRES
 #define YYSTYPE TEMSTYPE
+#define YYLTYPE TEMLTYPE
 union TEMSTYPE;
+struct TEMLTYPE;
+#ifndef FLEX_SCANNER
+#include "tempus_lex.h"
+#endif
 
 enum sexpr_type {
   SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
@@ -75,9 +80,15 @@ struct sexpr
   sexpr *left, *right;
 };
 
+int temlex  (TEMSTYPE*, TEMLTYPE*, yyscan_t);
+int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
+
+#undef  YY_DECL
+#define YY_DECL int temlex (TEMSTYPE* yylval_param, TEMLTYPE* asdlfksj, yyscan_t yyscanner)
+
 // #*#*#---------- END REQUIRES
 
-#line 81 "tempus_yacc.h"
+#line 92 "tempus_yacc.h"
 
 /* Token kinds.  */
 #ifndef TEMTOKENTYPE
@@ -108,14 +119,14 @@ struct sexpr
 #if ! defined TEMSTYPE && ! defined TEMSTYPE_IS_DECLARED
 union TEMSTYPE
 {
-#line 68 "tempus.y"
+#line 60 "tempus.y"
 
   int    val_int;
   double val_float;
   char*  val_str;
   sexpr* val_node;
 
-#line 119 "tempus_yacc.h"
+#line 130 "tempus_yacc.h"
 
 };
 typedef union TEMSTYPE TEMSTYPE;
@@ -142,19 +153,5 @@ struct TEMLTYPE
 
 int temparse (yyscan_t yyscanner, sexpr**  result);
 
-/* "%code provides" blocks.  */
-#line 33 "tempus.y"
-
-// #*#*#---------- BEGIN PROVIDES
-
-#undef  YY_DECL
-#define YY_DECL int temlex (TEMSTYPE* yylval_param, TEMLTYPE* asdlfksj, yyscan_t yyscanner)
-
-int temlex  (TEMSTYPE*, TEMLTYPE*, yyscan_t);
-int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
-
-// #*#*#---------- END PROVIDES
-
-#line 159 "tempus_yacc.h"
 
 #endif /* !YY_TEM_TEMPUS_YACC_H_INCLUDED  */
