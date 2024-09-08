@@ -1,12 +1,6 @@
-#define YYSTYPE TEMSTYPE
-#define YYLTYPE TEMLTYPE
-union TEMSTYPE;
-struct TEMLTYPE;
-#ifndef FLEX_SCANNER
-#include "tempus_lex.h"
-#endif
-
+#include "tempus_types.h" // must be before yacc/lex headers
 #include "tempus_yacc.h"
+#include "tempus_lex.h"
 
 #include <stdio.h>
 #include <vector>
@@ -16,7 +10,7 @@ std::vector<std::string> string_stack;
 
 //------------------------------------------------------------------------------
 
-int temerror (TEMLTYPE*, yyscan_t yyscanner, sexpr**  result, const char *msg) {
+int tem_error (TEM_LTYPE*, yyscan_t yyscanner, sexpr**  result, const char *msg) {
 	fprintf(stderr, "--> %s\n", msg);
   return 0;
 }
@@ -53,7 +47,7 @@ int main(int argc, char** argv) {
 
   YY_BUFFER_STATE buffer = tem_scan_string(source, scanner);
   sexpr* result = nullptr;
-  temparse(scanner, &result);
+  tem_parse(scanner, &result);
 
   tem_delete_buffer(buffer, scanner);
   temlex_destroy(scanner);

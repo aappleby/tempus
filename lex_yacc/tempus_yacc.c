@@ -63,29 +63,22 @@
 /* Pull parsers.  */
 #define YYPULL 1
 
-/* "%code top" blocks.  */
-#line 44 "tempus.y"
-
-// #*#*#--------- BEGIN YACC TOP
-
-// This goes at the top of tempus_yacc.c before any includes
-#include <string>
-#include <vector>
-extern std::vector<std::string> string_stack;
-
-// #*#*#--------- END YACC TOP
-
-#line 79 "tempus_yacc.c"
 /* Substitute the type names.  */
-#define YYSTYPE         TEMSTYPE
-#define YYLTYPE         TEMLTYPE
+#define YYSTYPE         TEM_STYPE
+#define YYLTYPE         TEM_LTYPE
 /* Substitute the variable and function names.  */
-#define yyparse         temparse
-#define yylex           temlex
-#define yyerror         temerror
-#define yydebug         temdebug
-#define yynerrs         temnerrs
+#define yyparse         tem_parse
+#define yylex           tem_lex
+#define yyerror         tem_error
+#define yydebug         tem_debug
+#define yynerrs         tem_nerrs
 
+/* First part of user prologue.  */
+#line 9 "tempus.y"
+
+#include "tempus_types.h"
+
+#line 82 "tempus_yacc.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -440,8 +433,8 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 
 #if (! defined yyoverflow \
      && (! defined __cplusplus \
-         || (defined TEMLTYPE_IS_TRIVIAL && TEMLTYPE_IS_TRIVIAL \
-             && defined TEMSTYPE_IS_TRIVIAL && TEMSTYPE_IS_TRIVIAL)))
+         || (defined TEM_LTYPE_IS_TRIVIAL && TEM_LTYPE_IS_TRIVIAL \
+             && defined TEM_STYPE_IS_TRIVIAL && TEM_STYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
@@ -559,17 +552,17 @@ static const yytype_int8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14
 };
 
-#if TEMDEBUG
+#if TEM_DEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_int8 yyrline[] =
 {
-       0,    84,    84,    86,    86,    86,    87,    87,    88,    88,
-      88,    90,    90,    98,    99,   100,   102,   102,   102,   102,
-     103,   103,   104,   104,   106,   107,   109,   110,   111,   112,
-     113,   114,   115,   116,   119,   120,   122,   129,   130,   131,
-     132,   133,   135,   138,   139,   142,   143,   143,   144,   145,
-     148,   149,   150,   151,   152,   153,   154,   155,   156,   157,
-     158,   159,   161,   161,   163,   163,   163,   164,   164,   164
+       0,    42,    42,    44,    44,    44,    45,    45,    46,    46,
+      46,    48,    48,    56,    57,    58,    60,    60,    60,    60,
+      61,    61,    62,    62,    64,    65,    67,    68,    69,    70,
+      71,    72,    73,    74,    77,    78,    80,    87,    88,    89,
+      90,    91,    93,    96,    97,   100,   101,   101,   102,   103,
+     106,   107,   108,   109,   110,   111,   112,   113,   114,   115,
+     116,   117,   119,   119,   121,   121,   121,   122,   122,   122
 };
 #endif
 
@@ -755,7 +748,7 @@ static const yytype_int8 yyr2[] =
 enum { YYENOMEM = -2 };
 
 #define yyerrok         (yyerrstatus = 0)
-#define yyclearin       (yychar = TEMEMPTY)
+#define yyclearin       (yychar = TEM_EMPTY)
 
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
@@ -767,7 +760,7 @@ enum { YYENOMEM = -2 };
 
 #define YYBACKUP(Token, Value)                                    \
   do                                                              \
-    if (yychar == TEMEMPTY)                                        \
+    if (yychar == TEM_EMPTY)                                        \
       {                                                           \
         yychar = (Token);                                         \
         yylval = (Value);                                         \
@@ -783,8 +776,8 @@ enum { YYENOMEM = -2 };
   while (0)
 
 /* Backward compatibility with an undocumented macro.
-   Use TEMerror or TEMUNDEF. */
-#define YYERRCODE TEMUNDEF
+   Use TEM_error or TEM_UNDEF. */
+#define YYERRCODE TEM_UNDEF
 
 /* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
    If N is 0, then set CURRENT to the empty location which ends
@@ -814,7 +807,7 @@ enum { YYENOMEM = -2 };
 
 
 /* Enable debugging if requested.  */
-#if TEMDEBUG
+#if TEM_DEBUG
 
 # ifndef YYFPRINTF
 #  include <stdio.h> /* INFRINGES ON USER NAME SPACE */
@@ -840,7 +833,7 @@ do {                                            \
       undocumented and private YY_LOCATION_PRINT macros.  */
 #   define YYLOCATION_PRINT(File, Loc)  YY_LOCATION_PRINT(File, *(Loc))
 
-#  elif defined TEMLTYPE_IS_TRIVIAL && TEMLTYPE_IS_TRIVIAL
+#  elif defined TEM_LTYPE_IS_TRIVIAL && TEM_LTYPE_IS_TRIVIAL
 
 /* Print *YYLOCP on YYO.  Private, do not rely on its existence. */
 
@@ -995,12 +988,12 @@ do {                                    \
 /* Nonzero means print parse trace.  It is left uninitialized so that
    multiple parsers can coexist.  */
 int yydebug;
-#else /* !TEMDEBUG */
+#else /* !TEM_DEBUG */
 # define YYDPRINTF(Args) ((void) 0)
 # define YY_SYMBOL_PRINT(Title, Kind, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
-#endif /* !TEMDEBUG */
+#endif /* !TEM_DEBUG */
 
 
 /* YYINITDEPTH -- initial size of the parser's stacks.  */
@@ -1337,7 +1330,7 @@ YYSTYPE yylval YY_INITIAL_VALUE (= yyval_default);
 
 /* Location data for the lookahead symbol.  */
 static YYLTYPE yyloc_default
-# if defined TEMLTYPE_IS_TRIVIAL && TEMLTYPE_IS_TRIVIAL
+# if defined TEM_LTYPE_IS_TRIVIAL && TEM_LTYPE_IS_TRIVIAL
   = { 1, 1, 1, 1 }
 # endif
 ;
@@ -1397,7 +1390,7 @@ YYLTYPE yylloc = yyloc_default;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
-  yychar = TEMEMPTY; /* Cause a token to be read.  */
+  yychar = TEM_EMPTY; /* Cause a token to be read.  */
 
   yylsp[0] = yylloc;
   goto yysetstate;
@@ -1513,25 +1506,25 @@ yybackup:
   /* Not known => get a lookahead token if don't already have one.  */
 
   /* YYCHAR is either empty, or end-of-input, or a valid lookahead.  */
-  if (yychar == TEMEMPTY)
+  if (yychar == TEM_EMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token\n"));
       yychar = yylex (&yylval, &yylloc, yyscanner);
     }
 
-  if (yychar <= TEMEOF)
+  if (yychar <= TEM_EOF)
     {
-      yychar = TEMEOF;
+      yychar = TEM_EOF;
       yytoken = YYSYMBOL_YYEOF;
       YYDPRINTF ((stderr, "Now at end of input.\n"));
     }
-  else if (yychar == TEMerror)
+  else if (yychar == TEM_error)
     {
       /* The scanner already issued an error message, process directly
          to error recovery.  But do not keep the error token as
          lookahead, it is too special and may lead us to an endless
          loop in error recovery. */
-      yychar = TEMUNDEF;
+      yychar = TEM_UNDEF;
       yytoken = YYSYMBOL_YYerror;
       yyerror_range[1] = yylloc;
       goto yyerrlab1;
@@ -1570,7 +1563,7 @@ yybackup:
   *++yylsp = yylloc;
 
   /* Discard the shifted token.  */
-  yychar = TEMEMPTY;
+  yychar = TEM_EMPTY;
   goto yynewstate;
 
 
@@ -1608,47 +1601,47 @@ yyreduce:
   switch (yyn)
     {
   case 11: /* ident: '@' TOK_IDENT  */
-#line 90 "tempus.y"
+#line 48 "tempus.y"
                             { printf("primed %s\n", (yyvsp[0].val_str)); string_stack.push_back((yyvsp[0].val_str)); }
-#line 1614 "tempus_yacc.c"
+#line 1607 "tempus_yacc.c"
     break;
 
   case 12: /* ident: TOK_IDENT  */
-#line 91 "tempus.y"
+#line 49 "tempus.y"
 {
   int y = 0;
   printf("ident %s\n", (yyvsp[0].val_str));
   string_stack.push_back((yyvsp[0].val_str));
   y++;
 }
-#line 1625 "tempus_yacc.c"
+#line 1618 "tempus_yacc.c"
     break;
 
   case 24: /* lhs_expr: atom_list  */
-#line 106 "tempus.y"
+#line 64 "tempus.y"
                         { printf("lhs_expr\n"); }
-#line 1631 "tempus_yacc.c"
+#line 1624 "tempus_yacc.c"
     break;
 
   case 36: /* assignment: lhs_expr OP_ASSIGN rhs_expr  */
-#line 122 "tempus.y"
+#line 80 "tempus.y"
                                                             {
   int x = 0;
   printf("Assignment %s\n", (yyvsp[-1].val_str));
   string_stack.push_back((yyvsp[-1].val_str));
   x++;
 }
-#line 1642 "tempus_yacc.c"
+#line 1635 "tempus_yacc.c"
     break;
 
   case 52: /* expr: assignment  */
-#line 150 "tempus.y"
+#line 108 "tempus.y"
                { printf("expr assignment\n"); }
-#line 1648 "tempus_yacc.c"
+#line 1641 "tempus_yacc.c"
     break;
 
 
-#line 1652 "tempus_yacc.c"
+#line 1645 "tempus_yacc.c"
 
       default: break;
     }
@@ -1691,7 +1684,7 @@ yyreduce:
 yyerrlab:
   /* Make sure we have latest lookahead translation.  See comments at
      user semantic actions for why this is necessary.  */
-  yytoken = yychar == TEMEMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
+  yytoken = yychar == TEM_EMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
@@ -1735,17 +1728,17 @@ yyerrlab:
       /* If just tried and failed to reuse lookahead token after an
          error, discard it.  */
 
-      if (yychar <= TEMEOF)
+      if (yychar <= TEM_EOF)
         {
           /* Return failure if at end of input.  */
-          if (yychar == TEMEOF)
+          if (yychar == TEM_EOF)
             YYABORT;
         }
       else
         {
           yydestruct ("Error: discarding",
                       yytoken, &yylval, &yylloc, yyscanner, result);
-          yychar = TEMEMPTY;
+          yychar = TEM_EMPTY;
         }
     }
 
@@ -1850,7 +1843,7 @@ yyexhaustedlab:
 | yyreturnlab -- parsing is finished, clean up and return.  |
 `----------------------------------------------------------*/
 yyreturnlab:
-  if (yychar != TEMEMPTY)
+  if (yychar != TEM_EMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at
          user semantic actions for why this is necessary.  */
@@ -1877,7 +1870,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 166 "tempus.y"
+#line 124 "tempus.y"
 
 
 //------------------------------------------------------------------------------

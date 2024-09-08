@@ -1,56 +1,14 @@
 %define api.pure    full
-%define api.prefix  {tem}
+%define api.prefix  {tem_}
 %parse-param {yyscan_t yyscanner}
 %lex-param   {yyscan_t yyscanner}
 %parse-param {sexpr**  result}
 %define parse.error verbose
 %locations
 
-%code requires{
-
-// #*#*#---------- BEGIN REQUIRES
-#define YYSTYPE TEMSTYPE
-#define YYLTYPE TEMLTYPE
-union TEMSTYPE;
-struct TEMLTYPE;
-typedef void* yyscan_t;
-
-enum sexpr_type {
-  SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
-};
-
-struct sexpr
-{
-  sexpr_type type;
-  union
-  {
-    int   num;
-    char *id;
-  } value;
-  sexpr *left, *right;
-};
-
-int temlex  (TEMSTYPE*, TEMLTYPE*, yyscan_t);
-int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
-
-#undef  YY_DECL
-#define YY_DECL int temlex (TEMSTYPE* yylval_param, TEMLTYPE* asdlfksj, yyscan_t yyscanner)
-
-// #*#*#---------- END REQUIRES
-}
-
-//------------------------------------------------------------------------------
-
-%code top {
-// #*#*#--------- BEGIN YACC TOP
-
-// This goes at the top of tempus_yacc.c before any includes
-#include <string>
-#include <vector>
-extern std::vector<std::string> string_stack;
-
-// #*#*#--------- END YACC TOP
-}
+%{
+#include "tempus_types.h"
+%}
 
 //------------------------------------------------------------------------------
 

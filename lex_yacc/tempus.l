@@ -3,9 +3,8 @@
 %option prefix="tem"
 
 %{
-// #*#*#---------- BEGIN TOP
+#include "tempus_types.h"
 #include "tempus_yacc.h"
-// #*#*#---------- END TOP
 %}
 
 D           [0-9]

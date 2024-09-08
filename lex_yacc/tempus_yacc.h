@@ -38,65 +38,30 @@
 #ifndef YY_TEM_TEMPUS_YACC_H_INCLUDED
 # define YY_TEM_TEMPUS_YACC_H_INCLUDED
 /* Debug traces.  */
-#ifndef TEMDEBUG
+#ifndef TEM_DEBUG
 # if defined YYDEBUG
 #if YYDEBUG
-#   define TEMDEBUG 1
+#   define TEM_DEBUG 1
 #  else
-#   define TEMDEBUG 0
+#   define TEM_DEBUG 0
 #  endif
 # else /* ! defined YYDEBUG */
-#  define TEMDEBUG 0
+#  define TEM_DEBUG 0
 # endif /* ! defined YYDEBUG */
-#endif  /* ! defined TEMDEBUG */
-#if TEMDEBUG
-extern int temdebug;
+#endif  /* ! defined TEM_DEBUG */
+#if TEM_DEBUG
+extern int tem_debug;
 #endif
-/* "%code requires" blocks.  */
-#line 9 "tempus.y"
-
-
-// #*#*#---------- BEGIN REQUIRES
-#define YYSTYPE TEMSTYPE
-#define YYLTYPE TEMLTYPE
-union TEMSTYPE;
-struct TEMLTYPE;
-typedef void* yyscan_t;
-
-enum sexpr_type {
-  SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
-};
-
-struct sexpr
-{
-  sexpr_type type;
-  union
-  {
-    int   num;
-    char *id;
-  } value;
-  sexpr *left, *right;
-};
-
-int temlex  (TEMSTYPE*, TEMLTYPE*, yyscan_t);
-int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
-
-#undef  YY_DECL
-#define YY_DECL int temlex (TEMSTYPE* yylval_param, TEMLTYPE* asdlfksj, yyscan_t yyscanner)
-
-// #*#*#---------- END REQUIRES
-
-#line 90 "tempus_yacc.h"
 
 /* Token kinds.  */
-#ifndef TEMTOKENTYPE
-# define TEMTOKENTYPE
-  enum temtokentype
+#ifndef TEM_TOKENTYPE
+# define TEM_TOKENTYPE
+  enum tem_tokentype
   {
-    TEMEMPTY = -2,
-    TEMEOF = 0,                    /* "end of file"  */
-    TEMerror = 256,                /* error  */
-    TEMUNDEF = 257,                /* "invalid token"  */
+    TEM_EMPTY = -2,
+    TEM_EOF = 0,                   /* "end of file"  */
+    TEM_error = 256,               /* error  */
+    TEM_UNDEF = 257,               /* "invalid token"  */
     TOK_IDENT = 258,               /* TOK_IDENT  */
     TOK_INT = 259,                 /* TOK_INT  */
     TOK_FLOAT = 260,               /* TOK_FLOAT  */
@@ -110,46 +75,46 @@ int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
     KW_CASE = 268,                 /* KW_CASE  */
     KW_FOR = 269                   /* KW_FOR  */
   };
-  typedef enum temtokentype temtoken_kind_t;
+  typedef enum tem_tokentype tem_token_kind_t;
 #endif
 
 /* Value type.  */
-#if ! defined TEMSTYPE && ! defined TEMSTYPE_IS_DECLARED
-union TEMSTYPE
+#if ! defined TEM_STYPE && ! defined TEM_STYPE_IS_DECLARED
+union TEM_STYPE
 {
-#line 57 "tempus.y"
+#line 15 "tempus.y"
 
   int    val_int;
   double val_float;
   char*  val_str;
   sexpr* val_node;
 
-#line 128 "tempus_yacc.h"
+#line 93 "tempus_yacc.h"
 
 };
-typedef union TEMSTYPE TEMSTYPE;
-# define TEMSTYPE_IS_TRIVIAL 1
-# define TEMSTYPE_IS_DECLARED 1
+typedef union TEM_STYPE TEM_STYPE;
+# define TEM_STYPE_IS_TRIVIAL 1
+# define TEM_STYPE_IS_DECLARED 1
 #endif
 
 /* Location type.  */
-#if ! defined TEMLTYPE && ! defined TEMLTYPE_IS_DECLARED
-typedef struct TEMLTYPE TEMLTYPE;
-struct TEMLTYPE
+#if ! defined TEM_LTYPE && ! defined TEM_LTYPE_IS_DECLARED
+typedef struct TEM_LTYPE TEM_LTYPE;
+struct TEM_LTYPE
 {
   int first_line;
   int first_column;
   int last_line;
   int last_column;
 };
-# define TEMLTYPE_IS_DECLARED 1
-# define TEMLTYPE_IS_TRIVIAL 1
+# define TEM_LTYPE_IS_DECLARED 1
+# define TEM_LTYPE_IS_TRIVIAL 1
 #endif
 
 
 
 
-int temparse (yyscan_t yyscanner, sexpr**  result);
+int tem_parse (yyscan_t yyscanner, sexpr**  result);
 
 
 #endif /* !YY_TEM_TEMPUS_YACC_H_INCLUDED  */
