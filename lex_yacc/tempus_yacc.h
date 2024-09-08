@@ -35,17 +35,33 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_TEMPUS_YACC_H_INCLUDED
-# define YY_YY_TEMPUS_YACC_H_INCLUDED
+#ifndef YY_TEM_TEMPUS_YACC_H_INCLUDED
+# define YY_TEM_TEMPUS_YACC_H_INCLUDED
 /* Debug traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
+#ifndef TEMDEBUG
+# if defined YYDEBUG
 #if YYDEBUG
-extern int yydebug;
+#   define TEMDEBUG 1
+#  else
+#   define TEMDEBUG 0
+#  endif
+# else /* ! defined YYDEBUG */
+#  define TEMDEBUG 0
+# endif /* ! defined YYDEBUG */
+#endif  /* ! defined TEMDEBUG */
+#if TEMDEBUG
+extern int temdebug;
 #endif
 /* "%code requires" blocks.  */
-#line 19 "tempus.y"
+#line 8 "tempus.y"
+
+// ---------- BEGIN REQUIRES
+#ifndef FLEX_SCANNER
+#include "tempus_lex.h"
+#endif
+#include "tempus_yacc.h"
+// ---------- END REQUIRES
+#line 38 "tempus.y"
 
 	enum sexpr_type {
 		SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
@@ -62,17 +78,17 @@ extern int yydebug;
 		sexpr *left, *right;
 	};
 
-#line 66 "tempus_yacc.h"
+#line 82 "tempus_yacc.h"
 
 /* Token kinds.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-  enum yytokentype
+#ifndef TEMTOKENTYPE
+# define TEMTOKENTYPE
+  enum temtokentype
   {
-    YYEMPTY = -2,
-    YYEOF = 0,                     /* "end of file"  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
+    TEMEMPTY = -2,
+    TEMEOF = 0,                    /* "end of file"  */
+    TEMerror = 256,                /* error  */
+    TEMUNDEF = 257,                /* "invalid token"  */
     TOK_IDENT = 258,               /* TOK_IDENT  */
     TOK_INT = 259,                 /* TOK_INT  */
     TOK_FLOAT = 260,               /* TOK_FLOAT  */
@@ -86,32 +102,44 @@ extern int yydebug;
     KW_CASE = 268,                 /* KW_CASE  */
     KW_FOR = 269                   /* KW_FOR  */
   };
-  typedef enum yytokentype yytoken_kind_t;
+  typedef enum temtokentype temtoken_kind_t;
 #endif
 
 /* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
+#if ! defined TEMSTYPE && ! defined TEMSTYPE_IS_DECLARED
+union TEMSTYPE
 {
-#line 38 "tempus.y"
+#line 57 "tempus.y"
 
   int    val_int;
   double val_float;
   char*  val_str;
   sexpr* val_node;
 
-#line 104 "tempus_yacc.h"
+#line 120 "tempus_yacc.h"
 
 };
-typedef union YYSTYPE YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
+typedef union TEMSTYPE TEMSTYPE;
+# define TEMSTYPE_IS_TRIVIAL 1
+# define TEMSTYPE_IS_DECLARED 1
 #endif
 
 
 
 
-int yyparse (void *scanner, sexpr** result);
+int temparse (yyscan_t yyscanner, sexpr**  result);
 
+/* "%code provides" blocks.  */
+#line 17 "tempus.y"
 
-#endif /* !YY_YY_TEMPUS_YACC_H_INCLUDED  */
+// ---------- BEGIN PROVIDES
+#undef  YY_DECL
+#define YY_DECL int temlex (TEMSTYPE* yylval, yyscan_t yyscanner)
+
+int temlex  (TEMSTYPE* yylval, yyscan_t yyscanner);
+int temerror(yyscan_t yyscanner, sexpr**  result, const char* message);
+// ---------- END PROVIDES
+
+#line 144 "tempus_yacc.h"
+
+#endif /* !YY_TEM_TEMPUS_YACC_H_INCLUDED  */

@@ -1,13 +1,32 @@
 %define api.pure    full
-//%define api.prefix  {tem}
+%define api.prefix  {tem}
+%parse-param {yyscan_t yyscanner}
+%lex-param   {yyscan_t yyscanner}
+%parse-param {sexpr**  result}
 %define parse.error verbose
+
+%code requires{
+// ---------- BEGIN REQUIRES
+#ifndef FLEX_SCANNER
+#include "tempus_lex.h"
+#endif
+#include "tempus_yacc.h"
+// ---------- END REQUIRES
+}
+
+%code provides{
+// ---------- BEGIN PROVIDES
+#undef  YY_DECL
+#define YY_DECL int temlex (TEMSTYPE* yylval, yyscan_t yyscanner)
+
+int temlex  (TEMSTYPE* yylval, yyscan_t yyscanner);
+int temerror(yyscan_t yyscanner, sexpr**  result, const char* message);
+// ---------- END PROVIDES
+}
 
 //------------------------------------------------------------------------------
 
 %code top {
-  #include "tempus_yacc.h"
-  #include "tempus_lex.h"
-
   #include <string>
   #include <vector>
 
@@ -40,16 +59,6 @@
   double val_float;
   char*  val_str;
   sexpr* val_node;
-}
-
-%param       {void *scanner}
-%parse-param {sexpr** result}
-
-//------------------------------------------------------------------------------
-
-%code {
-	int yyerror(void *foo, const void *s, char const *msg);
-	int yylex(void *lval, const void *s);
 }
 
 //------------------------------------------------------------------------------

@@ -9,8 +9,9 @@ std::vector<std::string> string_stack;
 
 //------------------------------------------------------------------------------
 
-void yyerror (yyscan_t locp, void const* result, char const *msg) {
+int temerror (yyscan_t yyscanner, sexpr**  result, const char *msg) {
 	fprintf(stderr, "--> %s\n", msg);
+  return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -36,19 +37,19 @@ int main(int argc, char** argv) {
   printf("Hello World %d %p\n", argc, argv);
 
   yyscan_t scanner;
-  yylex_init(&scanner);
+  temlex_init(&scanner);
 
   const char* source = R"(
   @x = 1;
   y : u32 = foo();
   )";
 
-  YY_BUFFER_STATE buffer = yy_scan_string(source, scanner);
+  YY_BUFFER_STATE buffer = tem_scan_string(source, scanner);
   sexpr* result = nullptr;
-  yyparse(scanner, &result);
+  temparse(scanner, &result);
 
-  yy_delete_buffer(buffer, scanner);
-  yylex_destroy(scanner);
+  tem_delete_buffer(buffer, scanner);
+  temlex_destroy(scanner);
 
   for (auto& s : string_stack) {
     printf("string stack %s\n", s.c_str());

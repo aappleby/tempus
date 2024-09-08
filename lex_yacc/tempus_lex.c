@@ -14,16 +14,214 @@
 #define FLEX_BETA
 #endif
 
-#ifdef yyget_lval
-#define yyget_lval_ALREADY_DEFINED
+#ifdef yy_create_buffer
+#define tem_create_buffer_ALREADY_DEFINED
 #else
-#define yyget_lval yyget_lval
+#define yy_create_buffer tem_create_buffer
 #endif
 
-#ifdef yyset_lval
-#define yyset_lval_ALREADY_DEFINED
+#ifdef yy_delete_buffer
+#define tem_delete_buffer_ALREADY_DEFINED
 #else
-#define yyset_lval yyset_lval
+#define yy_delete_buffer tem_delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define tem_scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer tem_scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define tem_scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string tem_scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define tem_scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes tem_scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define tem_init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer tem_init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define tem_flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer tem_flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define tem_load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state tem_load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define tem_switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer tem_switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define tempush_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state tempush_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define tempop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state tempop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define temensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack temensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define temlex_ALREADY_DEFINED
+#else
+#define yylex temlex
+#endif
+
+#ifdef yyrestart
+#define temrestart_ALREADY_DEFINED
+#else
+#define yyrestart temrestart
+#endif
+
+#ifdef yylex_init
+#define temlex_init_ALREADY_DEFINED
+#else
+#define yylex_init temlex_init
+#endif
+
+#ifdef yylex_init_extra
+#define temlex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra temlex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define temlex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy temlex_destroy
+#endif
+
+#ifdef yyget_debug
+#define temget_debug_ALREADY_DEFINED
+#else
+#define yyget_debug temget_debug
+#endif
+
+#ifdef yyset_debug
+#define temset_debug_ALREADY_DEFINED
+#else
+#define yyset_debug temset_debug
+#endif
+
+#ifdef yyget_extra
+#define temget_extra_ALREADY_DEFINED
+#else
+#define yyget_extra temget_extra
+#endif
+
+#ifdef yyset_extra
+#define temset_extra_ALREADY_DEFINED
+#else
+#define yyset_extra temset_extra
+#endif
+
+#ifdef yyget_in
+#define temget_in_ALREADY_DEFINED
+#else
+#define yyget_in temget_in
+#endif
+
+#ifdef yyset_in
+#define temset_in_ALREADY_DEFINED
+#else
+#define yyset_in temset_in
+#endif
+
+#ifdef yyget_out
+#define temget_out_ALREADY_DEFINED
+#else
+#define yyget_out temget_out
+#endif
+
+#ifdef yyset_out
+#define temset_out_ALREADY_DEFINED
+#else
+#define yyset_out temset_out
+#endif
+
+#ifdef yyget_leng
+#define temget_leng_ALREADY_DEFINED
+#else
+#define yyget_leng temget_leng
+#endif
+
+#ifdef yyget_text
+#define temget_text_ALREADY_DEFINED
+#else
+#define yyget_text temget_text
+#endif
+
+#ifdef yyget_lineno
+#define temget_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno temget_lineno
+#endif
+
+#ifdef yyset_lineno
+#define temset_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno temset_lineno
+#endif
+
+#ifdef yyget_column
+#define temget_column_ALREADY_DEFINED
+#else
+#define yyget_column temget_column
+#endif
+
+#ifdef yyset_column
+#define temset_column_ALREADY_DEFINED
+#else
+#define yyset_column temset_column
+#endif
+
+#ifdef yywrap
+#define temwrap_ALREADY_DEFINED
+#else
+#define yywrap temwrap
+#endif
+
+#ifdef yyalloc
+#define temalloc_ALREADY_DEFINED
+#else
+#define yyalloc temalloc
+#endif
+
+#ifdef yyrealloc
+#define temrealloc_ALREADY_DEFINED
+#else
+#define yyrealloc temrealloc
+#endif
+
+#ifdef yyfree
+#define temfree_ALREADY_DEFINED
+#else
+#define yyfree temfree
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -329,7 +527,7 @@ void yyfree ( void * , yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define yywrap(yyscanner) (/*CONSTCOND*/1)
+#define temwrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 typedef flex_uint8_t YY_CHAR;
 
@@ -488,12 +686,16 @@ static const flex_int16_t yy_chk[161] =
 #line 1 "tempus.l"
 #define YY_NO_INPUT 1
 /*%option noyyalloc noyyrealloc noyyfree*/
-/*%option prefix="tem"*/
 #line 6 "tempus.l"
-#include <stdio.h>
+// ---------- BEGIN TOP
+#ifndef FLEX_SCANNER
+#include "tempus_lex.h"
+#endif
 #include "tempus_yacc.h"
-#line 496 "tempus_lex.c"
-#line 497 "tempus_lex.c"
+#include <stdio.h>
+// ---------- END TOP
+#line 698 "tempus_lex.c"
+#line 699 "tempus_lex.c"
 
 #define INITIAL 0
 
@@ -541,16 +743,10 @@ struct yyguts_t
     int yy_more_flag;
     int yy_more_len;
 
-    YYSTYPE * yylval_r;
-
     }; /* end struct yyguts_t */
 
 static int yy_init_globals ( yyscan_t yyscanner );
 
-    /* This must go here because YYSTYPE and YYLTYPE are included
-     * from bison output in section 1.*/
-    #    define yylval yyg->yylval_r
-    
 int yylex_init (yyscan_t* scanner);
 
 int yylex_init_extra ( YY_EXTRA_TYPE user_defined, yyscan_t* scanner);
@@ -587,10 +783,6 @@ void yyset_lineno ( int _line_number , yyscan_t yyscanner );
 int yyget_column  ( yyscan_t yyscanner );
 
 void yyset_column ( int _column_no , yyscan_t yyscanner );
-
-YYSTYPE * yyget_lval ( yyscan_t yyscanner );
-
-void yyset_lval ( YYSTYPE * yylval_param , yyscan_t yyscanner );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -705,11 +897,9 @@ static int input ( yyscan_t yyscanner );
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int yylex \
-               (YYSTYPE * yylval_param , yyscan_t yyscanner);
+extern int yylex (yyscan_t yyscanner);
 
-#define YY_DECL int yylex \
-               (YYSTYPE * yylval_param , yyscan_t yyscanner)
+#define YY_DECL int yylex (yyscan_t yyscanner)
 #endif /* !YY_DECL */
 
 /* Code executed at the beginning of each rule, after yytext and yyleng
@@ -735,8 +925,6 @@ YY_DECL
 	char *yy_cp, *yy_bp;
 	int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-
-    yylval = yylval_param;
 
 	if ( !yyg->yy_init )
 		{
@@ -765,10 +953,10 @@ YY_DECL
 		}
 
 	{
-#line 15 "tempus.l"
+#line 20 "tempus.l"
 
 
-#line 772 "tempus_lex.c"
+#line 960 "tempus_lex.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -827,237 +1015,237 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 17 "tempus.l"
+#line 22 "tempus.l"
 { return(KW_IF); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 18 "tempus.l"
+#line 23 "tempus.l"
 { return(KW_ELSE); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 19 "tempus.l"
+#line 24 "tempus.l"
 { return(KW_MATCH); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 20 "tempus.l"
+#line 25 "tempus.l"
 { return(KW_CASE); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 21 "tempus.l"
+#line 26 "tempus.l"
 { return(KW_FOR); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 23 "tempus.l"
+#line 28 "tempus.l"
 { yylval->val_str   = strdup(yytext);       return(TOK_IDENT); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 24 "tempus.l"
+#line 29 "tempus.l"
 { yylval->val_int   = atoi(yytext);         return(TOK_INT); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 25 "tempus.l"
+#line 30 "tempus.l"
 { yylval->val_int   = atoi(yytext);         return(TOK_INT); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 26 "tempus.l"
+#line 31 "tempus.l"
 { yylval->val_float = atof(yytext);         return(TOK_FLOAT); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 27 "tempus.l"
+#line 32 "tempus.l"
 { yylval->val_float = atof(yytext);         return(TOK_FLOAT); }
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 28 "tempus.l"
+#line 33 "tempus.l"
 { yylval->val_str   = strdup(yytext);       return(TOK_STRING); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 30 "tempus.l"
+#line 35 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 31 "tempus.l"
+#line 36 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 32 "tempus.l"
+#line 37 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 33 "tempus.l"
+#line 38 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 34 "tempus.l"
+#line 39 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 35 "tempus.l"
+#line 40 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 36 "tempus.l"
+#line 41 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 37 "tempus.l"
+#line 42 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 38 "tempus.l"
+#line 43 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 39 "tempus.l"
+#line 44 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 40 "tempus.l"
+#line 45 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 42 "tempus.l"
+#line 47 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_TYPE); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 43 "tempus.l"
+#line 48 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_TYPE); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 44 "tempus.l"
+#line 49 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_TYPE); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 46 "tempus.l"
+#line 51 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 47 "tempus.l"
+#line 52 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 48 "tempus.l"
+#line 53 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 49 "tempus.l"
+#line 54 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 50 "tempus.l"
+#line 55 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 51 "tempus.l"
+#line 56 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 52 "tempus.l"
+#line 57 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 53 "tempus.l"
+#line 58 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 55 "tempus.l"
+#line 60 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 56 "tempus.l"
+#line 61 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 57 "tempus.l"
+#line 62 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 58 "tempus.l"
+#line 63 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 59 "tempus.l"
+#line 64 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 60 "tempus.l"
+#line 65 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 61 "tempus.l"
+#line 66 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 62 "tempus.l"
+#line 67 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 63 "tempus.l"
+#line 68 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 64 "tempus.l"
+#line 69 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 44:
 /* rule 44 can match eol */
 YY_RULE_SETUP
-#line 66 "tempus.l"
+#line 71 "tempus.l"
 { }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 67 "tempus.l"
+#line 72 "tempus.l"
 { return yytext[0]; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 69 "tempus.l"
+#line 74 "tempus.l"
 ECHO;
 	YY_BREAK
-#line 1061 "tempus_lex.c"
+#line 1249 "tempus_lex.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2007,18 +2195,6 @@ void yyset_debug (int  _bdebug , yyscan_t yyscanner)
 
 /* Accessor methods for yylval and yylloc */
 
-YYSTYPE * yyget_lval  (yyscan_t yyscanner)
-{
-    struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    return yylval;
-}
-
-void yyset_lval (YYSTYPE *  yylval_param , yyscan_t yyscanner)
-{
-    struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    yylval = yylval_param;
-}
-
 /* User-visible API */
 
 /* yylex_init is special because it creates the scanner itself, so it is
@@ -2200,6 +2376,6 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 69 "tempus.l"
+#line 74 "tempus.l"
 
 

@@ -1,6 +1,6 @@
-#ifndef yyHEADER_H
-#define yyHEADER_H 1
-#define yyIN_HEADER 1
+#ifndef temHEADER_H
+#define temHEADER_H 1
+#define temIN_HEADER 1
 
 #line 6 "tempus_lex.h"
 
@@ -18,16 +18,214 @@
 #define FLEX_BETA
 #endif
 
-#ifdef yyget_lval
-#define yyget_lval_ALREADY_DEFINED
+#ifdef yy_create_buffer
+#define tem_create_buffer_ALREADY_DEFINED
 #else
-#define yyget_lval yyget_lval
+#define yy_create_buffer tem_create_buffer
 #endif
 
-#ifdef yyset_lval
-#define yyset_lval_ALREADY_DEFINED
+#ifdef yy_delete_buffer
+#define tem_delete_buffer_ALREADY_DEFINED
 #else
-#define yyset_lval yyset_lval
+#define yy_delete_buffer tem_delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define tem_scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer tem_scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define tem_scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string tem_scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define tem_scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes tem_scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define tem_init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer tem_init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define tem_flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer tem_flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define tem_load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state tem_load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define tem_switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer tem_switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define tempush_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state tempush_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define tempop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state tempop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define temensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack temensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define temlex_ALREADY_DEFINED
+#else
+#define yylex temlex
+#endif
+
+#ifdef yyrestart
+#define temrestart_ALREADY_DEFINED
+#else
+#define yyrestart temrestart
+#endif
+
+#ifdef yylex_init
+#define temlex_init_ALREADY_DEFINED
+#else
+#define yylex_init temlex_init
+#endif
+
+#ifdef yylex_init_extra
+#define temlex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra temlex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define temlex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy temlex_destroy
+#endif
+
+#ifdef yyget_debug
+#define temget_debug_ALREADY_DEFINED
+#else
+#define yyget_debug temget_debug
+#endif
+
+#ifdef yyset_debug
+#define temset_debug_ALREADY_DEFINED
+#else
+#define yyset_debug temset_debug
+#endif
+
+#ifdef yyget_extra
+#define temget_extra_ALREADY_DEFINED
+#else
+#define yyget_extra temget_extra
+#endif
+
+#ifdef yyset_extra
+#define temset_extra_ALREADY_DEFINED
+#else
+#define yyset_extra temset_extra
+#endif
+
+#ifdef yyget_in
+#define temget_in_ALREADY_DEFINED
+#else
+#define yyget_in temget_in
+#endif
+
+#ifdef yyset_in
+#define temset_in_ALREADY_DEFINED
+#else
+#define yyset_in temset_in
+#endif
+
+#ifdef yyget_out
+#define temget_out_ALREADY_DEFINED
+#else
+#define yyget_out temget_out
+#endif
+
+#ifdef yyset_out
+#define temset_out_ALREADY_DEFINED
+#else
+#define yyset_out temset_out
+#endif
+
+#ifdef yyget_leng
+#define temget_leng_ALREADY_DEFINED
+#else
+#define yyget_leng temget_leng
+#endif
+
+#ifdef yyget_text
+#define temget_text_ALREADY_DEFINED
+#else
+#define yyget_text temget_text
+#endif
+
+#ifdef yyget_lineno
+#define temget_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno temget_lineno
+#endif
+
+#ifdef yyset_lineno
+#define temset_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno temset_lineno
+#endif
+
+#ifdef yyget_column
+#define temget_column_ALREADY_DEFINED
+#else
+#define yyget_column temget_column
+#endif
+
+#ifdef yyset_column
+#define temset_column_ALREADY_DEFINED
+#else
+#define yyset_column temset_column
+#endif
+
+#ifdef yywrap
+#define temwrap_ALREADY_DEFINED
+#else
+#define yywrap temwrap
+#endif
+
+#ifdef yyalloc
+#define temalloc_ALREADY_DEFINED
+#else
+#define yyalloc temalloc
+#endif
+
+#ifdef yyrealloc
+#define temrealloc_ALREADY_DEFINED
+#else
+#define yyrealloc temrealloc
+#endif
+
+#ifdef yyfree
+#define temfree_ALREADY_DEFINED
+#else
+#define yyfree temfree
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -228,7 +426,7 @@ void yyfree ( void * , yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define yywrap(yyscanner) (/*CONSTCOND*/1)
+#define temwrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 
 #define yytext_ptr yytext_r
@@ -287,10 +485,6 @@ int yyget_column  ( yyscan_t yyscanner );
 
 void yyset_column ( int _column_no , yyscan_t yyscanner );
 
-YYSTYPE * yyget_lval ( yyscan_t yyscanner );
-
-void yyset_lval ( YYSTYPE * yylval_param , yyscan_t yyscanner );
-
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
  */
@@ -336,11 +530,9 @@ static int yy_flex_strlen ( const char * , yyscan_t yyscanner);
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int yylex \
-               (YYSTYPE * yylval_param , yyscan_t yyscanner);
+extern int yylex (yyscan_t yyscanner);
 
-#define YY_DECL int yylex \
-               (YYSTYPE * yylval_param , yyscan_t yyscanner)
+#define YY_DECL int yylex (yyscan_t yyscanner)
 #endif /* !YY_DECL */
 
 /* yy_get_previous_state - get the state just before the EOB char was reached */
@@ -357,154 +549,154 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#ifndef yy_create_buffer_ALREADY_DEFINED
+#ifndef tem_create_buffer_ALREADY_DEFINED
 #undef yy_create_buffer
 #endif
-#ifndef yy_delete_buffer_ALREADY_DEFINED
+#ifndef tem_delete_buffer_ALREADY_DEFINED
 #undef yy_delete_buffer
 #endif
-#ifndef yy_scan_buffer_ALREADY_DEFINED
+#ifndef tem_scan_buffer_ALREADY_DEFINED
 #undef yy_scan_buffer
 #endif
-#ifndef yy_scan_string_ALREADY_DEFINED
+#ifndef tem_scan_string_ALREADY_DEFINED
 #undef yy_scan_string
 #endif
-#ifndef yy_scan_bytes_ALREADY_DEFINED
+#ifndef tem_scan_bytes_ALREADY_DEFINED
 #undef yy_scan_bytes
 #endif
-#ifndef yy_init_buffer_ALREADY_DEFINED
+#ifndef tem_init_buffer_ALREADY_DEFINED
 #undef yy_init_buffer
 #endif
-#ifndef yy_flush_buffer_ALREADY_DEFINED
+#ifndef tem_flush_buffer_ALREADY_DEFINED
 #undef yy_flush_buffer
 #endif
-#ifndef yy_load_buffer_state_ALREADY_DEFINED
+#ifndef tem_load_buffer_state_ALREADY_DEFINED
 #undef yy_load_buffer_state
 #endif
-#ifndef yy_switch_to_buffer_ALREADY_DEFINED
+#ifndef tem_switch_to_buffer_ALREADY_DEFINED
 #undef yy_switch_to_buffer
 #endif
-#ifndef yypush_buffer_state_ALREADY_DEFINED
+#ifndef tempush_buffer_state_ALREADY_DEFINED
 #undef yypush_buffer_state
 #endif
-#ifndef yypop_buffer_state_ALREADY_DEFINED
+#ifndef tempop_buffer_state_ALREADY_DEFINED
 #undef yypop_buffer_state
 #endif
-#ifndef yyensure_buffer_stack_ALREADY_DEFINED
+#ifndef temensure_buffer_stack_ALREADY_DEFINED
 #undef yyensure_buffer_stack
 #endif
-#ifndef yylex_ALREADY_DEFINED
+#ifndef temlex_ALREADY_DEFINED
 #undef yylex
 #endif
-#ifndef yyrestart_ALREADY_DEFINED
+#ifndef temrestart_ALREADY_DEFINED
 #undef yyrestart
 #endif
-#ifndef yylex_init_ALREADY_DEFINED
+#ifndef temlex_init_ALREADY_DEFINED
 #undef yylex_init
 #endif
-#ifndef yylex_init_extra_ALREADY_DEFINED
+#ifndef temlex_init_extra_ALREADY_DEFINED
 #undef yylex_init_extra
 #endif
-#ifndef yylex_destroy_ALREADY_DEFINED
+#ifndef temlex_destroy_ALREADY_DEFINED
 #undef yylex_destroy
 #endif
-#ifndef yyget_debug_ALREADY_DEFINED
+#ifndef temget_debug_ALREADY_DEFINED
 #undef yyget_debug
 #endif
-#ifndef yyset_debug_ALREADY_DEFINED
+#ifndef temset_debug_ALREADY_DEFINED
 #undef yyset_debug
 #endif
-#ifndef yyget_extra_ALREADY_DEFINED
+#ifndef temget_extra_ALREADY_DEFINED
 #undef yyget_extra
 #endif
-#ifndef yyset_extra_ALREADY_DEFINED
+#ifndef temset_extra_ALREADY_DEFINED
 #undef yyset_extra
 #endif
-#ifndef yyget_in_ALREADY_DEFINED
+#ifndef temget_in_ALREADY_DEFINED
 #undef yyget_in
 #endif
-#ifndef yyset_in_ALREADY_DEFINED
+#ifndef temset_in_ALREADY_DEFINED
 #undef yyset_in
 #endif
-#ifndef yyget_out_ALREADY_DEFINED
+#ifndef temget_out_ALREADY_DEFINED
 #undef yyget_out
 #endif
-#ifndef yyset_out_ALREADY_DEFINED
+#ifndef temset_out_ALREADY_DEFINED
 #undef yyset_out
 #endif
-#ifndef yyget_leng_ALREADY_DEFINED
+#ifndef temget_leng_ALREADY_DEFINED
 #undef yyget_leng
 #endif
-#ifndef yyget_text_ALREADY_DEFINED
+#ifndef temget_text_ALREADY_DEFINED
 #undef yyget_text
 #endif
-#ifndef yyget_lineno_ALREADY_DEFINED
+#ifndef temget_lineno_ALREADY_DEFINED
 #undef yyget_lineno
 #endif
-#ifndef yyset_lineno_ALREADY_DEFINED
+#ifndef temset_lineno_ALREADY_DEFINED
 #undef yyset_lineno
 #endif
-#ifndef yyget_column_ALREADY_DEFINED
+#ifndef temget_column_ALREADY_DEFINED
 #undef yyget_column
 #endif
-#ifndef yyset_column_ALREADY_DEFINED
+#ifndef temset_column_ALREADY_DEFINED
 #undef yyset_column
 #endif
-#ifndef yywrap_ALREADY_DEFINED
+#ifndef temwrap_ALREADY_DEFINED
 #undef yywrap
 #endif
-#ifndef yyget_lval_ALREADY_DEFINED
+#ifndef temget_lval_ALREADY_DEFINED
 #undef yyget_lval
 #endif
-#ifndef yyset_lval_ALREADY_DEFINED
+#ifndef temset_lval_ALREADY_DEFINED
 #undef yyset_lval
 #endif
-#ifndef yyget_lloc_ALREADY_DEFINED
+#ifndef temget_lloc_ALREADY_DEFINED
 #undef yyget_lloc
 #endif
-#ifndef yyset_lloc_ALREADY_DEFINED
+#ifndef temset_lloc_ALREADY_DEFINED
 #undef yyset_lloc
 #endif
-#ifndef yyalloc_ALREADY_DEFINED
+#ifndef temalloc_ALREADY_DEFINED
 #undef yyalloc
 #endif
-#ifndef yyrealloc_ALREADY_DEFINED
+#ifndef temrealloc_ALREADY_DEFINED
 #undef yyrealloc
 #endif
-#ifndef yyfree_ALREADY_DEFINED
+#ifndef temfree_ALREADY_DEFINED
 #undef yyfree
 #endif
-#ifndef yytext_ALREADY_DEFINED
+#ifndef temtext_ALREADY_DEFINED
 #undef yytext
 #endif
-#ifndef yyleng_ALREADY_DEFINED
+#ifndef temleng_ALREADY_DEFINED
 #undef yyleng
 #endif
-#ifndef yyin_ALREADY_DEFINED
+#ifndef temin_ALREADY_DEFINED
 #undef yyin
 #endif
-#ifndef yyout_ALREADY_DEFINED
+#ifndef temout_ALREADY_DEFINED
 #undef yyout
 #endif
-#ifndef yy_flex_debug_ALREADY_DEFINED
+#ifndef tem_flex_debug_ALREADY_DEFINED
 #undef yy_flex_debug
 #endif
-#ifndef yylineno_ALREADY_DEFINED
+#ifndef temlineno_ALREADY_DEFINED
 #undef yylineno
 #endif
-#ifndef yytables_fload_ALREADY_DEFINED
+#ifndef temtables_fload_ALREADY_DEFINED
 #undef yytables_fload
 #endif
-#ifndef yytables_destroy_ALREADY_DEFINED
+#ifndef temtables_destroy_ALREADY_DEFINED
 #undef yytables_destroy
 #endif
-#ifndef yyTABLES_NAME_ALREADY_DEFINED
+#ifndef temTABLES_NAME_ALREADY_DEFINED
 #undef yyTABLES_NAME
 #endif
 
-#line 69 "tempus.l"
+#line 74 "tempus.l"
 
 
-#line 509 "tempus_lex.h"
-#undef yyIN_HEADER
-#endif /* yyHEADER_H */
+#line 701 "tempus_lex.h"
+#undef temIN_HEADER
+#endif /* temHEADER_H */

@@ -64,19 +64,22 @@
 #define YYPULL 1
 
 /* "%code top" blocks.  */
-#line 7 "tempus.y"
-
-  #include "tempus_yacc.h"
-  #include "tempus_lex.h"
+#line 29 "tempus.y"
 
   #include <string>
   #include <vector>
 
   extern std::vector<std::string> string_stack;
 
-#line 78 "tempus_yacc.c"
-
-
+#line 75 "tempus_yacc.c"
+/* Substitute the type names.  */
+#define YYSTYPE         TEMSTYPE
+/* Substitute the variable and function names.  */
+#define yyparse         temparse
+#define yylex           temlex
+#define yyerror         temerror
+#define yydebug         temdebug
+#define yynerrs         temnerrs
 
 
 # ifndef YY_CAST
@@ -171,13 +174,6 @@ typedef enum yysymbol_kind_t yysymbol_kind_t;
 
 
 
-/* Unqualified %code blocks.  */
-#line 50 "tempus.y"
-
-	int yyerror(void *foo, const void *s, char const *msg);
-	int yylex(void *lval, const void *s);
-
-#line 181 "tempus_yacc.c"
 
 #ifdef short
 # undef short
@@ -439,7 +435,7 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 
 #if (! defined yyoverflow \
      && (! defined __cplusplus \
-         || (defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL)))
+         || (defined TEMSTYPE_IS_TRIVIAL && TEMSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
@@ -555,17 +551,17 @@ static const yytype_int8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14
 };
 
-#if YYDEBUG
+#if TEMDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    75,    75,    77,    77,    77,    78,    78,    79,    79,
-      79,    81,    81,    89,    90,    91,    93,    93,    93,    93,
-      94,    94,    95,    95,    97,    98,   100,   101,   102,   103,
-     104,   105,   106,   107,   110,   111,   113,   120,   121,   122,
-     123,   124,   126,   129,   130,   133,   134,   134,   135,   136,
-     139,   140,   141,   142,   143,   144,   145,   146,   147,   148,
-     149,   150,   152,   152,   154,   154,   154,   155,   155,   155
+       0,    84,    84,    86,    86,    86,    87,    87,    88,    88,
+      88,    90,    90,    98,    99,   100,   102,   102,   102,   102,
+     103,   103,   104,   104,   106,   107,   109,   110,   111,   112,
+     113,   114,   115,   116,   119,   120,   122,   129,   130,   131,
+     132,   133,   135,   138,   139,   142,   143,   143,   144,   145,
+     148,   149,   150,   151,   152,   153,   154,   155,   156,   157,
+     158,   159,   161,   161,   163,   163,   163,   164,   164,   164
 };
 #endif
 
@@ -751,7 +747,7 @@ static const yytype_int8 yyr2[] =
 enum { YYENOMEM = -2 };
 
 #define yyerrok         (yyerrstatus = 0)
-#define yyclearin       (yychar = YYEMPTY)
+#define yyclearin       (yychar = TEMEMPTY)
 
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
@@ -763,7 +759,7 @@ enum { YYENOMEM = -2 };
 
 #define YYBACKUP(Token, Value)                                    \
   do                                                              \
-    if (yychar == YYEMPTY)                                        \
+    if (yychar == TEMEMPTY)                                        \
       {                                                           \
         yychar = (Token);                                         \
         yylval = (Value);                                         \
@@ -773,18 +769,18 @@ enum { YYENOMEM = -2 };
       }                                                           \
     else                                                          \
       {                                                           \
-        yyerror (scanner, result, YY_("syntax error: cannot back up")); \
+        yyerror (yyscanner, result, YY_("syntax error: cannot back up")); \
         YYERROR;                                                  \
       }                                                           \
   while (0)
 
 /* Backward compatibility with an undocumented macro.
-   Use YYerror or YYUNDEF. */
-#define YYERRCODE YYUNDEF
+   Use TEMerror or TEMUNDEF. */
+#define YYERRCODE TEMUNDEF
 
 
 /* Enable debugging if requested.  */
-#if YYDEBUG
+#if TEMDEBUG
 
 # ifndef YYFPRINTF
 #  include <stdio.h> /* INFRINGES ON USER NAME SPACE */
@@ -806,7 +802,7 @@ do {                                                                      \
     {                                                                     \
       YYFPRINTF (stderr, "%s ", Title);                                   \
       yy_symbol_print (stderr,                                            \
-                  Kind, Value, scanner, result); \
+                  Kind, Value, yyscanner, result); \
       YYFPRINTF (stderr, "\n");                                           \
     }                                                                     \
 } while (0)
@@ -818,11 +814,11 @@ do {                                                                      \
 
 static void
 yy_symbol_value_print (FILE *yyo,
-                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, void *scanner, sexpr** result)
+                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, yyscan_t yyscanner, sexpr**  result)
 {
   FILE *yyoutput = yyo;
   YY_USE (yyoutput);
-  YY_USE (scanner);
+  YY_USE (yyscanner);
   YY_USE (result);
   if (!yyvaluep)
     return;
@@ -838,12 +834,12 @@ yy_symbol_value_print (FILE *yyo,
 
 static void
 yy_symbol_print (FILE *yyo,
-                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, void *scanner, sexpr** result)
+                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, yyscan_t yyscanner, sexpr**  result)
 {
   YYFPRINTF (yyo, "%s %s (",
              yykind < YYNTOKENS ? "token" : "nterm", yysymbol_name (yykind));
 
-  yy_symbol_value_print (yyo, yykind, yyvaluep, scanner, result);
+  yy_symbol_value_print (yyo, yykind, yyvaluep, yyscanner, result);
   YYFPRINTF (yyo, ")");
 }
 
@@ -877,7 +873,7 @@ do {                                                            \
 
 static void
 yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
-                 int yyrule, void *scanner, sexpr** result)
+                 int yyrule, yyscan_t yyscanner, sexpr**  result)
 {
   int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
@@ -890,7 +886,7 @@ yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr,
                        YY_ACCESSING_SYMBOL (+yyssp[yyi + 1 - yynrhs]),
-                       &yyvsp[(yyi + 1) - (yynrhs)], scanner, result);
+                       &yyvsp[(yyi + 1) - (yynrhs)], yyscanner, result);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -898,18 +894,18 @@ yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
 # define YY_REDUCE_PRINT(Rule)          \
 do {                                    \
   if (yydebug)                          \
-    yy_reduce_print (yyssp, yyvsp, Rule, scanner, result); \
+    yy_reduce_print (yyssp, yyvsp, Rule, yyscanner, result); \
 } while (0)
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
    multiple parsers can coexist.  */
 int yydebug;
-#else /* !YYDEBUG */
+#else /* !TEMDEBUG */
 # define YYDPRINTF(Args) ((void) 0)
 # define YY_SYMBOL_PRINT(Title, Kind, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
-#endif /* !YYDEBUG */
+#endif /* !TEMDEBUG */
 
 
 /* YYINITDEPTH -- initial size of the parser's stacks.  */
@@ -1206,10 +1202,10 @@ yysyntax_error (YYPTRDIFF_T *yymsg_alloc, char **yymsg,
 
 static void
 yydestruct (const char *yymsg,
-            yysymbol_kind_t yykind, YYSTYPE *yyvaluep, void *scanner, sexpr** result)
+            yysymbol_kind_t yykind, YYSTYPE *yyvaluep, yyscan_t yyscanner, sexpr**  result)
 {
   YY_USE (yyvaluep);
-  YY_USE (scanner);
+  YY_USE (yyscanner);
   YY_USE (result);
   if (!yymsg)
     yymsg = "Deleting";
@@ -1230,7 +1226,7 @@ yydestruct (const char *yymsg,
 `----------*/
 
 int
-yyparse (void *scanner, sexpr** result)
+yyparse (yyscan_t yyscanner, sexpr**  result)
 {
 /* Lookahead token kind.  */
 int yychar;
@@ -1287,7 +1283,7 @@ YYSTYPE yylval YY_INITIAL_VALUE (= yyval_default);
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
-  yychar = YYEMPTY; /* Cause a token to be read.  */
+  yychar = TEMEMPTY; /* Cause a token to be read.  */
 
   goto yysetstate;
 
@@ -1397,25 +1393,25 @@ yybackup:
   /* Not known => get a lookahead token if don't already have one.  */
 
   /* YYCHAR is either empty, or end-of-input, or a valid lookahead.  */
-  if (yychar == YYEMPTY)
+  if (yychar == TEMEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token\n"));
-      yychar = yylex (&yylval, scanner);
+      yychar = yylex (&yylval, yyscanner);
     }
 
-  if (yychar <= YYEOF)
+  if (yychar <= TEMEOF)
     {
-      yychar = YYEOF;
+      yychar = TEMEOF;
       yytoken = YYSYMBOL_YYEOF;
       YYDPRINTF ((stderr, "Now at end of input.\n"));
     }
-  else if (yychar == YYerror)
+  else if (yychar == TEMerror)
     {
       /* The scanner already issued an error message, process directly
          to error recovery.  But do not keep the error token as
          lookahead, it is too special and may lead us to an endless
          loop in error recovery. */
-      yychar = YYUNDEF;
+      yychar = TEMUNDEF;
       yytoken = YYSYMBOL_YYerror;
       goto yyerrlab1;
     }
@@ -1452,7 +1448,7 @@ yybackup:
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 
   /* Discard the shifted token.  */
-  yychar = YYEMPTY;
+  yychar = TEMEMPTY;
   goto yynewstate;
 
 
@@ -1488,47 +1484,47 @@ yyreduce:
   switch (yyn)
     {
   case 11: /* ident: '@' TOK_IDENT  */
-#line 81 "tempus.y"
+#line 90 "tempus.y"
                             { printf("primed %s\n", (yyvsp[0].val_str)); string_stack.push_back((yyvsp[0].val_str)); }
-#line 1494 "tempus_yacc.c"
+#line 1490 "tempus_yacc.c"
     break;
 
   case 12: /* ident: TOK_IDENT  */
-#line 82 "tempus.y"
+#line 91 "tempus.y"
 {
   int y = 0;
   printf("ident %s\n", (yyvsp[0].val_str));
   string_stack.push_back((yyvsp[0].val_str));
   y++;
 }
-#line 1505 "tempus_yacc.c"
+#line 1501 "tempus_yacc.c"
     break;
 
   case 24: /* lhs_expr: atom_list  */
-#line 97 "tempus.y"
+#line 106 "tempus.y"
                         { printf("lhs_expr\n"); }
-#line 1511 "tempus_yacc.c"
+#line 1507 "tempus_yacc.c"
     break;
 
   case 36: /* assignment: lhs_expr OP_ASSIGN rhs_expr  */
-#line 113 "tempus.y"
+#line 122 "tempus.y"
                                                             {
   int x = 0;
   printf("Assignment %s\n", (yyvsp[-1].val_str));
   string_stack.push_back((yyvsp[-1].val_str));
   x++;
 }
-#line 1522 "tempus_yacc.c"
+#line 1518 "tempus_yacc.c"
     break;
 
   case 52: /* expr: assignment  */
-#line 141 "tempus.y"
+#line 150 "tempus.y"
                { printf("expr assignment\n"); }
-#line 1528 "tempus_yacc.c"
+#line 1524 "tempus_yacc.c"
     break;
 
 
-#line 1532 "tempus_yacc.c"
+#line 1528 "tempus_yacc.c"
 
       default: break;
     }
@@ -1570,7 +1566,7 @@ yyreduce:
 yyerrlab:
   /* Make sure we have latest lookahead translation.  See comments at
      user semantic actions for why this is necessary.  */
-  yytoken = yychar == YYEMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
+  yytoken = yychar == TEMEMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
@@ -1602,7 +1598,7 @@ yyerrlab:
                 yysyntax_error_status = YYENOMEM;
               }
           }
-        yyerror (scanner, result, yymsgp);
+        yyerror (yyscanner, result, yymsgp);
         if (yysyntax_error_status == YYENOMEM)
           YYNOMEM;
       }
@@ -1613,17 +1609,17 @@ yyerrlab:
       /* If just tried and failed to reuse lookahead token after an
          error, discard it.  */
 
-      if (yychar <= YYEOF)
+      if (yychar <= TEMEOF)
         {
           /* Return failure if at end of input.  */
-          if (yychar == YYEOF)
+          if (yychar == TEMEOF)
             YYABORT;
         }
       else
         {
           yydestruct ("Error: discarding",
-                      yytoken, &yylval, scanner, result);
-          yychar = YYEMPTY;
+                      yytoken, &yylval, yyscanner, result);
+          yychar = TEMEMPTY;
         }
     }
 
@@ -1678,7 +1674,7 @@ yyerrlab1:
 
 
       yydestruct ("Error: popping",
-                  YY_ACCESSING_SYMBOL (yystate), yyvsp, scanner, result);
+                  YY_ACCESSING_SYMBOL (yystate), yyvsp, yyscanner, result);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -1716,7 +1712,7 @@ yyabortlab:
 | yyexhaustedlab -- YYNOMEM (memory exhaustion) comes here.  |
 `-----------------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (scanner, result, YY_("memory exhausted"));
+  yyerror (yyscanner, result, YY_("memory exhausted"));
   yyresult = 2;
   goto yyreturnlab;
 
@@ -1725,13 +1721,13 @@ yyexhaustedlab:
 | yyreturnlab -- parsing is finished, clean up and return.  |
 `----------------------------------------------------------*/
 yyreturnlab:
-  if (yychar != YYEMPTY)
+  if (yychar != TEMEMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at
          user semantic actions for why this is necessary.  */
       yytoken = YYTRANSLATE (yychar);
       yydestruct ("Cleanup: discarding lookahead",
-                  yytoken, &yylval, scanner, result);
+                  yytoken, &yylval, yyscanner, result);
     }
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYABORT or YYACCEPT.  */
@@ -1740,7 +1736,7 @@ yyreturnlab:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp, scanner, result);
+                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp, yyscanner, result);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -1752,7 +1748,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 157 "tempus.y"
+#line 166 "tempus.y"
 
 
 //------------------------------------------------------------------------------

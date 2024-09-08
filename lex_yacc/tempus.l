@@ -1,10 +1,15 @@
-%option nounput noinput noyywrap reentrant bison-bridge
+%option nounput noinput noyywrap reentrant
 /*%option noyyalloc noyyrealloc noyyfree*/
-/*%option prefix="tem"*/
+%option prefix="tem"
 
 %{
-#include <stdio.h>
+// ---------- BEGIN TOP
+#ifndef FLEX_SCANNER
+#include "tempus_lex.h"
+#endif
 #include "tempus_yacc.h"
+#include <stdio.h>
+// ---------- END TOP
 %}
 
 D           [0-9]
