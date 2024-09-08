@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 22 "tempus.y"
+#line 19 "tempus.y"
 
 	enum sexpr_type {
 		SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
@@ -93,7 +93,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 41 "tempus.y"
+#line 38 "tempus.y"
 
   int    val_int;
   double val_float;
@@ -111,7 +111,7 @@ typedef union YYSTYPE YYSTYPE;
 
 
 
-int yyparse (void *scanner, sexpr **result);
+int yyparse (void *scanner, sexpr** result);
 
 
 #endif /* !YY_YY_TEMPUS_YACC_H_INCLUDED  */

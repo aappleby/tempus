@@ -9,8 +9,25 @@ std::vector<std::string> string_stack;
 
 //------------------------------------------------------------------------------
 
-void yyerror (yyscan_t locp, sexpr** result, char const *msg) {
+void yyerror (yyscan_t locp, void const* result, char const *msg) {
 	fprintf(stderr, "--> %s\n", msg);
+}
+
+//------------------------------------------------------------------------------
+
+void sexpr_free(sexpr *s)
+{
+	if (!s)
+		return;
+
+	if (s->type == SEXPR_ID)
+		free(s->value.id);
+	else if (s->type == SEXPR_PAIR)
+	{
+		sexpr_free(s->left);
+		sexpr_free(s->right);
+	}
+	free(s);
 }
 
 //------------------------------------------------------------------------------

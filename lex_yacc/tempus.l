@@ -1,4 +1,6 @@
 %option nounput noinput noyywrap reentrant bison-bridge
+/*%option noyyalloc noyyrealloc noyyfree*/
+/*%option prefix="tem"*/
 
 %{
 #include <stdio.h>

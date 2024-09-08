@@ -502,7 +502,7 @@ extern int yylex \
 #undef yyTABLES_NAME
 #endif
 
-#line 67 "tempus.l"
+#line 69 "tempus.l"
 
 
 #line 509 "tempus_lex.h"

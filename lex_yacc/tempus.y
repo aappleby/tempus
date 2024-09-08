@@ -1,7 +1,5 @@
-%define api.pure full
-%lex-param   {void *scanner}
-%parse-param {void *scanner}
-
+%define api.pure    full
+//%define api.prefix  {tem}
 %define parse.error verbose
 
 //------------------------------------------------------------------------------
@@ -14,7 +12,6 @@
   #include <vector>
 
   extern std::vector<std::string> string_stack;
-  void yyerror(yyscan_t locp, sexpr** result, char const *msg);
 }
 
 //------------------------------------------------------------------------------
@@ -45,7 +42,15 @@
   sexpr* val_node;
 }
 
-%parse-param {sexpr **result}
+%param       {void *scanner}
+%parse-param {sexpr** result}
+
+//------------------------------------------------------------------------------
+
+%code {
+	int yyerror(void *foo, const void *s, char const *msg);
+	int yylex(void *lval, const void *s);
+}
 
 //------------------------------------------------------------------------------
 
