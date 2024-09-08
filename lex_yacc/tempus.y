@@ -4,33 +4,41 @@
 %lex-param   {yyscan_t yyscanner}
 %parse-param {sexpr**  result}
 %define parse.error verbose
+%locations
 
 %code requires{
 // ---------- BEGIN REQUIRES
+#define YYSTYPE         TEMSTYPE
+#define YYLTYPE         TEMLTYPE
+
+union TEMSTYPE;
+struct TEMLTYPE;
+
 #ifndef FLEX_SCANNER
 #include "tempus_lex.h"
 #endif
-#include "tempus_yacc.h"
 // ---------- END REQUIRES
 }
 
 %code provides{
 // ---------- BEGIN PROVIDES
 #undef  YY_DECL
-#define YY_DECL int temlex (TEMSTYPE* yylval, yyscan_t yyscanner)
+#define YY_DECL int temlex (TEMSTYPE* yylval_param, TEMLTYPE* asdlfksj, yyscan_t yyscanner)
 
-int temlex  (TEMSTYPE* yylval, yyscan_t yyscanner);
-int temerror(yyscan_t yyscanner, sexpr**  result, const char* message);
+int temlex  (TEMSTYPE*, TEMLTYPE*, yyscan_t);
+int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
 // ---------- END PROVIDES
 }
 
 //------------------------------------------------------------------------------
 
 %code top {
+  // --------- BEGIN TOP
   #include <string>
   #include <vector>
 
   extern std::vector<std::string> string_stack;
+  // --------- END TOP
 }
 
 //------------------------------------------------------------------------------

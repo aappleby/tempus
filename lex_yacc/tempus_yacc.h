@@ -53,15 +53,20 @@
 extern int temdebug;
 #endif
 /* "%code requires" blocks.  */
-#line 8 "tempus.y"
+#line 9 "tempus.y"
 
 // ---------- BEGIN REQUIRES
+#define YYSTYPE         TEMSTYPE
+#define YYLTYPE         TEMLTYPE
+
+union TEMSTYPE;
+struct TEMLTYPE;
+
 #ifndef FLEX_SCANNER
 #include "tempus_lex.h"
 #endif
-#include "tempus_yacc.h"
 // ---------- END REQUIRES
-#line 38 "tempus.y"
+#line 46 "tempus.y"
 
 	enum sexpr_type {
 		SEXPR_ID, SEXPR_NUM, SEXPR_PAIR, SEXPR_NIL
@@ -78,7 +83,7 @@ extern int temdebug;
 		sexpr *left, *right;
 	};
 
-#line 82 "tempus_yacc.h"
+#line 87 "tempus_yacc.h"
 
 /* Token kinds.  */
 #ifndef TEMTOKENTYPE
@@ -109,19 +114,33 @@ extern int temdebug;
 #if ! defined TEMSTYPE && ! defined TEMSTYPE_IS_DECLARED
 union TEMSTYPE
 {
-#line 57 "tempus.y"
+#line 65 "tempus.y"
 
   int    val_int;
   double val_float;
   char*  val_str;
   sexpr* val_node;
 
-#line 120 "tempus_yacc.h"
+#line 125 "tempus_yacc.h"
 
 };
 typedef union TEMSTYPE TEMSTYPE;
 # define TEMSTYPE_IS_TRIVIAL 1
 # define TEMSTYPE_IS_DECLARED 1
+#endif
+
+/* Location type.  */
+#if ! defined TEMLTYPE && ! defined TEMLTYPE_IS_DECLARED
+typedef struct TEMLTYPE TEMLTYPE;
+struct TEMLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+# define TEMLTYPE_IS_DECLARED 1
+# define TEMLTYPE_IS_TRIVIAL 1
 #endif
 
 
@@ -130,16 +149,16 @@ typedef union TEMSTYPE TEMSTYPE;
 int temparse (yyscan_t yyscanner, sexpr**  result);
 
 /* "%code provides" blocks.  */
-#line 17 "tempus.y"
+#line 23 "tempus.y"
 
 // ---------- BEGIN PROVIDES
 #undef  YY_DECL
-#define YY_DECL int temlex (TEMSTYPE* yylval, yyscan_t yyscanner)
+#define YY_DECL int temlex (TEMSTYPE* yylval_param, TEMLTYPE* asdlfksj, yyscan_t yyscanner)
 
-int temlex  (TEMSTYPE* yylval, yyscan_t yyscanner);
-int temerror(yyscan_t yyscanner, sexpr**  result, const char* message);
+int temlex  (TEMSTYPE*, TEMLTYPE*, yyscan_t);
+int temerror(TEMLTYPE* , yyscan_t, sexpr**, const char*);
 // ---------- END PROVIDES
 
-#line 144 "tempus_yacc.h"
+#line 163 "tempus_yacc.h"
 
 #endif /* !YY_TEM_TEMPUS_YACC_H_INCLUDED  */

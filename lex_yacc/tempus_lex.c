@@ -206,6 +206,18 @@
 #define yywrap temwrap
 #endif
 
+#ifdef yyget_lval
+#define temget_lval_ALREADY_DEFINED
+#else
+#define yyget_lval temget_lval
+#endif
+
+#ifdef yyset_lval
+#define temset_lval_ALREADY_DEFINED
+#else
+#define yyset_lval temset_lval
+#endif
+
 #ifdef yyalloc
 #define temalloc_ALREADY_DEFINED
 #else
@@ -688,14 +700,24 @@ static const flex_int16_t yy_chk[161] =
 /*%option noyyalloc noyyrealloc noyyfree*/
 #line 6 "tempus.l"
 // ---------- BEGIN TOP
+#define YYSTYPE         TEMSTYPE
+#define YYLTYPE         TEMLTYPE
+
 #ifndef FLEX_SCANNER
 #include "tempus_lex.h"
 #endif
+
+#undef TEMSTYPE
+#undef TEMLTYPE
+
+
 #include "tempus_yacc.h"
 #include <stdio.h>
+
+
 // ---------- END TOP
-#line 698 "tempus_lex.c"
-#line 699 "tempus_lex.c"
+#line 720 "tempus_lex.c"
+#line 721 "tempus_lex.c"
 
 #define INITIAL 0
 
@@ -743,10 +765,16 @@ struct yyguts_t
     int yy_more_flag;
     int yy_more_len;
 
+    YYSTYPE * yylval_r;
+
     }; /* end struct yyguts_t */
 
 static int yy_init_globals ( yyscan_t yyscanner );
 
+    /* This must go here because YYSTYPE and YYLTYPE are included
+     * from bison output in section 1.*/
+    #    define yylval yyg->yylval_r
+    
 int yylex_init (yyscan_t* scanner);
 
 int yylex_init_extra ( YY_EXTRA_TYPE user_defined, yyscan_t* scanner);
@@ -783,6 +811,10 @@ void yyset_lineno ( int _line_number , yyscan_t yyscanner );
 int yyget_column  ( yyscan_t yyscanner );
 
 void yyset_column ( int _column_no , yyscan_t yyscanner );
+
+YYSTYPE * yyget_lval ( yyscan_t yyscanner );
+
+void yyset_lval ( YYSTYPE * yylval_param , yyscan_t yyscanner );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -897,9 +929,11 @@ static int input ( yyscan_t yyscanner );
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int yylex (yyscan_t yyscanner);
+extern int yylex \
+               (YYSTYPE * yylval_param , yyscan_t yyscanner);
 
-#define YY_DECL int yylex (yyscan_t yyscanner)
+#define YY_DECL int yylex \
+               (YYSTYPE * yylval_param , yyscan_t yyscanner)
 #endif /* !YY_DECL */
 
 /* Code executed at the beginning of each rule, after yytext and yyleng
@@ -925,6 +959,8 @@ YY_DECL
 	char *yy_cp, *yy_bp;
 	int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+
+    yylval = yylval_param;
 
 	if ( !yyg->yy_init )
 		{
@@ -953,10 +989,10 @@ YY_DECL
 		}
 
 	{
-#line 20 "tempus.l"
+#line 30 "tempus.l"
 
 
-#line 960 "tempus_lex.c"
+#line 996 "tempus_lex.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1015,237 +1051,237 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 22 "tempus.l"
+#line 32 "tempus.l"
 { return(KW_IF); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 23 "tempus.l"
+#line 33 "tempus.l"
 { return(KW_ELSE); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 24 "tempus.l"
+#line 34 "tempus.l"
 { return(KW_MATCH); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 25 "tempus.l"
+#line 35 "tempus.l"
 { return(KW_CASE); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 26 "tempus.l"
+#line 36 "tempus.l"
 { return(KW_FOR); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 28 "tempus.l"
+#line 38 "tempus.l"
 { yylval->val_str   = strdup(yytext);       return(TOK_IDENT); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 29 "tempus.l"
+#line 39 "tempus.l"
 { yylval->val_int   = atoi(yytext);         return(TOK_INT); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 30 "tempus.l"
+#line 40 "tempus.l"
 { yylval->val_int   = atoi(yytext);         return(TOK_INT); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 31 "tempus.l"
+#line 41 "tempus.l"
 { yylval->val_float = atof(yytext);         return(TOK_FLOAT); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 32 "tempus.l"
+#line 42 "tempus.l"
 { yylval->val_float = atof(yytext);         return(TOK_FLOAT); }
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 33 "tempus.l"
+#line 43 "tempus.l"
 { yylval->val_str   = strdup(yytext);       return(TOK_STRING); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 35 "tempus.l"
+#line 45 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 36 "tempus.l"
+#line 46 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 37 "tempus.l"
+#line 47 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 38 "tempus.l"
+#line 48 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 39 "tempus.l"
+#line 49 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 40 "tempus.l"
+#line 50 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 41 "tempus.l"
+#line 51 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 42 "tempus.l"
+#line 52 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 43 "tempus.l"
+#line 53 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 44 "tempus.l"
+#line 54 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 45 "tempus.l"
+#line 55 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_ASSIGN); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 47 "tempus.l"
+#line 57 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_TYPE); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 48 "tempus.l"
+#line 58 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_TYPE); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 49 "tempus.l"
+#line 59 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_TYPE); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 51 "tempus.l"
+#line 61 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 52 "tempus.l"
+#line 62 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 53 "tempus.l"
+#line 63 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 54 "tempus.l"
+#line 64 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 55 "tempus.l"
+#line 65 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 56 "tempus.l"
+#line 66 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 57 "tempus.l"
+#line 67 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 58 "tempus.l"
+#line 68 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 60 "tempus.l"
+#line 70 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 61 "tempus.l"
+#line 71 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 62 "tempus.l"
+#line 72 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 63 "tempus.l"
+#line 73 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 64 "tempus.l"
+#line 74 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 65 "tempus.l"
+#line 75 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 66 "tempus.l"
+#line 76 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 67 "tempus.l"
+#line 77 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 68 "tempus.l"
+#line 78 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 69 "tempus.l"
+#line 79 "tempus.l"
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 44:
 /* rule 44 can match eol */
 YY_RULE_SETUP
-#line 71 "tempus.l"
+#line 81 "tempus.l"
 { }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 72 "tempus.l"
+#line 82 "tempus.l"
 { return yytext[0]; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 74 "tempus.l"
+#line 84 "tempus.l"
 ECHO;
 	YY_BREAK
-#line 1249 "tempus_lex.c"
+#line 1285 "tempus_lex.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2195,6 +2231,18 @@ void yyset_debug (int  _bdebug , yyscan_t yyscanner)
 
 /* Accessor methods for yylval and yylloc */
 
+YYSTYPE * yyget_lval  (yyscan_t yyscanner)
+{
+    struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+    return yylval;
+}
+
+void yyset_lval (YYSTYPE *  yylval_param , yyscan_t yyscanner)
+{
+    struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+    yylval = yylval_param;
+}
+
 /* User-visible API */
 
 /* yylex_init is special because it creates the scanner itself, so it is
@@ -2376,6 +2424,6 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 74 "tempus.l"
+#line 84 "tempus.l"
 
 

@@ -1,3 +1,9 @@
+#define YYSTYPE TEMSTYPE
+#define YYLTYPE TEMLTYPE
+
+struct TEMLTYPE;
+union TEMSTYPE;
+
 #include "tempus_yacc.h"
 #include "tempus_lex.h"
 
@@ -9,7 +15,7 @@ std::vector<std::string> string_stack;
 
 //------------------------------------------------------------------------------
 
-int temerror (yyscan_t yyscanner, sexpr**  result, const char *msg) {
+int temerror (TEMLTYPE*, yyscan_t yyscanner, sexpr**  result, const char *msg) {
 	fprintf(stderr, "--> %s\n", msg);
   return 0;
 }

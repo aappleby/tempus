@@ -210,6 +210,18 @@
 #define yywrap temwrap
 #endif
 
+#ifdef yyget_lval
+#define temget_lval_ALREADY_DEFINED
+#else
+#define yyget_lval temget_lval
+#endif
+
+#ifdef yyset_lval
+#define temset_lval_ALREADY_DEFINED
+#else
+#define yyset_lval temset_lval
+#endif
+
 #ifdef yyalloc
 #define temalloc_ALREADY_DEFINED
 #else
@@ -485,6 +497,10 @@ int yyget_column  ( yyscan_t yyscanner );
 
 void yyset_column ( int _column_no , yyscan_t yyscanner );
 
+YYSTYPE * yyget_lval ( yyscan_t yyscanner );
+
+void yyset_lval ( YYSTYPE * yylval_param , yyscan_t yyscanner );
+
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
  */
@@ -530,9 +546,11 @@ static int yy_flex_strlen ( const char * , yyscan_t yyscanner);
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int yylex (yyscan_t yyscanner);
+extern int yylex \
+               (YYSTYPE * yylval_param , yyscan_t yyscanner);
 
-#define YY_DECL int yylex (yyscan_t yyscanner)
+#define YY_DECL int yylex \
+               (YYSTYPE * yylval_param , yyscan_t yyscanner)
 #endif /* !YY_DECL */
 
 /* yy_get_previous_state - get the state just before the EOB char was reached */
@@ -694,9 +712,9 @@ extern int yylex (yyscan_t yyscanner);
 #undef yyTABLES_NAME
 #endif
 
-#line 74 "tempus.l"
+#line 84 "tempus.l"
 
 
-#line 701 "tempus_lex.h"
+#line 719 "tempus_lex.h"
 #undef temIN_HEADER
 #endif /* temHEADER_H */
