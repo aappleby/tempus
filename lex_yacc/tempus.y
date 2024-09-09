@@ -53,6 +53,8 @@ parens      : '(' expr_tuple ')';
 braces      : '{' expr_block '}';
 bracks      : '[' expr_tuple ']';
 
+delimited   : parens | braces | bracks;
+
 expr_atom   : ident | parens | braces | bracks;
 atom_link   : expr_atom | '.' expr_atom;
 atom_chain  : atom_link | atom_link atom_chain;
@@ -60,9 +62,10 @@ atom_chain  : atom_link | atom_link atom_chain;
 lhs_expr    : atom_chain;
 type_expr   : atom_chain;
 
-op_bin : OP_BIN   | '+' | '-';
-prefix : OP_AFFIX | '+' | '-';
-suffix : OP_AFFIX;
+op_type : OP_TYPE | ':';
+op_bin  : OP_BIN   | '+' | '-';
+prefix  : OP_AFFIX | '+' | '-';
+suffix  : OP_AFFIX;
 
 prefix_chain : atom_chain   | prefix prefix_chain;
 affix_chain  : prefix_chain | affix_chain suffix;
@@ -70,24 +73,24 @@ affix_chain  : prefix_chain | affix_chain suffix;
 rhs_expr    : affix_chain expr_tail | const expr_tail;
 expr_tail   : op_bin rhs_expr  | /**/;
 
-full_decl   : lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr;
-empty_decl  : lhs_expr OP_TYPE type_expr                   ;
+full_decl   : lhs_expr op_type type_expr OP_ASSIGN rhs_expr;
+empty_decl  : lhs_expr op_type type_expr                   ;
 
 assignment  : lhs_expr                   OP_ASSIGN rhs_expr;
 
-typed_val   :          OP_TYPE type_expr OP_ASSIGN rhs_expr;
-bare_name   : lhs_expr OP_TYPE                             ;
-bare_type   :          OP_TYPE type_expr                   ;
+typed_val   :          op_type type_expr OP_ASSIGN rhs_expr;
+bare_name   : lhs_expr op_type                             ;
+bare_type   :          op_type type_expr                   ;
 bare_val    :                            OP_ASSIGN rhs_expr;
 bare_expr   :                                      rhs_expr;
 
-stmt_if     : KW_IF parens braces | KW_IF parens braces else_chain;
-else_chain  : KW_ELSE braces | KW_ELSE stmt_if;
+stmt_if     : KW_IF parens delimited | KW_IF parens delimited else_chain;
+else_chain  : KW_ELSE delimited | KW_ELSE stmt_if;
 
-stmt_case   : KW_CASE parens braces
+stmt_case   : KW_CASE parens expr
 case_block  : stmt_case | stmt_case case_block;
 stmt_match  : KW_MATCH parens '{' case_block '}';
-stmt_for    : KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' braces
+stmt_for    : KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr;
 
 expr
   : full_decl

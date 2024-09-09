@@ -58,6 +58,13 @@ const char* sources[] = {
   "# suffix x--",
   "# prefix !x",
   "# suffix x!",
+  "# affix  x = !++!++!--!--!x!--!++--!++!",
+  "# signs  x = a + +y - -y;",
+
+  "# lhs [] = 1;",
+  "# lhs () = 1;",
+  "# lhs {} = 1;",
+  "# lhs {}[]().()foo().[](){} = 1;",
 
   "# if1 if (x) {}",
   "# if2 if (x) {} else {}",
@@ -66,16 +73,17 @@ const char* sources[] = {
   "# if5 if (x) {} else if () {} else if () {}",
   "# if6 if (x) {} else if () {} else if () {} else {}",
 
-  "# neg x = a + +y - -y;",
-  "# affix x = !++!++!--!--!x!--!++--!++!",
-
   "# bar  a.b.c = zarp(blah : type = 229)()()[1,3,2];",
-  "# asd  for (x : int = 0; x < 12; x = x + 1) { print(\"asldkflskjfd\") }",
+  "# for1 for (x : int = 0; x < 12; x++) { print(\"asldkflskjfd\") }",
 
   // isolated dot doesn't work as ident
   //"# func blah : func(int) = (x : int, y : int, z : int) { . = (x,y,z) };"
 
-  "# func blah : func(int) = (x : int, y : int, z : int) { .a = (x,y,z) };"
+  "# func blah : func(int) = (x : int, y : int, z : int) { .a = (x,y,z) };",
+
+  "# match1 match (x) { case (foo) : {} case (bar) : {} case (baz) : {} }",
+  "# match2 match (x) { case (foo) : x  case (bar) : y  case (baz) : z  }",
+
 };
 
 int main(int argc, char** argv) {
