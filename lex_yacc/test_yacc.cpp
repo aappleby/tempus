@@ -81,8 +81,8 @@ const char* sources[] = {
 
   "# func blah : func(int) = (x : int, y : int, z : int) { .a = (x,y,z) };",
 
-  "# match1 match (x) { case (foo) : {} case (bar) : {} case (baz) : {} }",
-  "# match2 match (x) { case (foo) : x  case (bar) : y  case (baz) : z  }",
+  "# match1 match (x) { case (foo) {} case (bar) {} case (baz) {} }",
+  "# match2 match (x) { case (foo) x  case (bar) y  case (baz) z  }",
 
 };
 
