@@ -59,7 +59,7 @@ expr_atom   : ident | parens | braces | bracks;
 atom_link   : expr_atom | '.' expr_atom;
 atom_chain  : atom_link | atom_link atom_chain;
 
-lhs_expr    : atom_chain;
+lhs_expr    : atom_chain | '.';
 type_expr   : atom_chain;
 
 op_type : OP_TYPE | ':';

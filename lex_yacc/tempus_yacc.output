@@ -38,120 +38,121 @@ Grammar
    23           | atom_link atom_chain
 
    24 lhs_expr: atom_chain
+   25         | '.'
 
-   25 type_expr: atom_chain
+   26 type_expr: atom_chain
 
-   26 op_type: OP_TYPE
-   27        | ':'
+   27 op_type: OP_TYPE
+   28        | ':'
 
-   28 op_bin: OP_BIN
-   29       | '+'
-   30       | '-'
+   29 op_bin: OP_BIN
+   30       | '+'
+   31       | '-'
 
-   31 prefix: OP_AFFIX
-   32       | '+'
-   33       | '-'
+   32 prefix: OP_AFFIX
+   33       | '+'
+   34       | '-'
 
-   34 suffix: OP_AFFIX
+   35 suffix: OP_AFFIX
 
-   35 prefix_chain: atom_chain
-   36             | prefix prefix_chain
+   36 prefix_chain: atom_chain
+   37             | prefix prefix_chain
 
-   37 affix_chain: prefix_chain
-   38            | affix_chain suffix
+   38 affix_chain: prefix_chain
+   39            | affix_chain suffix
 
-   39 rhs_expr: affix_chain expr_tail
-   40         | const expr_tail
+   40 rhs_expr: affix_chain expr_tail
+   41         | const expr_tail
 
-   41 expr_tail: op_bin rhs_expr
-   42          | ε
+   42 expr_tail: op_bin rhs_expr
+   43          | ε
 
-   43 full_decl: lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   44 full_decl: lhs_expr op_type type_expr OP_ASSIGN rhs_expr
 
-   44 empty_decl: lhs_expr op_type type_expr
+   45 empty_decl: lhs_expr op_type type_expr
 
-   45 assignment: lhs_expr OP_ASSIGN rhs_expr
+   46 assignment: lhs_expr OP_ASSIGN rhs_expr
 
-   46 typed_val: op_type type_expr OP_ASSIGN rhs_expr
+   47 typed_val: op_type type_expr OP_ASSIGN rhs_expr
 
-   47 bare_name: lhs_expr op_type
+   48 bare_name: lhs_expr op_type
 
-   48 bare_type: op_type type_expr
+   49 bare_type: op_type type_expr
 
-   49 bare_val: OP_ASSIGN rhs_expr
+   50 bare_val: OP_ASSIGN rhs_expr
 
-   50 bare_expr: rhs_expr
+   51 bare_expr: rhs_expr
 
-   51 stmt_if: KW_IF parens delimited
-   52        | KW_IF parens delimited else_chain
+   52 stmt_if: KW_IF parens delimited
+   53        | KW_IF parens delimited else_chain
 
-   53 else_chain: KW_ELSE delimited
-   54           | KW_ELSE stmt_if
+   54 else_chain: KW_ELSE delimited
+   55           | KW_ELSE stmt_if
 
-   55 stmt_case: KW_CASE parens expr
+   56 stmt_case: KW_CASE parens expr
 
-   56 case_block: stmt_case
-   57           | stmt_case case_block
+   57 case_block: stmt_case
+   58           | stmt_case case_block
 
-   58 stmt_match: KW_MATCH parens '{' case_block '}'
+   59 stmt_match: KW_MATCH parens '{' case_block '}'
 
-   59 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   60 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
 
-   60 expr: full_decl
-   61     | empty_decl
-   62     | assignment
-   63     | typed_val
-   64     | bare_name
-   65     | bare_type
-   66     | bare_val
-   67     | bare_expr
-   68     | stmt_if
-   69     | stmt_match
-   70     | stmt_for
+   61 expr: full_decl
+   62     | empty_decl
+   63     | assignment
+   64     | typed_val
+   65     | bare_name
+   66     | bare_type
+   67     | bare_val
+   68     | bare_expr
+   69     | stmt_if
+   70     | stmt_match
+   71     | stmt_for
 
-   71 opt_expr: expr
-   72         | ε
+   72 opt_expr: expr
+   73         | ε
 
-   73 expr_block: ε
-   74           | expr
-   75           | expr ';' expr_block
+   74 expr_block: ε
+   75           | expr
+   76           | expr ';' expr_block
 
-   76 expr_tuple: ε
-   77           | expr
-   78           | expr ',' expr_tuple
+   77 expr_tuple: ε
+   78           | expr
+   79           | expr ',' expr_tuple
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     '#' (35) 4
-    '(' (40) 10 59
-    ')' (41) 10 59
-    '+' (43) 29 32
-    ',' (44) 78
-    '-' (45) 30 33
-    '.' (46) 21
-    ':' (58) 27
-    ';' (59) 59 75
+    '(' (40) 10 60
+    ')' (41) 10 60
+    '+' (43) 30 33
+    ',' (44) 79
+    '-' (45) 31 34
+    '.' (46) 21 25
+    ':' (58) 28
+    ';' (59) 60 76
     '@' (64) 8
     '[' (91) 12
     ']' (93) 12
-    '{' (123) 11 58
-    '}' (125) 11 58
+    '{' (123) 11 59
+    '}' (125) 11 59
     error (256)
     TOK_IDENT <val_str> (258) 4 8 9
     TOK_INT <val_int> (259) 5
     TOK_FLOAT <val_float> (260) 6
     TOK_STRING <val_str> (261) 7
-    OP_TYPE <val_str> (262) 26
-    OP_ASSIGN <val_str> (263) 43 45 46 49
-    OP_BIN <val_str> (264) 28
-    OP_AFFIX <val_str> (265) 31 34
-    KW_IF (266) 51 52
-    KW_ELSE (267) 53 54
-    KW_MATCH (268) 58
-    KW_CASE (269) 55
-    KW_FOR (270) 59
+    OP_TYPE <val_str> (262) 27
+    OP_ASSIGN <val_str> (263) 44 46 47 50
+    OP_BIN <val_str> (264) 29
+    OP_AFFIX <val_str> (265) 32 35
+    KW_IF (266) 52 53
+    KW_ELSE (267) 54 55
+    KW_MATCH (268) 59
+    KW_CASE (269) 56
+    KW_FOR (270) 60
 
 
 Nonterminals, with rules where they appear
@@ -169,13 +170,13 @@ Nonterminals, with rules where they appear
         on right: 3
     const (34)
         on left: 5 6 7
-        on right: 40
+        on right: 41
     ident (35)
         on left: 8 9
         on right: 16
     parens (36)
         on left: 10
-        on right: 13 17 51 52 55 58
+        on right: 13 17 52 53 56 59
     braces (37)
         on left: 11
         on right: 14 18
@@ -184,7 +185,7 @@ Nonterminals, with rules where they appear
         on right: 15 19
     delimited (39)
         on left: 13 14 15
-        on right: 51 52 53
+        on right: 52 53 54
     expr_atom (40)
         on left: 16 17 18 19
         on right: 20 21
@@ -193,91 +194,91 @@ Nonterminals, with rules where they appear
         on right: 22 23
     atom_chain (42)
         on left: 22 23
-        on right: 23 24 25 35
+        on right: 23 24 26 36
     lhs_expr (43)
-        on left: 24
-        on right: 43 44 45 47
+        on left: 24 25
+        on right: 44 45 46 48
     type_expr (44)
-        on left: 25
-        on right: 43 44 46 48
+        on left: 26
+        on right: 44 45 47 49
     op_type (45)
-        on left: 26 27
-        on right: 43 44 46 47 48
+        on left: 27 28
+        on right: 44 45 47 48 49
     op_bin (46)
-        on left: 28 29 30
-        on right: 41
+        on left: 29 30 31
+        on right: 42
     prefix (47)
-        on left: 31 32 33
-        on right: 36
+        on left: 32 33 34
+        on right: 37
     suffix (48)
-        on left: 34
-        on right: 38
+        on left: 35
+        on right: 39
     prefix_chain (49)
-        on left: 35 36
-        on right: 36 37
+        on left: 36 37
+        on right: 37 38
     affix_chain (50)
-        on left: 37 38
-        on right: 38 39
-    rhs_expr (51)
-        on left: 39 40
-        on right: 41 43 45 46 49 50
-    expr_tail (52)
-        on left: 41 42
+        on left: 38 39
         on right: 39 40
+    rhs_expr (51)
+        on left: 40 41
+        on right: 42 44 46 47 50 51
+    expr_tail (52)
+        on left: 42 43
+        on right: 40 41
     full_decl (53)
-        on left: 43
-        on right: 60
-    empty_decl (54)
         on left: 44
         on right: 61
-    assignment (55)
+    empty_decl (54)
         on left: 45
         on right: 62
-    typed_val (56)
+    assignment (55)
         on left: 46
         on right: 63
-    bare_name (57)
+    typed_val (56)
         on left: 47
         on right: 64
-    bare_type (58)
+    bare_name (57)
         on left: 48
         on right: 65
-    bare_val (59)
+    bare_type (58)
         on left: 49
         on right: 66
-    bare_expr (60)
+    bare_val (59)
         on left: 50
         on right: 67
+    bare_expr (60)
+        on left: 51
+        on right: 68
     stmt_if (61)
-        on left: 51 52
-        on right: 54 68
+        on left: 52 53
+        on right: 55 69
     else_chain (62)
-        on left: 53 54
-        on right: 52
+        on left: 54 55
+        on right: 53
     stmt_case (63)
-        on left: 55
-        on right: 56 57
-    case_block (64)
-        on left: 56 57
+        on left: 56
         on right: 57 58
+    case_block (64)
+        on left: 57 58
+        on right: 58 59
     stmt_match (65)
-        on left: 58
-        on right: 69
-    stmt_for (66)
         on left: 59
         on right: 70
+    stmt_for (66)
+        on left: 60
+        on right: 71
     expr (67)
-        on left: 60 61 62 63 64 65 66 67 68 69 70
-        on right: 55 59 71 74 75 77 78
+        on left: 61 62 63 64 65 66 67 68 69 70 71
+        on right: 56 60 72 75 76 78 79
     opt_expr (68)
-        on left: 71 72
-        on right: 59
+        on left: 72 73
+        on right: 60
     expr_block (69)
-        on left: 73 74 75
-        on right: 3 11 75
+        on left: 74 75 76
+        on right: 3 11 76
     expr_tuple (70)
-        on left: 76 77 78
-        on right: 10 12 78
+        on left: 77 78 79
+        on right: 10 12 79
 
 
 State 0
@@ -347,43 +348,44 @@ State 4
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
    24 lhs_expr: • atom_chain
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: • lhs_expr op_type type_expr
-   45 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   46 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
-   47 bare_name: • lhs_expr op_type
-   48 bare_type: • op_type type_expr
-   49 bare_val: • OP_ASSIGN rhs_expr
-   50 bare_expr: • rhs_expr
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   58 stmt_match: • KW_MATCH parens '{' case_block '}'
-   59 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60 expr: • full_decl
-   61     | • empty_decl
-   62     | • assignment
-   63     | • typed_val
-   64     | • bare_name
-   65     | • bare_type
-   66     | • bare_val
-   67     | • bare_expr
-   68     | • stmt_if
-   69     | • stmt_match
-   70     | • stmt_for
-   73 expr_block: ε •  [$end, '#']
-   74           | • expr
-   75           | • expr ';' expr_block
+   25         | • '.'
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: • lhs_expr op_type type_expr
+   46 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   47 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
+   48 bare_name: • lhs_expr op_type
+   49 bare_type: • op_type type_expr
+   50 bare_val: • OP_ASSIGN rhs_expr
+   51 bare_expr: • rhs_expr
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   59 stmt_match: • KW_MATCH parens '{' case_block '}'
+   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   61 expr: • full_decl
+   62     | • empty_decl
+   63     | • assignment
+   64     | • typed_val
+   65     | • bare_name
+   66     | • bare_type
+   67     | • bare_val
+   68     | • bare_expr
+   69     | • stmt_if
+   70     | • stmt_match
+   71     | • stmt_for
+   74 expr_block: ε •  [$end, '#']
+   75           | • expr
+   76           | • expr ';' expr_block
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -404,7 +406,7 @@ State 4
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 73 (expr_block)
+    $default  reduce using rule 74 (expr_block)
 
     const         go to state 26
     ident         go to state 27
@@ -486,9 +488,9 @@ State 11
 
 State 12
 
-   26 op_type: OP_TYPE •
+   27 op_type: OP_TYPE •
 
-    $default  reduce using rule 26 (op_type)
+    $default  reduce using rule 27 (op_type)
 
 
 State 13
@@ -509,16 +511,16 @@ State 13
    21          | • '.' expr_atom
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   49 bare_val: OP_ASSIGN • rhs_expr
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   50 bare_val: OP_ASSIGN • rhs_expr
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -529,7 +531,7 @@ State 13
     '('         shift, and go to state 19
     '{'         shift, and go to state 20
     '['         shift, and go to state 21
-    '.'         shift, and go to state 22
+    '.'         shift, and go to state 53
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
@@ -540,53 +542,53 @@ State 13
     bracks        go to state 30
     expr_atom     go to state 31
     atom_link     go to state 32
-    atom_chain    go to state 53
+    atom_chain    go to state 54
     prefix        go to state 36
     prefix_chain  go to state 37
     affix_chain   go to state 38
-    rhs_expr      go to state 54
+    rhs_expr      go to state 55
 
 
 State 14
 
-   31 prefix: OP_AFFIX •
+   32 prefix: OP_AFFIX •
 
-    $default  reduce using rule 31 (prefix)
+    $default  reduce using rule 32 (prefix)
 
 
 State 15
 
    10 parens: • '(' expr_tuple ')'
-   51 stmt_if: KW_IF • parens delimited
-   52        | KW_IF • parens delimited else_chain
-
-    '('  shift, and go to state 19
-
-    parens  go to state 55
-
-
-State 16
-
-   10 parens: • '(' expr_tuple ')'
-   58 stmt_match: KW_MATCH • parens '{' case_block '}'
+   52 stmt_if: KW_IF • parens delimited
+   53        | KW_IF • parens delimited else_chain
 
     '('  shift, and go to state 19
 
     parens  go to state 56
 
 
+State 16
+
+   10 parens: • '(' expr_tuple ')'
+   59 stmt_match: KW_MATCH • parens '{' case_block '}'
+
+    '('  shift, and go to state 19
+
+    parens  go to state 57
+
+
 State 17
 
-   59 stmt_for: KW_FOR • '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   60 stmt_for: KW_FOR • '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
 
-    '('  shift, and go to state 57
+    '('  shift, and go to state 58
 
 
 State 18
 
     8 ident: '@' • TOK_IDENT
 
-    TOK_IDENT  shift, and go to state 58
+    TOK_IDENT  shift, and go to state 59
 
 
 State 19
@@ -609,43 +611,44 @@ State 19
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
    24 lhs_expr: • atom_chain
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: • lhs_expr op_type type_expr
-   45 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   46 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
-   47 bare_name: • lhs_expr op_type
-   48 bare_type: • op_type type_expr
-   49 bare_val: • OP_ASSIGN rhs_expr
-   50 bare_expr: • rhs_expr
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   58 stmt_match: • KW_MATCH parens '{' case_block '}'
-   59 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60 expr: • full_decl
-   61     | • empty_decl
-   62     | • assignment
-   63     | • typed_val
-   64     | • bare_name
-   65     | • bare_type
-   66     | • bare_val
-   67     | • bare_expr
-   68     | • stmt_if
-   69     | • stmt_match
-   70     | • stmt_for
-   76 expr_tuple: ε •  [')']
-   77           | • expr
-   78           | • expr ',' expr_tuple
+   25         | • '.'
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: • lhs_expr op_type type_expr
+   46 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   47 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
+   48 bare_name: • lhs_expr op_type
+   49 bare_type: • op_type type_expr
+   50 bare_val: • OP_ASSIGN rhs_expr
+   51 bare_expr: • rhs_expr
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   59 stmt_match: • KW_MATCH parens '{' case_block '}'
+   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   61 expr: • full_decl
+   62     | • empty_decl
+   63     | • assignment
+   64     | • typed_val
+   65     | • bare_name
+   66     | • bare_type
+   67     | • bare_val
+   68     | • bare_expr
+   69     | • stmt_if
+   70     | • stmt_match
+   71     | • stmt_for
+   77 expr_tuple: ε •  [')']
+   78           | • expr
+   79           | • expr ',' expr_tuple
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -666,7 +669,7 @@ State 19
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 76 (expr_tuple)
+    $default  reduce using rule 77 (expr_tuple)
 
     const         go to state 26
     ident         go to state 27
@@ -693,8 +696,8 @@ State 19
     stmt_if       go to state 48
     stmt_match    go to state 49
     stmt_for      go to state 50
-    expr          go to state 59
-    expr_tuple    go to state 60
+    expr          go to state 60
+    expr_tuple    go to state 61
 
 
 State 20
@@ -717,43 +720,44 @@ State 20
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
    24 lhs_expr: • atom_chain
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: • lhs_expr op_type type_expr
-   45 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   46 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
-   47 bare_name: • lhs_expr op_type
-   48 bare_type: • op_type type_expr
-   49 bare_val: • OP_ASSIGN rhs_expr
-   50 bare_expr: • rhs_expr
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   58 stmt_match: • KW_MATCH parens '{' case_block '}'
-   59 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60 expr: • full_decl
-   61     | • empty_decl
-   62     | • assignment
-   63     | • typed_val
-   64     | • bare_name
-   65     | • bare_type
-   66     | • bare_val
-   67     | • bare_expr
-   68     | • stmt_if
-   69     | • stmt_match
-   70     | • stmt_for
-   73 expr_block: ε •  ['}']
-   74           | • expr
-   75           | • expr ';' expr_block
+   25         | • '.'
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: • lhs_expr op_type type_expr
+   46 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   47 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
+   48 bare_name: • lhs_expr op_type
+   49 bare_type: • op_type type_expr
+   50 bare_val: • OP_ASSIGN rhs_expr
+   51 bare_expr: • rhs_expr
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   59 stmt_match: • KW_MATCH parens '{' case_block '}'
+   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   61 expr: • full_decl
+   62     | • empty_decl
+   63     | • assignment
+   64     | • typed_val
+   65     | • bare_name
+   66     | • bare_type
+   67     | • bare_val
+   68     | • bare_expr
+   69     | • stmt_if
+   70     | • stmt_match
+   71     | • stmt_for
+   74 expr_block: ε •  ['}']
+   75           | • expr
+   76           | • expr ';' expr_block
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -774,7 +778,7 @@ State 20
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 73 (expr_block)
+    $default  reduce using rule 74 (expr_block)
 
     const         go to state 26
     ident         go to state 27
@@ -802,7 +806,7 @@ State 20
     stmt_match    go to state 49
     stmt_for      go to state 50
     expr          go to state 51
-    expr_block    go to state 61
+    expr_block    go to state 62
 
 
 State 21
@@ -825,43 +829,44 @@ State 21
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
    24 lhs_expr: • atom_chain
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: • lhs_expr op_type type_expr
-   45 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   46 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
-   47 bare_name: • lhs_expr op_type
-   48 bare_type: • op_type type_expr
-   49 bare_val: • OP_ASSIGN rhs_expr
-   50 bare_expr: • rhs_expr
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   58 stmt_match: • KW_MATCH parens '{' case_block '}'
-   59 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60 expr: • full_decl
-   61     | • empty_decl
-   62     | • assignment
-   63     | • typed_val
-   64     | • bare_name
-   65     | • bare_type
-   66     | • bare_val
-   67     | • bare_expr
-   68     | • stmt_if
-   69     | • stmt_match
-   70     | • stmt_for
-   76 expr_tuple: ε •  [']']
-   77           | • expr
-   78           | • expr ',' expr_tuple
+   25         | • '.'
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: • lhs_expr op_type type_expr
+   46 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   47 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
+   48 bare_name: • lhs_expr op_type
+   49 bare_type: • op_type type_expr
+   50 bare_val: • OP_ASSIGN rhs_expr
+   51 bare_expr: • rhs_expr
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   59 stmt_match: • KW_MATCH parens '{' case_block '}'
+   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   61 expr: • full_decl
+   62     | • empty_decl
+   63     | • assignment
+   64     | • typed_val
+   65     | • bare_name
+   66     | • bare_type
+   67     | • bare_val
+   68     | • bare_expr
+   69     | • stmt_if
+   70     | • stmt_match
+   71     | • stmt_for
+   77 expr_tuple: ε •  [']']
+   78           | • expr
+   79           | • expr ',' expr_tuple
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -882,7 +887,7 @@ State 21
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 76 (expr_tuple)
+    $default  reduce using rule 77 (expr_tuple)
 
     const         go to state 26
     ident         go to state 27
@@ -909,8 +914,8 @@ State 21
     stmt_if       go to state 48
     stmt_match    go to state 49
     stmt_for      go to state 50
-    expr          go to state 59
-    expr_tuple    go to state 62
+    expr          go to state 60
+    expr_tuple    go to state 63
 
 
 State 22
@@ -925,6 +930,7 @@ State 22
    18          | • braces
    19          | • bracks
    21 atom_link: '.' • expr_atom
+   25 lhs_expr: '.' •  [OP_TYPE, OP_ASSIGN, ':']
 
     TOK_IDENT  shift, and go to state 8
     '@'        shift, and go to state 18
@@ -932,51 +938,53 @@ State 22
     '{'        shift, and go to state 20
     '['        shift, and go to state 21
 
+    $default  reduce using rule 25 (lhs_expr)
+
     ident      go to state 27
     parens     go to state 28
     braces     go to state 29
     bracks     go to state 30
-    expr_atom  go to state 63
+    expr_atom  go to state 64
 
 
 State 23
 
-   27 op_type: ':' •
+   28 op_type: ':' •
 
-    $default  reduce using rule 27 (op_type)
+    $default  reduce using rule 28 (op_type)
 
 
 State 24
 
-   32 prefix: '+' •
-
-    $default  reduce using rule 32 (prefix)
-
-
-State 25
-
-   33 prefix: '-' •
+   33 prefix: '+' •
 
     $default  reduce using rule 33 (prefix)
 
 
+State 25
+
+   34 prefix: '-' •
+
+    $default  reduce using rule 34 (prefix)
+
+
 State 26
 
-   28 op_bin: • OP_BIN
-   29       | • '+'
-   30       | • '-'
-   40 rhs_expr: const • expr_tail
-   41 expr_tail: • op_bin rhs_expr
-   42          | ε •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
+   29 op_bin: • OP_BIN
+   30       | • '+'
+   31       | • '-'
+   41 rhs_expr: const • expr_tail
+   42 expr_tail: • op_bin rhs_expr
+   43          | ε •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
 
-    OP_BIN  shift, and go to state 64
-    '+'     shift, and go to state 65
-    '-'     shift, and go to state 66
+    OP_BIN  shift, and go to state 65
+    '+'     shift, and go to state 66
+    '-'     shift, and go to state 67
 
-    $default  reduce using rule 42 (expr_tail)
+    $default  reduce using rule 43 (expr_tail)
 
-    op_bin     go to state 67
-    expr_tail  go to state 68
+    op_bin     go to state 68
+    expr_tail  go to state 69
 
 
 State 27
@@ -1037,7 +1045,7 @@ State 32
     '('        shift, and go to state 19
     '{'        shift, and go to state 20
     '['        shift, and go to state 21
-    '.'        shift, and go to state 22
+    '.'        shift, and go to state 53
 
     $default  reduce using rule 22 (atom_chain)
 
@@ -1047,34 +1055,34 @@ State 32
     bracks      go to state 30
     expr_atom   go to state 31
     atom_link   go to state 32
-    atom_chain  go to state 69
+    atom_chain  go to state 70
 
 
 State 33
 
    24 lhs_expr: atom_chain •  [OP_TYPE, OP_ASSIGN, ':']
-   35 prefix_chain: atom_chain •  [$end, OP_BIN, OP_AFFIX, KW_CASE, '#', ')', '}', ']', '+', '-', ';', ',']
+   36 prefix_chain: atom_chain •  [$end, OP_BIN, OP_AFFIX, KW_CASE, '#', ')', '}', ']', '+', '-', ';', ',']
 
     OP_TYPE    reduce using rule 24 (lhs_expr)
     OP_ASSIGN  reduce using rule 24 (lhs_expr)
     ':'        reduce using rule 24 (lhs_expr)
-    $default   reduce using rule 35 (prefix_chain)
+    $default   reduce using rule 36 (prefix_chain)
 
 
 State 34
 
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   43 full_decl: lhs_expr • op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: lhs_expr • op_type type_expr
-   45 assignment: lhs_expr • OP_ASSIGN rhs_expr
-   47 bare_name: lhs_expr • op_type
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   44 full_decl: lhs_expr • op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: lhs_expr • op_type type_expr
+   46 assignment: lhs_expr • OP_ASSIGN rhs_expr
+   48 bare_name: lhs_expr • op_type
 
     OP_TYPE    shift, and go to state 12
-    OP_ASSIGN  shift, and go to state 70
+    OP_ASSIGN  shift, and go to state 71
     ':'        shift, and go to state 23
 
-    op_type  go to state 71
+    op_type  go to state 72
 
 
 State 35
@@ -1092,16 +1100,16 @@ State 35
    21          | • '.' expr_atom
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
-   25 type_expr: • atom_chain
-   46 typed_val: op_type • type_expr OP_ASSIGN rhs_expr
-   48 bare_type: op_type • type_expr
+   26 type_expr: • atom_chain
+   47 typed_val: op_type • type_expr OP_ASSIGN rhs_expr
+   49 bare_type: op_type • type_expr
 
     TOK_IDENT  shift, and go to state 8
     '@'        shift, and go to state 18
     '('        shift, and go to state 19
     '{'        shift, and go to state 20
     '['        shift, and go to state 21
-    '.'        shift, and go to state 22
+    '.'        shift, and go to state 53
 
     ident       go to state 27
     parens      go to state 28
@@ -1109,8 +1117,8 @@ State 35
     bracks      go to state 30
     expr_atom   go to state 31
     atom_link   go to state 32
-    atom_chain  go to state 72
-    type_expr   go to state 73
+    atom_chain  go to state 73
+    type_expr   go to state 74
 
 
 State 36
@@ -1128,12 +1136,12 @@ State 36
    21          | • '.' expr_atom
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   36             | prefix • prefix_chain
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   37             | prefix • prefix_chain
 
     TOK_IDENT  shift, and go to state 8
     OP_AFFIX   shift, and go to state 14
@@ -1141,7 +1149,7 @@ State 36
     '('        shift, and go to state 19
     '{'        shift, and go to state 20
     '['        shift, and go to state 21
-    '.'        shift, and go to state 22
+    '.'        shift, and go to state 53
     '+'        shift, and go to state 24
     '-'        shift, and go to state 25
 
@@ -1151,133 +1159,133 @@ State 36
     bracks        go to state 30
     expr_atom     go to state 31
     atom_link     go to state 32
-    atom_chain    go to state 53
+    atom_chain    go to state 54
     prefix        go to state 36
-    prefix_chain  go to state 74
+    prefix_chain  go to state 75
 
 
 State 37
 
-   37 affix_chain: prefix_chain •
+   38 affix_chain: prefix_chain •
 
-    $default  reduce using rule 37 (affix_chain)
+    $default  reduce using rule 38 (affix_chain)
 
 
 State 38
 
-   28 op_bin: • OP_BIN
-   29       | • '+'
-   30       | • '-'
-   34 suffix: • OP_AFFIX
-   38 affix_chain: affix_chain • suffix
-   39 rhs_expr: affix_chain • expr_tail
-   41 expr_tail: • op_bin rhs_expr
-   42          | ε •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
+   29 op_bin: • OP_BIN
+   30       | • '+'
+   31       | • '-'
+   35 suffix: • OP_AFFIX
+   39 affix_chain: affix_chain • suffix
+   40 rhs_expr: affix_chain • expr_tail
+   42 expr_tail: • op_bin rhs_expr
+   43          | ε •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
 
-    OP_BIN    shift, and go to state 64
-    OP_AFFIX  shift, and go to state 75
-    '+'       shift, and go to state 65
-    '-'       shift, and go to state 66
+    OP_BIN    shift, and go to state 65
+    OP_AFFIX  shift, and go to state 76
+    '+'       shift, and go to state 66
+    '-'       shift, and go to state 67
 
-    $default  reduce using rule 42 (expr_tail)
+    $default  reduce using rule 43 (expr_tail)
 
-    op_bin     go to state 67
-    suffix     go to state 76
-    expr_tail  go to state 77
+    op_bin     go to state 68
+    suffix     go to state 77
+    expr_tail  go to state 78
 
 
 State 39
 
-   50 bare_expr: rhs_expr •
+   51 bare_expr: rhs_expr •
 
-    $default  reduce using rule 50 (bare_expr)
+    $default  reduce using rule 51 (bare_expr)
 
 
 State 40
 
-   60 expr: full_decl •
-
-    $default  reduce using rule 60 (expr)
-
-
-State 41
-
-   61 expr: empty_decl •
+   61 expr: full_decl •
 
     $default  reduce using rule 61 (expr)
 
 
-State 42
+State 41
 
-   62 expr: assignment •
+   62 expr: empty_decl •
 
     $default  reduce using rule 62 (expr)
 
 
-State 43
+State 42
 
-   63 expr: typed_val •
+   63 expr: assignment •
 
     $default  reduce using rule 63 (expr)
 
 
-State 44
+State 43
 
-   64 expr: bare_name •
+   64 expr: typed_val •
 
     $default  reduce using rule 64 (expr)
 
 
-State 45
+State 44
 
-   65 expr: bare_type •
+   65 expr: bare_name •
 
     $default  reduce using rule 65 (expr)
 
 
-State 46
+State 45
 
-   66 expr: bare_val •
+   66 expr: bare_type •
 
     $default  reduce using rule 66 (expr)
 
 
-State 47
+State 46
 
-   67 expr: bare_expr •
+   67 expr: bare_val •
 
     $default  reduce using rule 67 (expr)
 
 
-State 48
+State 47
 
-   68 expr: stmt_if •
+   68 expr: bare_expr •
 
     $default  reduce using rule 68 (expr)
 
 
-State 49
+State 48
 
-   69 expr: stmt_match •
+   69 expr: stmt_if •
 
     $default  reduce using rule 69 (expr)
 
 
-State 50
+State 49
 
-   70 expr: stmt_for •
+   70 expr: stmt_match •
 
     $default  reduce using rule 70 (expr)
 
 
+State 50
+
+   71 expr: stmt_for •
+
+    $default  reduce using rule 71 (expr)
+
+
 State 51
 
-   74 expr_block: expr •  [$end, '#', '}']
-   75           | expr • ';' expr_block
+   75 expr_block: expr •  [$end, '#', '}']
+   76           | expr • ';' expr_block
 
-    ';'  shift, and go to state 78
+    ';'  shift, and go to state 79
 
-    $default  reduce using rule 74 (expr_block)
+    $default  reduce using rule 75 (expr_block)
 
 
 State 52
@@ -1289,19 +1297,45 @@ State 52
 
 State 53
 
-   35 prefix_chain: atom_chain •
+    8 ident: • '@' TOK_IDENT
+    9      | • TOK_IDENT
+   10 parens: • '(' expr_tuple ')'
+   11 braces: • '{' expr_block '}'
+   12 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   21 atom_link: '.' • expr_atom
 
-    $default  reduce using rule 35 (prefix_chain)
+    TOK_IDENT  shift, and go to state 8
+    '@'        shift, and go to state 18
+    '('        shift, and go to state 19
+    '{'        shift, and go to state 20
+    '['        shift, and go to state 21
+
+    ident      go to state 27
+    parens     go to state 28
+    braces     go to state 29
+    bracks     go to state 30
+    expr_atom  go to state 64
 
 
 State 54
 
-   49 bare_val: OP_ASSIGN rhs_expr •
+   36 prefix_chain: atom_chain •
 
-    $default  reduce using rule 49 (bare_val)
+    $default  reduce using rule 36 (prefix_chain)
 
 
 State 55
+
+   50 bare_val: OP_ASSIGN rhs_expr •
+
+    $default  reduce using rule 50 (bare_val)
+
+
+State 56
 
    10 parens: • '(' expr_tuple ')'
    11 braces: • '{' expr_block '}'
@@ -1309,27 +1343,27 @@ State 55
    13 delimited: • parens
    14          | • braces
    15          | • bracks
-   51 stmt_if: KW_IF parens • delimited
-   52        | KW_IF parens • delimited else_chain
+   52 stmt_if: KW_IF parens • delimited
+   53        | KW_IF parens • delimited else_chain
 
     '('  shift, and go to state 19
     '{'  shift, and go to state 20
     '['  shift, and go to state 21
 
-    parens     go to state 79
-    braces     go to state 80
-    bracks     go to state 81
-    delimited  go to state 82
-
-
-State 56
-
-   58 stmt_match: KW_MATCH parens • '{' case_block '}'
-
-    '{'  shift, and go to state 83
+    parens     go to state 80
+    braces     go to state 81
+    bracks     go to state 82
+    delimited  go to state 83
 
 
 State 57
+
+   59 stmt_match: KW_MATCH parens • '{' case_block '}'
+
+    '{'  shift, and go to state 84
+
+
+State 58
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -1348,43 +1382,44 @@ State 57
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
    24 lhs_expr: • atom_chain
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: • lhs_expr op_type type_expr
-   45 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   46 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
-   47 bare_name: • lhs_expr op_type
-   48 bare_type: • op_type type_expr
-   49 bare_val: • OP_ASSIGN rhs_expr
-   50 bare_expr: • rhs_expr
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   58 stmt_match: • KW_MATCH parens '{' case_block '}'
-   59 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   59         | KW_FOR '(' • opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60 expr: • full_decl
-   61     | • empty_decl
-   62     | • assignment
-   63     | • typed_val
-   64     | • bare_name
-   65     | • bare_type
-   66     | • bare_val
-   67     | • bare_expr
-   68     | • stmt_if
-   69     | • stmt_match
-   70     | • stmt_for
-   71 opt_expr: • expr
-   72         | ε •  [';']
+   25         | • '.'
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: • lhs_expr op_type type_expr
+   46 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   47 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
+   48 bare_name: • lhs_expr op_type
+   49 bare_type: • op_type type_expr
+   50 bare_val: • OP_ASSIGN rhs_expr
+   51 bare_expr: • rhs_expr
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   59 stmt_match: • KW_MATCH parens '{' case_block '}'
+   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   60         | KW_FOR '(' • opt_expr ';' opt_expr ';' opt_expr ')' expr
+   61 expr: • full_decl
+   62     | • empty_decl
+   63     | • assignment
+   64     | • typed_val
+   65     | • bare_name
+   66     | • bare_type
+   67     | • bare_val
+   68     | • bare_expr
+   69     | • stmt_if
+   70     | • stmt_match
+   71     | • stmt_for
+   72 opt_expr: • expr
+   73         | ε •  [';']
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -1405,7 +1440,7 @@ State 57
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 72 (opt_expr)
+    $default  reduce using rule 73 (opt_expr)
 
     const         go to state 26
     ident         go to state 27
@@ -1432,148 +1467,78 @@ State 57
     stmt_if       go to state 48
     stmt_match    go to state 49
     stmt_for      go to state 50
-    expr          go to state 84
-    opt_expr      go to state 85
+    expr          go to state 85
+    opt_expr      go to state 86
 
 
-State 58
+State 59
 
     8 ident: '@' TOK_IDENT •
 
     $default  reduce using rule 8 (ident)
 
 
-State 59
-
-   77 expr_tuple: expr •  [')', ']']
-   78           | expr • ',' expr_tuple
-
-    ','  shift, and go to state 86
-
-    $default  reduce using rule 77 (expr_tuple)
-
-
 State 60
 
-   10 parens: '(' expr_tuple • ')'
+   78 expr_tuple: expr •  [')', ']']
+   79           | expr • ',' expr_tuple
 
-    ')'  shift, and go to state 87
+    ','  shift, and go to state 87
+
+    $default  reduce using rule 78 (expr_tuple)
 
 
 State 61
 
-   11 braces: '{' expr_block • '}'
+   10 parens: '(' expr_tuple • ')'
 
-    '}'  shift, and go to state 88
+    ')'  shift, and go to state 88
 
 
 State 62
 
-   12 bracks: '[' expr_tuple • ']'
+   11 braces: '{' expr_block • '}'
 
-    ']'  shift, and go to state 89
+    '}'  shift, and go to state 89
 
 
 State 63
+
+   12 bracks: '[' expr_tuple • ']'
+
+    ']'  shift, and go to state 90
+
+
+State 64
 
    21 atom_link: '.' expr_atom •
 
     $default  reduce using rule 21 (atom_link)
 
 
-State 64
-
-   28 op_bin: OP_BIN •
-
-    $default  reduce using rule 28 (op_bin)
-
-
 State 65
 
-   29 op_bin: '+' •
+   29 op_bin: OP_BIN •
 
     $default  reduce using rule 29 (op_bin)
 
 
 State 66
 
-   30 op_bin: '-' •
+   30 op_bin: '+' •
 
     $default  reduce using rule 30 (op_bin)
 
 
 State 67
 
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block '}'
-   12 bracks: • '[' expr_tuple ']'
-   16 expr_atom: • ident
-   17          | • parens
-   18          | • braces
-   19          | • bracks
-   20 atom_link: • expr_atom
-   21          | • '.' expr_atom
-   22 atom_chain: • atom_link
-   23           | • atom_link atom_chain
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   41 expr_tail: op_bin • rhs_expr
+   31 op_bin: '-' •
 
-    TOK_IDENT   shift, and go to state 8
-    TOK_INT     shift, and go to state 9
-    TOK_FLOAT   shift, and go to state 10
-    TOK_STRING  shift, and go to state 11
-    OP_AFFIX    shift, and go to state 14
-    '@'         shift, and go to state 18
-    '('         shift, and go to state 19
-    '{'         shift, and go to state 20
-    '['         shift, and go to state 21
-    '.'         shift, and go to state 22
-    '+'         shift, and go to state 24
-    '-'         shift, and go to state 25
-
-    const         go to state 26
-    ident         go to state 27
-    parens        go to state 28
-    braces        go to state 29
-    bracks        go to state 30
-    expr_atom     go to state 31
-    atom_link     go to state 32
-    atom_chain    go to state 53
-    prefix        go to state 36
-    prefix_chain  go to state 37
-    affix_chain   go to state 38
-    rhs_expr      go to state 90
+    $default  reduce using rule 31 (op_bin)
 
 
 State 68
 
-   40 rhs_expr: const expr_tail •
-
-    $default  reduce using rule 40 (rhs_expr)
-
-
-State 69
-
-   23 atom_chain: atom_link atom_chain •
-
-    $default  reduce using rule 23 (atom_chain)
-
-
-State 70
-
     5 const: • TOK_INT
     6      | • TOK_FLOAT
     7      | • TOK_STRING
@@ -1590,16 +1555,16 @@ State 70
    21          | • '.' expr_atom
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   45 assignment: lhs_expr OP_ASSIGN • rhs_expr
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   42 expr_tail: op_bin • rhs_expr
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -1610,7 +1575,7 @@ State 70
     '('         shift, and go to state 19
     '{'         shift, and go to state 20
     '['         shift, and go to state 21
-    '.'         shift, and go to state 22
+    '.'         shift, and go to state 53
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
@@ -1621,14 +1586,84 @@ State 70
     bracks        go to state 30
     expr_atom     go to state 31
     atom_link     go to state 32
-    atom_chain    go to state 53
+    atom_chain    go to state 54
     prefix        go to state 36
     prefix_chain  go to state 37
     affix_chain   go to state 38
     rhs_expr      go to state 91
 
 
+State 69
+
+   41 rhs_expr: const expr_tail •
+
+    $default  reduce using rule 41 (rhs_expr)
+
+
+State 70
+
+   23 atom_chain: atom_link atom_chain •
+
+    $default  reduce using rule 23 (atom_chain)
+
+
 State 71
+
+    5 const: • TOK_INT
+    6      | • TOK_FLOAT
+    7      | • TOK_STRING
+    8 ident: • '@' TOK_IDENT
+    9      | • TOK_IDENT
+   10 parens: • '(' expr_tuple ')'
+   11 braces: • '{' expr_block '}'
+   12 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   46 assignment: lhs_expr OP_ASSIGN • rhs_expr
+
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_AFFIX    shift, and go to state 14
+    '@'         shift, and go to state 18
+    '('         shift, and go to state 19
+    '{'         shift, and go to state 20
+    '['         shift, and go to state 21
+    '.'         shift, and go to state 53
+    '+'         shift, and go to state 24
+    '-'         shift, and go to state 25
+
+    const         go to state 26
+    ident         go to state 27
+    parens        go to state 28
+    braces        go to state 29
+    bracks        go to state 30
+    expr_atom     go to state 31
+    atom_link     go to state 32
+    atom_chain    go to state 54
+    prefix        go to state 36
+    prefix_chain  go to state 37
+    affix_chain   go to state 38
+    rhs_expr      go to state 92
+
+
+State 72
 
     8 ident: • '@' TOK_IDENT
     9      | • TOK_IDENT
@@ -1643,19 +1678,19 @@ State 71
    21          | • '.' expr_atom
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
-   25 type_expr: • atom_chain
-   43 full_decl: lhs_expr op_type • type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: lhs_expr op_type • type_expr
-   47 bare_name: lhs_expr op_type •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
+   26 type_expr: • atom_chain
+   44 full_decl: lhs_expr op_type • type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: lhs_expr op_type • type_expr
+   48 bare_name: lhs_expr op_type •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
 
     TOK_IDENT  shift, and go to state 8
     '@'        shift, and go to state 18
     '('        shift, and go to state 19
     '{'        shift, and go to state 20
     '['        shift, and go to state 21
-    '.'        shift, and go to state 22
+    '.'        shift, and go to state 53
 
-    $default  reduce using rule 47 (bare_name)
+    $default  reduce using rule 48 (bare_name)
 
     ident       go to state 27
     parens      go to state 28
@@ -1663,56 +1698,56 @@ State 71
     bracks      go to state 30
     expr_atom   go to state 31
     atom_link   go to state 32
-    atom_chain  go to state 72
-    type_expr   go to state 92
-
-
-State 72
-
-   25 type_expr: atom_chain •
-
-    $default  reduce using rule 25 (type_expr)
+    atom_chain  go to state 73
+    type_expr   go to state 93
 
 
 State 73
 
-   46 typed_val: op_type type_expr • OP_ASSIGN rhs_expr
-   48 bare_type: op_type type_expr •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
+   26 type_expr: atom_chain •
 
-    OP_ASSIGN  shift, and go to state 93
-
-    $default  reduce using rule 48 (bare_type)
+    $default  reduce using rule 26 (type_expr)
 
 
 State 74
 
-   36 prefix_chain: prefix prefix_chain •
+   47 typed_val: op_type type_expr • OP_ASSIGN rhs_expr
+   49 bare_type: op_type type_expr •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
 
-    $default  reduce using rule 36 (prefix_chain)
+    OP_ASSIGN  shift, and go to state 94
+
+    $default  reduce using rule 49 (bare_type)
 
 
 State 75
 
-   34 suffix: OP_AFFIX •
+   37 prefix_chain: prefix prefix_chain •
 
-    $default  reduce using rule 34 (suffix)
+    $default  reduce using rule 37 (prefix_chain)
 
 
 State 76
 
-   38 affix_chain: affix_chain suffix •
+   35 suffix: OP_AFFIX •
 
-    $default  reduce using rule 38 (affix_chain)
+    $default  reduce using rule 35 (suffix)
 
 
 State 77
 
-   39 rhs_expr: affix_chain expr_tail •
+   39 affix_chain: affix_chain suffix •
 
-    $default  reduce using rule 39 (rhs_expr)
+    $default  reduce using rule 39 (affix_chain)
 
 
 State 78
+
+   40 rhs_expr: affix_chain expr_tail •
+
+    $default  reduce using rule 40 (rhs_expr)
+
+
+State 79
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -1731,44 +1766,45 @@ State 78
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
    24 lhs_expr: • atom_chain
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: • lhs_expr op_type type_expr
-   45 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   46 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
-   47 bare_name: • lhs_expr op_type
-   48 bare_type: • op_type type_expr
-   49 bare_val: • OP_ASSIGN rhs_expr
-   50 bare_expr: • rhs_expr
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   58 stmt_match: • KW_MATCH parens '{' case_block '}'
-   59 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60 expr: • full_decl
-   61     | • empty_decl
-   62     | • assignment
-   63     | • typed_val
-   64     | • bare_name
-   65     | • bare_type
-   66     | • bare_val
-   67     | • bare_expr
-   68     | • stmt_if
-   69     | • stmt_match
-   70     | • stmt_for
-   73 expr_block: ε •  [$end, '#', '}']
-   74           | • expr
-   75           | • expr ';' expr_block
-   75           | expr ';' • expr_block
+   25         | • '.'
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: • lhs_expr op_type type_expr
+   46 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   47 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
+   48 bare_name: • lhs_expr op_type
+   49 bare_type: • op_type type_expr
+   50 bare_val: • OP_ASSIGN rhs_expr
+   51 bare_expr: • rhs_expr
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   59 stmt_match: • KW_MATCH parens '{' case_block '}'
+   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   61 expr: • full_decl
+   62     | • empty_decl
+   63     | • assignment
+   64     | • typed_val
+   65     | • bare_name
+   66     | • bare_type
+   67     | • bare_val
+   68     | • bare_expr
+   69     | • stmt_if
+   70     | • stmt_match
+   71     | • stmt_for
+   74 expr_block: ε •  [$end, '#', '}']
+   75           | • expr
+   76           | • expr ';' expr_block
+   76           | expr ';' • expr_block
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -1789,7 +1825,7 @@ State 78
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 73 (expr_block)
+    $default  reduce using rule 74 (expr_block)
 
     const         go to state 26
     ident         go to state 27
@@ -1817,72 +1853,72 @@ State 78
     stmt_match    go to state 49
     stmt_for      go to state 50
     expr          go to state 51
-    expr_block    go to state 94
+    expr_block    go to state 95
 
 
-State 79
+State 80
 
    13 delimited: parens •
 
     $default  reduce using rule 13 (delimited)
 
 
-State 80
+State 81
 
    14 delimited: braces •
 
     $default  reduce using rule 14 (delimited)
 
 
-State 81
+State 82
 
    15 delimited: bracks •
 
     $default  reduce using rule 15 (delimited)
 
 
-State 82
-
-   51 stmt_if: KW_IF parens delimited •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
-   52        | KW_IF parens delimited • else_chain
-   53 else_chain: • KW_ELSE delimited
-   54           | • KW_ELSE stmt_if
-
-    KW_ELSE  shift, and go to state 95
-
-    $default  reduce using rule 51 (stmt_if)
-
-    else_chain  go to state 96
-
-
 State 83
 
-   55 stmt_case: • KW_CASE parens expr
-   56 case_block: • stmt_case
-   57           | • stmt_case case_block
-   58 stmt_match: KW_MATCH parens '{' • case_block '}'
+   52 stmt_if: KW_IF parens delimited •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
+   53        | KW_IF parens delimited • else_chain
+   54 else_chain: • KW_ELSE delimited
+   55           | • KW_ELSE stmt_if
 
-    KW_CASE  shift, and go to state 97
+    KW_ELSE  shift, and go to state 96
 
-    stmt_case   go to state 98
-    case_block  go to state 99
+    $default  reduce using rule 52 (stmt_if)
+
+    else_chain  go to state 97
 
 
 State 84
 
-   71 opt_expr: expr •
+   56 stmt_case: • KW_CASE parens expr
+   57 case_block: • stmt_case
+   58           | • stmt_case case_block
+   59 stmt_match: KW_MATCH parens '{' • case_block '}'
 
-    $default  reduce using rule 71 (opt_expr)
+    KW_CASE  shift, and go to state 98
+
+    stmt_case   go to state 99
+    case_block  go to state 100
 
 
 State 85
 
-   59 stmt_for: KW_FOR '(' opt_expr • ';' opt_expr ';' opt_expr ')' expr
+   72 opt_expr: expr •
 
-    ';'  shift, and go to state 100
+    $default  reduce using rule 72 (opt_expr)
 
 
 State 86
+
+   60 stmt_for: KW_FOR '(' opt_expr • ';' opt_expr ';' opt_expr ')' expr
+
+    ';'  shift, and go to state 101
+
+
+State 87
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -1901,44 +1937,45 @@ State 86
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
    24 lhs_expr: • atom_chain
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: • lhs_expr op_type type_expr
-   45 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   46 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
-   47 bare_name: • lhs_expr op_type
-   48 bare_type: • op_type type_expr
-   49 bare_val: • OP_ASSIGN rhs_expr
-   50 bare_expr: • rhs_expr
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   58 stmt_match: • KW_MATCH parens '{' case_block '}'
-   59 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60 expr: • full_decl
-   61     | • empty_decl
-   62     | • assignment
-   63     | • typed_val
-   64     | • bare_name
-   65     | • bare_type
-   66     | • bare_val
-   67     | • bare_expr
-   68     | • stmt_if
-   69     | • stmt_match
-   70     | • stmt_for
-   76 expr_tuple: ε •  [')', ']']
-   77           | • expr
-   78           | • expr ',' expr_tuple
-   78           | expr ',' • expr_tuple
+   25         | • '.'
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: • lhs_expr op_type type_expr
+   46 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   47 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
+   48 bare_name: • lhs_expr op_type
+   49 bare_type: • op_type type_expr
+   50 bare_val: • OP_ASSIGN rhs_expr
+   51 bare_expr: • rhs_expr
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   59 stmt_match: • KW_MATCH parens '{' case_block '}'
+   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   61 expr: • full_decl
+   62     | • empty_decl
+   63     | • assignment
+   64     | • typed_val
+   65     | • bare_name
+   66     | • bare_type
+   67     | • bare_val
+   68     | • bare_expr
+   69     | • stmt_if
+   70     | • stmt_match
+   71     | • stmt_for
+   77 expr_tuple: ε •  [')', ']']
+   78           | • expr
+   79           | • expr ',' expr_tuple
+   79           | expr ',' • expr_tuple
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -1959,7 +1996,7 @@ State 86
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 76 (expr_tuple)
+    $default  reduce using rule 77 (expr_tuple)
 
     const         go to state 26
     ident         go to state 27
@@ -1986,56 +2023,56 @@ State 86
     stmt_if       go to state 48
     stmt_match    go to state 49
     stmt_for      go to state 50
-    expr          go to state 59
-    expr_tuple    go to state 101
+    expr          go to state 60
+    expr_tuple    go to state 102
 
 
-State 87
+State 88
 
    10 parens: '(' expr_tuple ')' •
 
     $default  reduce using rule 10 (parens)
 
 
-State 88
+State 89
 
    11 braces: '{' expr_block '}' •
 
     $default  reduce using rule 11 (braces)
 
 
-State 89
+State 90
 
    12 bracks: '[' expr_tuple ']' •
 
     $default  reduce using rule 12 (bracks)
 
 
-State 90
-
-   41 expr_tail: op_bin rhs_expr •
-
-    $default  reduce using rule 41 (expr_tail)
-
-
 State 91
 
-   45 assignment: lhs_expr OP_ASSIGN rhs_expr •
+   42 expr_tail: op_bin rhs_expr •
 
-    $default  reduce using rule 45 (assignment)
+    $default  reduce using rule 42 (expr_tail)
 
 
 State 92
 
-   43 full_decl: lhs_expr op_type type_expr • OP_ASSIGN rhs_expr
-   44 empty_decl: lhs_expr op_type type_expr •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
+   46 assignment: lhs_expr OP_ASSIGN rhs_expr •
 
-    OP_ASSIGN  shift, and go to state 102
-
-    $default  reduce using rule 44 (empty_decl)
+    $default  reduce using rule 46 (assignment)
 
 
 State 93
+
+   44 full_decl: lhs_expr op_type type_expr • OP_ASSIGN rhs_expr
+   45 empty_decl: lhs_expr op_type type_expr •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
+
+    OP_ASSIGN  shift, and go to state 103
+
+    $default  reduce using rule 45 (empty_decl)
+
+
+State 94
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -2053,16 +2090,16 @@ State 93
    21          | • '.' expr_atom
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   46 typed_val: op_type type_expr OP_ASSIGN • rhs_expr
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   47 typed_val: op_type type_expr OP_ASSIGN • rhs_expr
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -2073,7 +2110,7 @@ State 93
     '('         shift, and go to state 19
     '{'         shift, and go to state 20
     '['         shift, and go to state 21
-    '.'         shift, and go to state 22
+    '.'         shift, and go to state 53
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
@@ -2084,21 +2121,21 @@ State 93
     bracks        go to state 30
     expr_atom     go to state 31
     atom_link     go to state 32
-    atom_chain    go to state 53
+    atom_chain    go to state 54
     prefix        go to state 36
     prefix_chain  go to state 37
     affix_chain   go to state 38
-    rhs_expr      go to state 103
-
-
-State 94
-
-   75 expr_block: expr ';' expr_block •
-
-    $default  reduce using rule 75 (expr_block)
+    rhs_expr      go to state 104
 
 
 State 95
+
+   76 expr_block: expr ';' expr_block •
+
+    $default  reduce using rule 76 (expr_block)
+
+
+State 96
 
    10 parens: • '(' expr_tuple ')'
    11 braces: • '{' expr_block '}'
@@ -2106,64 +2143,64 @@ State 95
    13 delimited: • parens
    14          | • braces
    15          | • bracks
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   53 else_chain: KW_ELSE • delimited
-   54           | KW_ELSE • stmt_if
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   54 else_chain: KW_ELSE • delimited
+   55           | KW_ELSE • stmt_if
 
     KW_IF  shift, and go to state 15
     '('    shift, and go to state 19
     '{'    shift, and go to state 20
     '['    shift, and go to state 21
 
-    parens     go to state 79
-    braces     go to state 80
-    bracks     go to state 81
-    delimited  go to state 104
-    stmt_if    go to state 105
-
-
-State 96
-
-   52 stmt_if: KW_IF parens delimited else_chain •
-
-    $default  reduce using rule 52 (stmt_if)
+    parens     go to state 80
+    braces     go to state 81
+    bracks     go to state 82
+    delimited  go to state 105
+    stmt_if    go to state 106
 
 
 State 97
 
-   10 parens: • '(' expr_tuple ')'
-   55 stmt_case: KW_CASE • parens expr
+   53 stmt_if: KW_IF parens delimited else_chain •
 
-    '('  shift, and go to state 19
-
-    parens  go to state 106
+    $default  reduce using rule 53 (stmt_if)
 
 
 State 98
 
-   55 stmt_case: • KW_CASE parens expr
-   56 case_block: • stmt_case
-   56           | stmt_case •  ['}']
-   57           | • stmt_case case_block
-   57           | stmt_case • case_block
+   10 parens: • '(' expr_tuple ')'
+   56 stmt_case: KW_CASE • parens expr
 
-    KW_CASE  shift, and go to state 97
+    '('  shift, and go to state 19
 
-    $default  reduce using rule 56 (case_block)
-
-    stmt_case   go to state 98
-    case_block  go to state 107
+    parens  go to state 107
 
 
 State 99
 
-   58 stmt_match: KW_MATCH parens '{' case_block • '}'
+   56 stmt_case: • KW_CASE parens expr
+   57 case_block: • stmt_case
+   57           | stmt_case •  ['}']
+   58           | • stmt_case case_block
+   58           | stmt_case • case_block
 
-    '}'  shift, and go to state 108
+    KW_CASE  shift, and go to state 98
+
+    $default  reduce using rule 57 (case_block)
+
+    stmt_case   go to state 99
+    case_block  go to state 108
 
 
 State 100
+
+   59 stmt_match: KW_MATCH parens '{' case_block • '}'
+
+    '}'  shift, and go to state 109
+
+
+State 101
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -2182,43 +2219,44 @@ State 100
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
    24 lhs_expr: • atom_chain
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: • lhs_expr op_type type_expr
-   45 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   46 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
-   47 bare_name: • lhs_expr op_type
-   48 bare_type: • op_type type_expr
-   49 bare_val: • OP_ASSIGN rhs_expr
-   50 bare_expr: • rhs_expr
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   58 stmt_match: • KW_MATCH parens '{' case_block '}'
-   59 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   59         | KW_FOR '(' opt_expr ';' • opt_expr ';' opt_expr ')' expr
-   60 expr: • full_decl
-   61     | • empty_decl
-   62     | • assignment
-   63     | • typed_val
-   64     | • bare_name
-   65     | • bare_type
-   66     | • bare_val
-   67     | • bare_expr
-   68     | • stmt_if
-   69     | • stmt_match
-   70     | • stmt_for
-   71 opt_expr: • expr
-   72         | ε •  [';']
+   25         | • '.'
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: • lhs_expr op_type type_expr
+   46 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   47 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
+   48 bare_name: • lhs_expr op_type
+   49 bare_type: • op_type type_expr
+   50 bare_val: • OP_ASSIGN rhs_expr
+   51 bare_expr: • rhs_expr
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   59 stmt_match: • KW_MATCH parens '{' case_block '}'
+   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   60         | KW_FOR '(' opt_expr ';' • opt_expr ';' opt_expr ')' expr
+   61 expr: • full_decl
+   62     | • empty_decl
+   63     | • assignment
+   64     | • typed_val
+   65     | • bare_name
+   66     | • bare_type
+   67     | • bare_val
+   68     | • bare_expr
+   69     | • stmt_if
+   70     | • stmt_match
+   71     | • stmt_for
+   72 opt_expr: • expr
+   73         | ε •  [';']
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -2239,7 +2277,7 @@ State 100
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 72 (opt_expr)
+    $default  reduce using rule 73 (opt_expr)
 
     const         go to state 26
     ident         go to state 27
@@ -2266,18 +2304,18 @@ State 100
     stmt_if       go to state 48
     stmt_match    go to state 49
     stmt_for      go to state 50
-    expr          go to state 84
-    opt_expr      go to state 109
-
-
-State 101
-
-   78 expr_tuple: expr ',' expr_tuple •
-
-    $default  reduce using rule 78 (expr_tuple)
+    expr          go to state 85
+    opt_expr      go to state 110
 
 
 State 102
+
+   79 expr_tuple: expr ',' expr_tuple •
+
+    $default  reduce using rule 79 (expr_tuple)
+
+
+State 103
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -2295,16 +2333,16 @@ State 102
    21          | • '.' expr_atom
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: lhs_expr op_type type_expr OP_ASSIGN • rhs_expr
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: lhs_expr op_type type_expr OP_ASSIGN • rhs_expr
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -2315,7 +2353,7 @@ State 102
     '('         shift, and go to state 19
     '{'         shift, and go to state 20
     '['         shift, and go to state 21
-    '.'         shift, and go to state 22
+    '.'         shift, and go to state 53
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
@@ -2326,286 +2364,288 @@ State 102
     bracks        go to state 30
     expr_atom     go to state 31
     atom_link     go to state 32
-    atom_chain    go to state 53
+    atom_chain    go to state 54
     prefix        go to state 36
     prefix_chain  go to state 37
     affix_chain   go to state 38
-    rhs_expr      go to state 110
-
-
-State 103
-
-   46 typed_val: op_type type_expr OP_ASSIGN rhs_expr •
-
-    $default  reduce using rule 46 (typed_val)
+    rhs_expr      go to state 111
 
 
 State 104
 
-   53 else_chain: KW_ELSE delimited •
+   47 typed_val: op_type type_expr OP_ASSIGN rhs_expr •
 
-    $default  reduce using rule 53 (else_chain)
+    $default  reduce using rule 47 (typed_val)
 
 
 State 105
 
-   54 else_chain: KW_ELSE stmt_if •
+   54 else_chain: KW_ELSE delimited •
 
     $default  reduce using rule 54 (else_chain)
 
 
 State 106
 
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block '}'
-   12 bracks: • '[' expr_tuple ']'
-   16 expr_atom: • ident
-   17          | • parens
-   18          | • braces
-   19          | • bracks
-   20 atom_link: • expr_atom
-   21          | • '.' expr_atom
-   22 atom_chain: • atom_link
-   23           | • atom_link atom_chain
-   24 lhs_expr: • atom_chain
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: • lhs_expr op_type type_expr
-   45 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   46 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
-   47 bare_name: • lhs_expr op_type
-   48 bare_type: • op_type type_expr
-   49 bare_val: • OP_ASSIGN rhs_expr
-   50 bare_expr: • rhs_expr
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   55 stmt_case: KW_CASE parens • expr
-   58 stmt_match: • KW_MATCH parens '{' case_block '}'
-   59 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60 expr: • full_decl
-   61     | • empty_decl
-   62     | • assignment
-   63     | • typed_val
-   64     | • bare_name
-   65     | • bare_type
-   66     | • bare_val
-   67     | • bare_expr
-   68     | • stmt_if
-   69     | • stmt_match
-   70     | • stmt_for
+   55 else_chain: KW_ELSE stmt_if •
 
-    TOK_IDENT   shift, and go to state 8
-    TOK_INT     shift, and go to state 9
-    TOK_FLOAT   shift, and go to state 10
-    TOK_STRING  shift, and go to state 11
-    OP_TYPE     shift, and go to state 12
-    OP_ASSIGN   shift, and go to state 13
-    OP_AFFIX    shift, and go to state 14
-    KW_IF       shift, and go to state 15
-    KW_MATCH    shift, and go to state 16
-    KW_FOR      shift, and go to state 17
-    '@'         shift, and go to state 18
-    '('         shift, and go to state 19
-    '{'         shift, and go to state 20
-    '['         shift, and go to state 21
-    '.'         shift, and go to state 22
-    ':'         shift, and go to state 23
-    '+'         shift, and go to state 24
-    '-'         shift, and go to state 25
-
-    const         go to state 26
-    ident         go to state 27
-    parens        go to state 28
-    braces        go to state 29
-    bracks        go to state 30
-    expr_atom     go to state 31
-    atom_link     go to state 32
-    atom_chain    go to state 33
-    lhs_expr      go to state 34
-    op_type       go to state 35
-    prefix        go to state 36
-    prefix_chain  go to state 37
-    affix_chain   go to state 38
-    rhs_expr      go to state 39
-    full_decl     go to state 40
-    empty_decl    go to state 41
-    assignment    go to state 42
-    typed_val     go to state 43
-    bare_name     go to state 44
-    bare_type     go to state 45
-    bare_val      go to state 46
-    bare_expr     go to state 47
-    stmt_if       go to state 48
-    stmt_match    go to state 49
-    stmt_for      go to state 50
-    expr          go to state 111
+    $default  reduce using rule 55 (else_chain)
 
 
 State 107
 
-   57 case_block: stmt_case case_block •
+    5 const: • TOK_INT
+    6      | • TOK_FLOAT
+    7      | • TOK_STRING
+    8 ident: • '@' TOK_IDENT
+    9      | • TOK_IDENT
+   10 parens: • '(' expr_tuple ')'
+   11 braces: • '{' expr_block '}'
+   12 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   24 lhs_expr: • atom_chain
+   25         | • '.'
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: • lhs_expr op_type type_expr
+   46 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   47 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
+   48 bare_name: • lhs_expr op_type
+   49 bare_type: • op_type type_expr
+   50 bare_val: • OP_ASSIGN rhs_expr
+   51 bare_expr: • rhs_expr
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   56 stmt_case: KW_CASE parens • expr
+   59 stmt_match: • KW_MATCH parens '{' case_block '}'
+   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   61 expr: • full_decl
+   62     | • empty_decl
+   63     | • assignment
+   64     | • typed_val
+   65     | • bare_name
+   66     | • bare_type
+   67     | • bare_val
+   68     | • bare_expr
+   69     | • stmt_if
+   70     | • stmt_match
+   71     | • stmt_for
 
-    $default  reduce using rule 57 (case_block)
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_TYPE     shift, and go to state 12
+    OP_ASSIGN   shift, and go to state 13
+    OP_AFFIX    shift, and go to state 14
+    KW_IF       shift, and go to state 15
+    KW_MATCH    shift, and go to state 16
+    KW_FOR      shift, and go to state 17
+    '@'         shift, and go to state 18
+    '('         shift, and go to state 19
+    '{'         shift, and go to state 20
+    '['         shift, and go to state 21
+    '.'         shift, and go to state 22
+    ':'         shift, and go to state 23
+    '+'         shift, and go to state 24
+    '-'         shift, and go to state 25
+
+    const         go to state 26
+    ident         go to state 27
+    parens        go to state 28
+    braces        go to state 29
+    bracks        go to state 30
+    expr_atom     go to state 31
+    atom_link     go to state 32
+    atom_chain    go to state 33
+    lhs_expr      go to state 34
+    op_type       go to state 35
+    prefix        go to state 36
+    prefix_chain  go to state 37
+    affix_chain   go to state 38
+    rhs_expr      go to state 39
+    full_decl     go to state 40
+    empty_decl    go to state 41
+    assignment    go to state 42
+    typed_val     go to state 43
+    bare_name     go to state 44
+    bare_type     go to state 45
+    bare_val      go to state 46
+    bare_expr     go to state 47
+    stmt_if       go to state 48
+    stmt_match    go to state 49
+    stmt_for      go to state 50
+    expr          go to state 112
 
 
 State 108
 
-   58 stmt_match: KW_MATCH parens '{' case_block '}' •
+   58 case_block: stmt_case case_block •
 
-    $default  reduce using rule 58 (stmt_match)
+    $default  reduce using rule 58 (case_block)
 
 
 State 109
 
-   59 stmt_for: KW_FOR '(' opt_expr ';' opt_expr • ';' opt_expr ')' expr
+   59 stmt_match: KW_MATCH parens '{' case_block '}' •
 
-    ';'  shift, and go to state 112
+    $default  reduce using rule 59 (stmt_match)
 
 
 State 110
 
-   43 full_decl: lhs_expr op_type type_expr OP_ASSIGN rhs_expr •
+   60 stmt_for: KW_FOR '(' opt_expr ';' opt_expr • ';' opt_expr ')' expr
 
-    $default  reduce using rule 43 (full_decl)
+    ';'  shift, and go to state 113
 
 
 State 111
 
-   55 stmt_case: KW_CASE parens expr •
+   44 full_decl: lhs_expr op_type type_expr OP_ASSIGN rhs_expr •
 
-    $default  reduce using rule 55 (stmt_case)
+    $default  reduce using rule 44 (full_decl)
 
 
 State 112
 
-    5 const: • TOK_INT
-    6      | • TOK_FLOAT
-    7      | • TOK_STRING
-    8 ident: • '@' TOK_IDENT
-    9      | • TOK_IDENT
-   10 parens: • '(' expr_tuple ')'
-   11 braces: • '{' expr_block '}'
-   12 bracks: • '[' expr_tuple ']'
-   16 expr_atom: • ident
-   17          | • parens
-   18          | • braces
-   19          | • bracks
-   20 atom_link: • expr_atom
-   21          | • '.' expr_atom
-   22 atom_chain: • atom_link
-   23           | • atom_link atom_chain
-   24 lhs_expr: • atom_chain
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: • lhs_expr op_type type_expr
-   45 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   46 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
-   47 bare_name: • lhs_expr op_type
-   48 bare_type: • op_type type_expr
-   49 bare_val: • OP_ASSIGN rhs_expr
-   50 bare_expr: • rhs_expr
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   58 stmt_match: • KW_MATCH parens '{' case_block '}'
-   59 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   59         | KW_FOR '(' opt_expr ';' opt_expr ';' • opt_expr ')' expr
-   60 expr: • full_decl
-   61     | • empty_decl
-   62     | • assignment
-   63     | • typed_val
-   64     | • bare_name
-   65     | • bare_type
-   66     | • bare_val
-   67     | • bare_expr
-   68     | • stmt_if
-   69     | • stmt_match
-   70     | • stmt_for
-   71 opt_expr: • expr
-   72         | ε •  [')']
+   56 stmt_case: KW_CASE parens expr •
 
-    TOK_IDENT   shift, and go to state 8
-    TOK_INT     shift, and go to state 9
-    TOK_FLOAT   shift, and go to state 10
-    TOK_STRING  shift, and go to state 11
-    OP_TYPE     shift, and go to state 12
-    OP_ASSIGN   shift, and go to state 13
-    OP_AFFIX    shift, and go to state 14
-    KW_IF       shift, and go to state 15
-    KW_MATCH    shift, and go to state 16
-    KW_FOR      shift, and go to state 17
-    '@'         shift, and go to state 18
-    '('         shift, and go to state 19
-    '{'         shift, and go to state 20
-    '['         shift, and go to state 21
-    '.'         shift, and go to state 22
-    ':'         shift, and go to state 23
-    '+'         shift, and go to state 24
-    '-'         shift, and go to state 25
-
-    $default  reduce using rule 72 (opt_expr)
-
-    const         go to state 26
-    ident         go to state 27
-    parens        go to state 28
-    braces        go to state 29
-    bracks        go to state 30
-    expr_atom     go to state 31
-    atom_link     go to state 32
-    atom_chain    go to state 33
-    lhs_expr      go to state 34
-    op_type       go to state 35
-    prefix        go to state 36
-    prefix_chain  go to state 37
-    affix_chain   go to state 38
-    rhs_expr      go to state 39
-    full_decl     go to state 40
-    empty_decl    go to state 41
-    assignment    go to state 42
-    typed_val     go to state 43
-    bare_name     go to state 44
-    bare_type     go to state 45
-    bare_val      go to state 46
-    bare_expr     go to state 47
-    stmt_if       go to state 48
-    stmt_match    go to state 49
-    stmt_for      go to state 50
-    expr          go to state 84
-    opt_expr      go to state 113
+    $default  reduce using rule 56 (stmt_case)
 
 
 State 113
 
-   59 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr • ')' expr
+    5 const: • TOK_INT
+    6      | • TOK_FLOAT
+    7      | • TOK_STRING
+    8 ident: • '@' TOK_IDENT
+    9      | • TOK_IDENT
+   10 parens: • '(' expr_tuple ')'
+   11 braces: • '{' expr_block '}'
+   12 bracks: • '[' expr_tuple ']'
+   16 expr_atom: • ident
+   17          | • parens
+   18          | • braces
+   19          | • bracks
+   20 atom_link: • expr_atom
+   21          | • '.' expr_atom
+   22 atom_chain: • atom_link
+   23           | • atom_link atom_chain
+   24 lhs_expr: • atom_chain
+   25         | • '.'
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: • lhs_expr op_type type_expr
+   46 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   47 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
+   48 bare_name: • lhs_expr op_type
+   49 bare_type: • op_type type_expr
+   50 bare_val: • OP_ASSIGN rhs_expr
+   51 bare_expr: • rhs_expr
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   59 stmt_match: • KW_MATCH parens '{' case_block '}'
+   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   60         | KW_FOR '(' opt_expr ';' opt_expr ';' • opt_expr ')' expr
+   61 expr: • full_decl
+   62     | • empty_decl
+   63     | • assignment
+   64     | • typed_val
+   65     | • bare_name
+   66     | • bare_type
+   67     | • bare_val
+   68     | • bare_expr
+   69     | • stmt_if
+   70     | • stmt_match
+   71     | • stmt_for
+   72 opt_expr: • expr
+   73         | ε •  [')']
 
-    ')'  shift, and go to state 114
+    TOK_IDENT   shift, and go to state 8
+    TOK_INT     shift, and go to state 9
+    TOK_FLOAT   shift, and go to state 10
+    TOK_STRING  shift, and go to state 11
+    OP_TYPE     shift, and go to state 12
+    OP_ASSIGN   shift, and go to state 13
+    OP_AFFIX    shift, and go to state 14
+    KW_IF       shift, and go to state 15
+    KW_MATCH    shift, and go to state 16
+    KW_FOR      shift, and go to state 17
+    '@'         shift, and go to state 18
+    '('         shift, and go to state 19
+    '{'         shift, and go to state 20
+    '['         shift, and go to state 21
+    '.'         shift, and go to state 22
+    ':'         shift, and go to state 23
+    '+'         shift, and go to state 24
+    '-'         shift, and go to state 25
+
+    $default  reduce using rule 73 (opt_expr)
+
+    const         go to state 26
+    ident         go to state 27
+    parens        go to state 28
+    braces        go to state 29
+    bracks        go to state 30
+    expr_atom     go to state 31
+    atom_link     go to state 32
+    atom_chain    go to state 33
+    lhs_expr      go to state 34
+    op_type       go to state 35
+    prefix        go to state 36
+    prefix_chain  go to state 37
+    affix_chain   go to state 38
+    rhs_expr      go to state 39
+    full_decl     go to state 40
+    empty_decl    go to state 41
+    assignment    go to state 42
+    typed_val     go to state 43
+    bare_name     go to state 44
+    bare_type     go to state 45
+    bare_val      go to state 46
+    bare_expr     go to state 47
+    stmt_if       go to state 48
+    stmt_match    go to state 49
+    stmt_for      go to state 50
+    expr          go to state 85
+    opt_expr      go to state 114
 
 
 State 114
+
+   60 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr • ')' expr
+
+    ')'  shift, and go to state 115
+
+
+State 115
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -2624,41 +2664,42 @@ State 114
    22 atom_chain: • atom_link
    23           | • atom_link atom_chain
    24 lhs_expr: • atom_chain
-   26 op_type: • OP_TYPE
-   27        | • ':'
-   31 prefix: • OP_AFFIX
-   32       | • '+'
-   33       | • '-'
-   35 prefix_chain: • atom_chain
-   36             | • prefix prefix_chain
-   37 affix_chain: • prefix_chain
-   38            | • affix_chain suffix
-   39 rhs_expr: • affix_chain expr_tail
-   40         | • const expr_tail
-   43 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
-   44 empty_decl: • lhs_expr op_type type_expr
-   45 assignment: • lhs_expr OP_ASSIGN rhs_expr
-   46 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
-   47 bare_name: • lhs_expr op_type
-   48 bare_type: • op_type type_expr
-   49 bare_val: • OP_ASSIGN rhs_expr
-   50 bare_expr: • rhs_expr
-   51 stmt_if: • KW_IF parens delimited
-   52        | • KW_IF parens delimited else_chain
-   58 stmt_match: • KW_MATCH parens '{' case_block '}'
-   59 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   59         | KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' • expr
-   60 expr: • full_decl
-   61     | • empty_decl
-   62     | • assignment
-   63     | • typed_val
-   64     | • bare_name
-   65     | • bare_type
-   66     | • bare_val
-   67     | • bare_expr
-   68     | • stmt_if
-   69     | • stmt_match
-   70     | • stmt_for
+   25         | • '.'
+   27 op_type: • OP_TYPE
+   28        | • ':'
+   32 prefix: • OP_AFFIX
+   33       | • '+'
+   34       | • '-'
+   36 prefix_chain: • atom_chain
+   37             | • prefix prefix_chain
+   38 affix_chain: • prefix_chain
+   39            | • affix_chain suffix
+   40 rhs_expr: • affix_chain expr_tail
+   41         | • const expr_tail
+   44 full_decl: • lhs_expr op_type type_expr OP_ASSIGN rhs_expr
+   45 empty_decl: • lhs_expr op_type type_expr
+   46 assignment: • lhs_expr OP_ASSIGN rhs_expr
+   47 typed_val: • op_type type_expr OP_ASSIGN rhs_expr
+   48 bare_name: • lhs_expr op_type
+   49 bare_type: • op_type type_expr
+   50 bare_val: • OP_ASSIGN rhs_expr
+   51 bare_expr: • rhs_expr
+   52 stmt_if: • KW_IF parens delimited
+   53        | • KW_IF parens delimited else_chain
+   59 stmt_match: • KW_MATCH parens '{' case_block '}'
+   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   60         | KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' • expr
+   61 expr: • full_decl
+   62     | • empty_decl
+   63     | • assignment
+   64     | • typed_val
+   65     | • bare_name
+   66     | • bare_type
+   67     | • bare_val
+   68     | • bare_expr
+   69     | • stmt_if
+   70     | • stmt_match
+   71     | • stmt_for
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -2704,11 +2745,11 @@ State 114
     stmt_if       go to state 48
     stmt_match    go to state 49
     stmt_for      go to state 50
-    expr          go to state 115
+    expr          go to state 116
 
 
-State 115
+State 116
 
-   59 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr •
+   60 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr •
 
-    $default  reduce using rule 59 (stmt_for)
+    $default  reduce using rule 60 (stmt_for)

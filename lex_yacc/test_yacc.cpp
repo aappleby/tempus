@@ -77,7 +77,7 @@ const char* sources[] = {
   "# for1 for (x : int = 0; x < 12; x++) { print(\"asldkflskjfd\") }",
 
   // isolated dot doesn't work as ident
-  //"# func blah : func(int) = (x : int, y : int, z : int) { . = (x,y,z) };"
+  "# func blah : func(int) = (x : int, y : int, z : int) { . = (x,y,z) };"
 
   "# func blah : func(int) = (x : int, y : int, z : int) { .a = (x,y,z) };",
 
