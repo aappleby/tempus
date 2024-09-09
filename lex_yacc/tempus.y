@@ -56,13 +56,19 @@ bracks      : '[' expr_tuple ']';
 expr_atom   : ident | parens | braces | bracks;
 atom_link   : expr_atom | '.' expr_atom;
 atom_chain  : atom_link | atom_link atom_chain;
-affixed_chain : atom_chain | OP_AFFIX atom_chain | atom_chain OP_AFFIX;
 
 lhs_expr    : atom_chain;
 type_expr   : atom_chain;
 
-rhs_expr    : affixed_chain expr_tail | const expr_tail;
-expr_tail   : OP_BIN rhs_expr  | /**/;
+op_bin : OP_BIN   | '+' | '-';
+prefix : OP_AFFIX | '+' | '-';
+suffix : OP_AFFIX;
+
+prefix_chain : atom_chain   | prefix prefix_chain;
+affix_chain  : prefix_chain | affix_chain suffix;
+
+rhs_expr    : affix_chain expr_tail | const expr_tail;
+expr_tail   : op_bin rhs_expr  | /**/;
 
 full_decl   : lhs_expr OP_TYPE type_expr OP_ASSIGN rhs_expr;
 empty_decl  : lhs_expr OP_TYPE type_expr                   ;

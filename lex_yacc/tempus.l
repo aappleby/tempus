@@ -57,8 +57,6 @@ E           [Ee][+-]?{D}+
 
 "!"         { yylval->val_str = strdup(yytext);       return(OP_AFFIX); }
 
-"+"         { yylval->val_str = strdup(yytext);       return(OP_BIN); }
-"-"         { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 "*"         { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 "/"         { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 "%"         { yylval->val_str = strdup(yytext);       return(OP_BIN); }

@@ -66,8 +66,8 @@ const char* sources[] = {
   "# if5 if (x) {} else if () {} else if () {}",
   "# if6 if (x) {} else if () {} else if () {} else {}",
 
-  // why u no work
-  //"# sign x = -y;",
+  "# neg x = a + +y - -y;",
+  "# affix x = !++!++!--!--!x!--!++--!++!",
 
   "# bar  a.b.c = zarp(blah : type = 229)()()[1,3,2];",
   "# asd  for (x : int = 0; x < 12; x = x + 1) { print(\"asldkflskjfd\") }",

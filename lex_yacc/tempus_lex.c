@@ -561,8 +561,8 @@ static void yynoreturn yy_fatal_error ( const char* msg , yyscan_t yyscanner );
 	yyg->yy_hold_char = *yy_cp; \
 	*yy_cp = '\0'; \
 	yyg->yy_c_buf_p = yy_cp;
-#define YY_NUM_RULES 49
-#define YY_END_OF_BUFFER 50
+#define YY_NUM_RULES 47
+#define YY_END_OF_BUFFER 48
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -572,9 +572,9 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[80] =
     {   0,
-        0,    0,   50,   48,   47,   47,   36,   48,   41,   42,
-       39,   37,   38,   40,    8,    8,   27,   45,   22,   46,
-        6,   44,    6,    6,    6,    6,    6,   43,   35,    0,
+        0,    0,   48,   46,   45,   45,   36,   46,   39,   40,
+       37,   46,   46,   38,    8,    8,   27,   43,   22,   44,
+        6,   42,    6,    6,    6,    6,    6,   41,   35,    0,
        11,    0,   18,   30,   19,   16,   23,   14,   24,   15,
        17,   10,    8,    0,    0,   26,   29,   32,   34,   25,
        33,   28,    6,   20,    6,    6,    6,    1,    6,   21,
@@ -1260,32 +1260,22 @@ YY_RULE_SETUP
 { yylval->val_str = strdup(yytext);       return(OP_BIN); }
 	YY_BREAK
 case 45:
+/* rule 45 can match eol */
 YY_RULE_SETUP
-#line 68 "tempus.l"
-{ yylval->val_str = strdup(yytext);       return(OP_BIN); }
+#line 69 "tempus.l"
+{ }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 69 "tempus.l"
-{ yylval->val_str = strdup(yytext);       return(OP_BIN); }
-	YY_BREAK
-case 47:
-/* rule 47 can match eol */
-YY_RULE_SETUP
-#line 71 "tempus.l"
-{ }
-	YY_BREAK
-case 48:
-YY_RULE_SETUP
-#line 72 "tempus.l"
+#line 70 "tempus.l"
 { return yytext[0]; }
 	YY_BREAK
-case 49:
+case 47:
 YY_RULE_SETUP
-#line 74 "tempus.l"
+#line 72 "tempus.l"
 ECHO;
 	YY_BREAK
-#line 1289 "tempus_lex.c"
+#line 1279 "tempus_lex.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2428,6 +2418,6 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 74 "tempus.l"
+#line 72 "tempus.l"
 
 
