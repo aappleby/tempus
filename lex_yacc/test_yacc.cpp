@@ -5,12 +5,13 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
+#include <stddef.h>
 
 std::vector<std::string> string_stack;
 
 //------------------------------------------------------------------------------
 
-int tem_error (TEM_LTYPE*, yyscan_t yyscanner, sexpr**  result, const char *msg) {
+int tem_error (TEM_LTYPE* ltype, yyscan_t yyscanner, sexpr**  result, const char *msg) {
 	fprintf(stderr, "--> %s\n", msg);
   return 0;
 }
@@ -49,6 +50,29 @@ int test_parse(const char* source) {
 
 //------------------------------------------------------------------------------
 
+int test_parse_file(const char* filename) {
+  FILE* f = fopen(filename, "r");
+  fseek(f, 0, SEEK_END);
+  size_t size = ftell(f);
+
+  char* buf = new char[size + 1];
+  memset(buf, 0, size + 1);
+
+  fseek(f, 0, SEEK_SET);
+  fread(buf, size, 1, f);
+  fclose(f);
+  buf[size] = 0;
+
+  printf("size %ld\n", size);
+  printf("contents %s\n", buf);
+
+  int result = test_parse(buf);
+  delete [] buf;
+  return result;
+}
+
+//------------------------------------------------------------------------------
+
 const char* sources[] = {
   "# foo  @x = 1; y : u32 = foo();",
 
@@ -66,15 +90,15 @@ const char* sources[] = {
   "# lhs {} = 1;",
   "# lhs {}[]().()foo().[](){} = 1;",
 
-  "# if1 if (x) {}",
-  "# if2 if (x) {} else {}",
-  "# if3 if (x) {} else if () {}",
-  "# if4 if (x) {} else if () {} else {}",
-  "# if5 if (x) {} else if () {} else if () {}",
-  "# if6 if (x) {} else if () {} else if () {} else {}",
+  "# if1 if (x) {};",
+  "# if2 if (x) {} else {};",
+  "# if3 if (x) {} else if () {};",
+  "# if4 if (x) {} else if () {} else {};",
+  "# if5 if (x) {} else if () {} else if () {};",
+  "# if6 if (x) {} else if () {} else if () {} else {};",
 
   "# bar  a.b.c = zarp(blah : type = 229)()()[1,3,2];",
-  "# for1 for (x : int = 0; x < 12; x++) { print(\"asldkflskjfd\") }",
+  "# for1 for (x : int = 0; x < 12; x++) { print(\"asldkflskjfd\"); }",
 
   // isolated dot doesn't work as ident
   "# func blah : func(int) = (x : int, y : int, z : int) { . = (x,y,z) };"
@@ -83,6 +107,7 @@ const char* sources[] = {
 
   "# match1 match (x) { case (foo) {} case (bar) {} case (baz) {} }",
   "# match2 match (x) { case (foo) x  case (bar) y  case (baz) z  }",
+  "# match3 match (x) {}",
 
 };
 
@@ -93,6 +118,12 @@ int main(int argc, char** argv) {
     printf("Parsing '%.12s'...\n", source);
     auto result = test_parse(source);
     if (result) printf("FAIL\n");
+  }
+
+  //test_parse_file("../uart_tem/simple_rx.tem");
+  int result = test_parse_file("scratch.tem");
+  if (result == 0) {
+    printf("Parse OK\n");
   }
 
   return 0;

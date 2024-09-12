@@ -89,7 +89,8 @@ else_chain  : KW_ELSE delimited | KW_ELSE stmt_if;
 
 stmt_case   : KW_CASE parens expr
 case_block  : stmt_case | stmt_case case_block;
-stmt_match  : KW_MATCH parens '{' case_block '}';
+opt_case_block : /**/ | case_block;
+stmt_match  : KW_MATCH parens '{' opt_case_block '}';
 stmt_for    : KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr;
 
 expr

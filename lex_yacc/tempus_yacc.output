@@ -94,51 +94,54 @@ Grammar
    57 case_block: stmt_case
    58           | stmt_case case_block
 
-   59 stmt_match: KW_MATCH parens '{' case_block '}'
+   59 opt_case_block: ε
+   60               | case_block
 
-   60 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   61 stmt_match: KW_MATCH parens '{' opt_case_block '}'
 
-   61 expr: full_decl
-   62     | empty_decl
-   63     | assignment
-   64     | typed_val
-   65     | bare_name
-   66     | bare_type
-   67     | bare_val
-   68     | bare_expr
-   69     | stmt_if
-   70     | stmt_match
-   71     | stmt_for
+   62 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
 
-   72 opt_expr: expr
-   73         | ε
+   63 expr: full_decl
+   64     | empty_decl
+   65     | assignment
+   66     | typed_val
+   67     | bare_name
+   68     | bare_type
+   69     | bare_val
+   70     | bare_expr
+   71     | stmt_if
+   72     | stmt_match
+   73     | stmt_for
 
-   74 expr_block: ε
-   75           | expr
-   76           | expr ';' expr_block
+   74 opt_expr: expr
+   75         | ε
 
-   77 expr_tuple: ε
-   78           | expr
-   79           | expr ',' expr_tuple
+   76 expr_block: ε
+   77           | expr
+   78           | expr ';' expr_block
+
+   79 expr_tuple: ε
+   80           | expr
+   81           | expr ',' expr_tuple
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     '#' (35) 4
-    '(' (40) 10 60
-    ')' (41) 10 60
+    '(' (40) 10 62
+    ')' (41) 10 62
     '+' (43) 30 33
-    ',' (44) 79
+    ',' (44) 81
     '-' (45) 31 34
     '.' (46) 21 25
     ':' (58) 28
-    ';' (59) 60 76
+    ';' (59) 62 78
     '@' (64) 8
     '[' (91) 12
     ']' (93) 12
-    '{' (123) 11 59
-    '}' (125) 11 59
+    '{' (123) 11 61
+    '}' (125) 11 61
     error (256)
     TOK_IDENT <val_str> (258) 4 8 9
     TOK_INT <val_int> (259) 5
@@ -150,9 +153,9 @@ Terminals, with rules where they appear
     OP_AFFIX <val_str> (265) 32 35
     KW_IF (266) 52 53
     KW_ELSE (267) 54 55
-    KW_MATCH (268) 59
+    KW_MATCH (268) 61
     KW_CASE (269) 56
-    KW_FOR (270) 60
+    KW_FOR (270) 62
 
 
 Nonterminals, with rules where they appear
@@ -176,7 +179,7 @@ Nonterminals, with rules where they appear
         on right: 16
     parens (36)
         on left: 10
-        on right: 13 17 52 53 56 59
+        on right: 13 17 52 53 56 61
     braces (37)
         on left: 11
         on right: 14 18
@@ -227,31 +230,31 @@ Nonterminals, with rules where they appear
         on right: 40 41
     full_decl (53)
         on left: 44
-        on right: 61
+        on right: 63
     empty_decl (54)
         on left: 45
-        on right: 62
+        on right: 64
     assignment (55)
         on left: 46
-        on right: 63
+        on right: 65
     typed_val (56)
         on left: 47
-        on right: 64
+        on right: 66
     bare_name (57)
         on left: 48
-        on right: 65
+        on right: 67
     bare_type (58)
         on left: 49
-        on right: 66
+        on right: 68
     bare_val (59)
         on left: 50
-        on right: 67
+        on right: 69
     bare_expr (60)
         on left: 51
-        on right: 68
+        on right: 70
     stmt_if (61)
         on left: 52 53
-        on right: 55 69
+        on right: 55 71
     else_chain (62)
         on left: 54 55
         on right: 53
@@ -260,25 +263,28 @@ Nonterminals, with rules where they appear
         on right: 57 58
     case_block (64)
         on left: 57 58
-        on right: 58 59
-    stmt_match (65)
-        on left: 59
-        on right: 70
-    stmt_for (66)
-        on left: 60
-        on right: 71
-    expr (67)
-        on left: 61 62 63 64 65 66 67 68 69 70 71
-        on right: 56 60 72 75 76 78 79
-    opt_expr (68)
-        on left: 72 73
-        on right: 60
-    expr_block (69)
-        on left: 74 75 76
-        on right: 3 11 76
-    expr_tuple (70)
-        on left: 77 78 79
-        on right: 10 12 79
+        on right: 58 60
+    opt_case_block (65)
+        on left: 59 60
+        on right: 61
+    stmt_match (66)
+        on left: 61
+        on right: 72
+    stmt_for (67)
+        on left: 62
+        on right: 73
+    expr (68)
+        on left: 63 64 65 66 67 68 69 70 71 72 73
+        on right: 56 62 74 77 78 80 81
+    opt_expr (69)
+        on left: 74 75
+        on right: 62
+    expr_block (70)
+        on left: 76 77 78
+        on right: 3 11 78
+    expr_tuple (71)
+        on left: 79 80 81
+        on right: 10 12 81
 
 
 State 0
@@ -370,22 +376,22 @@ State 4
    51 bare_expr: • rhs_expr
    52 stmt_if: • KW_IF parens delimited
    53        | • KW_IF parens delimited else_chain
-   59 stmt_match: • KW_MATCH parens '{' case_block '}'
-   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   61 expr: • full_decl
-   62     | • empty_decl
-   63     | • assignment
-   64     | • typed_val
-   65     | • bare_name
-   66     | • bare_type
-   67     | • bare_val
-   68     | • bare_expr
-   69     | • stmt_if
-   70     | • stmt_match
-   71     | • stmt_for
-   74 expr_block: ε •  [$end, '#']
-   75           | • expr
-   76           | • expr ';' expr_block
+   61 stmt_match: • KW_MATCH parens '{' opt_case_block '}'
+   62 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   63 expr: • full_decl
+   64     | • empty_decl
+   65     | • assignment
+   66     | • typed_val
+   67     | • bare_name
+   68     | • bare_type
+   69     | • bare_val
+   70     | • bare_expr
+   71     | • stmt_if
+   72     | • stmt_match
+   73     | • stmt_for
+   76 expr_block: ε •  [$end, '#']
+   77           | • expr
+   78           | • expr ';' expr_block
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -406,7 +412,7 @@ State 4
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 74 (expr_block)
+    $default  reduce using rule 76 (expr_block)
 
     const         go to state 26
     ident         go to state 27
@@ -570,7 +576,7 @@ State 15
 State 16
 
    10 parens: • '(' expr_tuple ')'
-   59 stmt_match: KW_MATCH • parens '{' case_block '}'
+   61 stmt_match: KW_MATCH • parens '{' opt_case_block '}'
 
     '('  shift, and go to state 19
 
@@ -579,7 +585,7 @@ State 16
 
 State 17
 
-   60 stmt_for: KW_FOR • '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   62 stmt_for: KW_FOR • '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
 
     '('  shift, and go to state 58
 
@@ -633,22 +639,22 @@ State 19
    51 bare_expr: • rhs_expr
    52 stmt_if: • KW_IF parens delimited
    53        | • KW_IF parens delimited else_chain
-   59 stmt_match: • KW_MATCH parens '{' case_block '}'
-   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   61 expr: • full_decl
-   62     | • empty_decl
-   63     | • assignment
-   64     | • typed_val
-   65     | • bare_name
-   66     | • bare_type
-   67     | • bare_val
-   68     | • bare_expr
-   69     | • stmt_if
-   70     | • stmt_match
-   71     | • stmt_for
-   77 expr_tuple: ε •  [')']
-   78           | • expr
-   79           | • expr ',' expr_tuple
+   61 stmt_match: • KW_MATCH parens '{' opt_case_block '}'
+   62 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   63 expr: • full_decl
+   64     | • empty_decl
+   65     | • assignment
+   66     | • typed_val
+   67     | • bare_name
+   68     | • bare_type
+   69     | • bare_val
+   70     | • bare_expr
+   71     | • stmt_if
+   72     | • stmt_match
+   73     | • stmt_for
+   79 expr_tuple: ε •  [')']
+   80           | • expr
+   81           | • expr ',' expr_tuple
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -669,7 +675,7 @@ State 19
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 77 (expr_tuple)
+    $default  reduce using rule 79 (expr_tuple)
 
     const         go to state 26
     ident         go to state 27
@@ -742,22 +748,22 @@ State 20
    51 bare_expr: • rhs_expr
    52 stmt_if: • KW_IF parens delimited
    53        | • KW_IF parens delimited else_chain
-   59 stmt_match: • KW_MATCH parens '{' case_block '}'
-   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   61 expr: • full_decl
-   62     | • empty_decl
-   63     | • assignment
-   64     | • typed_val
-   65     | • bare_name
-   66     | • bare_type
-   67     | • bare_val
-   68     | • bare_expr
-   69     | • stmt_if
-   70     | • stmt_match
-   71     | • stmt_for
-   74 expr_block: ε •  ['}']
-   75           | • expr
-   76           | • expr ';' expr_block
+   61 stmt_match: • KW_MATCH parens '{' opt_case_block '}'
+   62 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   63 expr: • full_decl
+   64     | • empty_decl
+   65     | • assignment
+   66     | • typed_val
+   67     | • bare_name
+   68     | • bare_type
+   69     | • bare_val
+   70     | • bare_expr
+   71     | • stmt_if
+   72     | • stmt_match
+   73     | • stmt_for
+   76 expr_block: ε •  ['}']
+   77           | • expr
+   78           | • expr ';' expr_block
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -778,7 +784,7 @@ State 20
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 74 (expr_block)
+    $default  reduce using rule 76 (expr_block)
 
     const         go to state 26
     ident         go to state 27
@@ -851,22 +857,22 @@ State 21
    51 bare_expr: • rhs_expr
    52 stmt_if: • KW_IF parens delimited
    53        | • KW_IF parens delimited else_chain
-   59 stmt_match: • KW_MATCH parens '{' case_block '}'
-   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   61 expr: • full_decl
-   62     | • empty_decl
-   63     | • assignment
-   64     | • typed_val
-   65     | • bare_name
-   66     | • bare_type
-   67     | • bare_val
-   68     | • bare_expr
-   69     | • stmt_if
-   70     | • stmt_match
-   71     | • stmt_for
-   77 expr_tuple: ε •  [']']
-   78           | • expr
-   79           | • expr ',' expr_tuple
+   61 stmt_match: • KW_MATCH parens '{' opt_case_block '}'
+   62 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   63 expr: • full_decl
+   64     | • empty_decl
+   65     | • assignment
+   66     | • typed_val
+   67     | • bare_name
+   68     | • bare_type
+   69     | • bare_val
+   70     | • bare_expr
+   71     | • stmt_if
+   72     | • stmt_match
+   73     | • stmt_for
+   79 expr_tuple: ε •  [']']
+   80           | • expr
+   81           | • expr ',' expr_tuple
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -887,7 +893,7 @@ State 21
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 77 (expr_tuple)
+    $default  reduce using rule 79 (expr_tuple)
 
     const         go to state 26
     ident         go to state 27
@@ -1203,89 +1209,89 @@ State 39
 
 State 40
 
-   61 expr: full_decl •
-
-    $default  reduce using rule 61 (expr)
-
-
-State 41
-
-   62 expr: empty_decl •
-
-    $default  reduce using rule 62 (expr)
-
-
-State 42
-
-   63 expr: assignment •
+   63 expr: full_decl •
 
     $default  reduce using rule 63 (expr)
 
 
-State 43
+State 41
 
-   64 expr: typed_val •
+   64 expr: empty_decl •
 
     $default  reduce using rule 64 (expr)
 
 
-State 44
+State 42
 
-   65 expr: bare_name •
+   65 expr: assignment •
 
     $default  reduce using rule 65 (expr)
 
 
-State 45
+State 43
 
-   66 expr: bare_type •
+   66 expr: typed_val •
 
     $default  reduce using rule 66 (expr)
 
 
-State 46
+State 44
 
-   67 expr: bare_val •
+   67 expr: bare_name •
 
     $default  reduce using rule 67 (expr)
 
 
-State 47
+State 45
 
-   68 expr: bare_expr •
+   68 expr: bare_type •
 
     $default  reduce using rule 68 (expr)
 
 
-State 48
+State 46
 
-   69 expr: stmt_if •
+   69 expr: bare_val •
 
     $default  reduce using rule 69 (expr)
 
 
-State 49
+State 47
 
-   70 expr: stmt_match •
+   70 expr: bare_expr •
 
     $default  reduce using rule 70 (expr)
 
 
-State 50
+State 48
 
-   71 expr: stmt_for •
+   71 expr: stmt_if •
 
     $default  reduce using rule 71 (expr)
 
 
+State 49
+
+   72 expr: stmt_match •
+
+    $default  reduce using rule 72 (expr)
+
+
+State 50
+
+   73 expr: stmt_for •
+
+    $default  reduce using rule 73 (expr)
+
+
 State 51
 
-   75 expr_block: expr •  [$end, '#', '}']
-   76           | expr • ';' expr_block
+   77 expr_block: expr •  [$end, '#', '}']
+   78           | expr • ';' expr_block
 
     ';'  shift, and go to state 79
 
-    $default  reduce using rule 75 (expr_block)
+    $default  reduce using rule 77 (expr_block)
 
 
 State 52
@@ -1358,7 +1364,7 @@ State 56
 
 State 57
 
-   59 stmt_match: KW_MATCH parens • '{' case_block '}'
+   61 stmt_match: KW_MATCH parens • '{' opt_case_block '}'
 
     '{'  shift, and go to state 84
 
@@ -1404,22 +1410,22 @@ State 58
    51 bare_expr: • rhs_expr
    52 stmt_if: • KW_IF parens delimited
    53        | • KW_IF parens delimited else_chain
-   59 stmt_match: • KW_MATCH parens '{' case_block '}'
-   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60         | KW_FOR '(' • opt_expr ';' opt_expr ';' opt_expr ')' expr
-   61 expr: • full_decl
-   62     | • empty_decl
-   63     | • assignment
-   64     | • typed_val
-   65     | • bare_name
-   66     | • bare_type
-   67     | • bare_val
-   68     | • bare_expr
-   69     | • stmt_if
-   70     | • stmt_match
-   71     | • stmt_for
-   72 opt_expr: • expr
-   73         | ε •  [';']
+   61 stmt_match: • KW_MATCH parens '{' opt_case_block '}'
+   62 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   62         | KW_FOR '(' • opt_expr ';' opt_expr ';' opt_expr ')' expr
+   63 expr: • full_decl
+   64     | • empty_decl
+   65     | • assignment
+   66     | • typed_val
+   67     | • bare_name
+   68     | • bare_type
+   69     | • bare_val
+   70     | • bare_expr
+   71     | • stmt_if
+   72     | • stmt_match
+   73     | • stmt_for
+   74 opt_expr: • expr
+   75         | ε •  [';']
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -1440,7 +1446,7 @@ State 58
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 73 (opt_expr)
+    $default  reduce using rule 75 (opt_expr)
 
     const         go to state 26
     ident         go to state 27
@@ -1480,12 +1486,12 @@ State 59
 
 State 60
 
-   78 expr_tuple: expr •  [')', ']']
-   79           | expr • ',' expr_tuple
+   80 expr_tuple: expr •  [')', ']']
+   81           | expr • ',' expr_tuple
 
     ','  shift, and go to state 87
 
-    $default  reduce using rule 78 (expr_tuple)
+    $default  reduce using rule 80 (expr_tuple)
 
 
 State 61
@@ -1788,23 +1794,23 @@ State 79
    51 bare_expr: • rhs_expr
    52 stmt_if: • KW_IF parens delimited
    53        | • KW_IF parens delimited else_chain
-   59 stmt_match: • KW_MATCH parens '{' case_block '}'
-   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   61 expr: • full_decl
-   62     | • empty_decl
-   63     | • assignment
-   64     | • typed_val
-   65     | • bare_name
-   66     | • bare_type
-   67     | • bare_val
-   68     | • bare_expr
-   69     | • stmt_if
-   70     | • stmt_match
-   71     | • stmt_for
-   74 expr_block: ε •  [$end, '#', '}']
-   75           | • expr
-   76           | • expr ';' expr_block
-   76           | expr ';' • expr_block
+   61 stmt_match: • KW_MATCH parens '{' opt_case_block '}'
+   62 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   63 expr: • full_decl
+   64     | • empty_decl
+   65     | • assignment
+   66     | • typed_val
+   67     | • bare_name
+   68     | • bare_type
+   69     | • bare_val
+   70     | • bare_expr
+   71     | • stmt_if
+   72     | • stmt_match
+   73     | • stmt_for
+   76 expr_block: ε •  [$end, '#', '}']
+   77           | • expr
+   78           | • expr ';' expr_block
+   78           | expr ';' • expr_block
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -1825,7 +1831,7 @@ State 79
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 74 (expr_block)
+    $default  reduce using rule 76 (expr_block)
 
     const         go to state 26
     ident         go to state 27
@@ -1896,26 +1902,31 @@ State 84
    56 stmt_case: • KW_CASE parens expr
    57 case_block: • stmt_case
    58           | • stmt_case case_block
-   59 stmt_match: KW_MATCH parens '{' • case_block '}'
+   59 opt_case_block: ε •  ['}']
+   60               | • case_block
+   61 stmt_match: KW_MATCH parens '{' • opt_case_block '}'
 
     KW_CASE  shift, and go to state 98
 
-    stmt_case   go to state 99
-    case_block  go to state 100
+    $default  reduce using rule 59 (opt_case_block)
+
+    stmt_case       go to state 99
+    case_block      go to state 100
+    opt_case_block  go to state 101
 
 
 State 85
 
-   72 opt_expr: expr •
+   74 opt_expr: expr •
 
-    $default  reduce using rule 72 (opt_expr)
+    $default  reduce using rule 74 (opt_expr)
 
 
 State 86
 
-   60 stmt_for: KW_FOR '(' opt_expr • ';' opt_expr ';' opt_expr ')' expr
+   62 stmt_for: KW_FOR '(' opt_expr • ';' opt_expr ';' opt_expr ')' expr
 
-    ';'  shift, and go to state 101
+    ';'  shift, and go to state 102
 
 
 State 87
@@ -1959,23 +1970,23 @@ State 87
    51 bare_expr: • rhs_expr
    52 stmt_if: • KW_IF parens delimited
    53        | • KW_IF parens delimited else_chain
-   59 stmt_match: • KW_MATCH parens '{' case_block '}'
-   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   61 expr: • full_decl
-   62     | • empty_decl
-   63     | • assignment
-   64     | • typed_val
-   65     | • bare_name
-   66     | • bare_type
-   67     | • bare_val
-   68     | • bare_expr
-   69     | • stmt_if
-   70     | • stmt_match
-   71     | • stmt_for
-   77 expr_tuple: ε •  [')', ']']
-   78           | • expr
-   79           | • expr ',' expr_tuple
-   79           | expr ',' • expr_tuple
+   61 stmt_match: • KW_MATCH parens '{' opt_case_block '}'
+   62 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   63 expr: • full_decl
+   64     | • empty_decl
+   65     | • assignment
+   66     | • typed_val
+   67     | • bare_name
+   68     | • bare_type
+   69     | • bare_val
+   70     | • bare_expr
+   71     | • stmt_if
+   72     | • stmt_match
+   73     | • stmt_for
+   79 expr_tuple: ε •  [')', ']']
+   80           | • expr
+   81           | • expr ',' expr_tuple
+   81           | expr ',' • expr_tuple
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -1996,7 +2007,7 @@ State 87
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 77 (expr_tuple)
+    $default  reduce using rule 79 (expr_tuple)
 
     const         go to state 26
     ident         go to state 27
@@ -2024,7 +2035,7 @@ State 87
     stmt_match    go to state 49
     stmt_for      go to state 50
     expr          go to state 60
-    expr_tuple    go to state 102
+    expr_tuple    go to state 103
 
 
 State 88
@@ -2067,7 +2078,7 @@ State 93
    44 full_decl: lhs_expr op_type type_expr • OP_ASSIGN rhs_expr
    45 empty_decl: lhs_expr op_type type_expr •  [$end, KW_CASE, '#', ')', '}', ']', ';', ',']
 
-    OP_ASSIGN  shift, and go to state 103
+    OP_ASSIGN  shift, and go to state 104
 
     $default  reduce using rule 45 (empty_decl)
 
@@ -2125,14 +2136,14 @@ State 94
     prefix        go to state 36
     prefix_chain  go to state 37
     affix_chain   go to state 38
-    rhs_expr      go to state 104
+    rhs_expr      go to state 105
 
 
 State 95
 
-   76 expr_block: expr ';' expr_block •
+   78 expr_block: expr ';' expr_block •
 
-    $default  reduce using rule 76 (expr_block)
+    $default  reduce using rule 78 (expr_block)
 
 
 State 96
@@ -2156,8 +2167,8 @@ State 96
     parens     go to state 80
     braces     go to state 81
     bracks     go to state 82
-    delimited  go to state 105
-    stmt_if    go to state 106
+    delimited  go to state 106
+    stmt_if    go to state 107
 
 
 State 97
@@ -2174,7 +2185,7 @@ State 98
 
     '('  shift, and go to state 19
 
-    parens  go to state 107
+    parens  go to state 108
 
 
 State 99
@@ -2190,17 +2201,24 @@ State 99
     $default  reduce using rule 57 (case_block)
 
     stmt_case   go to state 99
-    case_block  go to state 108
+    case_block  go to state 109
 
 
 State 100
 
-   59 stmt_match: KW_MATCH parens '{' case_block • '}'
+   60 opt_case_block: case_block •
 
-    '}'  shift, and go to state 109
+    $default  reduce using rule 60 (opt_case_block)
 
 
 State 101
+
+   61 stmt_match: KW_MATCH parens '{' opt_case_block • '}'
+
+    '}'  shift, and go to state 110
+
+
+State 102
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -2241,22 +2259,22 @@ State 101
    51 bare_expr: • rhs_expr
    52 stmt_if: • KW_IF parens delimited
    53        | • KW_IF parens delimited else_chain
-   59 stmt_match: • KW_MATCH parens '{' case_block '}'
-   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60         | KW_FOR '(' opt_expr ';' • opt_expr ';' opt_expr ')' expr
-   61 expr: • full_decl
-   62     | • empty_decl
-   63     | • assignment
-   64     | • typed_val
-   65     | • bare_name
-   66     | • bare_type
-   67     | • bare_val
-   68     | • bare_expr
-   69     | • stmt_if
-   70     | • stmt_match
-   71     | • stmt_for
-   72 opt_expr: • expr
-   73         | ε •  [';']
+   61 stmt_match: • KW_MATCH parens '{' opt_case_block '}'
+   62 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   62         | KW_FOR '(' opt_expr ';' • opt_expr ';' opt_expr ')' expr
+   63 expr: • full_decl
+   64     | • empty_decl
+   65     | • assignment
+   66     | • typed_val
+   67     | • bare_name
+   68     | • bare_type
+   69     | • bare_val
+   70     | • bare_expr
+   71     | • stmt_if
+   72     | • stmt_match
+   73     | • stmt_for
+   74 opt_expr: • expr
+   75         | ε •  [';']
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -2277,7 +2295,7 @@ State 101
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 73 (opt_expr)
+    $default  reduce using rule 75 (opt_expr)
 
     const         go to state 26
     ident         go to state 27
@@ -2305,17 +2323,17 @@ State 101
     stmt_match    go to state 49
     stmt_for      go to state 50
     expr          go to state 85
-    opt_expr      go to state 110
-
-
-State 102
-
-   79 expr_tuple: expr ',' expr_tuple •
-
-    $default  reduce using rule 79 (expr_tuple)
+    opt_expr      go to state 111
 
 
 State 103
+
+   81 expr_tuple: expr ',' expr_tuple •
+
+    $default  reduce using rule 81 (expr_tuple)
+
+
+State 104
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -2368,31 +2386,31 @@ State 103
     prefix        go to state 36
     prefix_chain  go to state 37
     affix_chain   go to state 38
-    rhs_expr      go to state 111
+    rhs_expr      go to state 112
 
 
-State 104
+State 105
 
    47 typed_val: op_type type_expr OP_ASSIGN rhs_expr •
 
     $default  reduce using rule 47 (typed_val)
 
 
-State 105
+State 106
 
    54 else_chain: KW_ELSE delimited •
 
     $default  reduce using rule 54 (else_chain)
 
 
-State 106
+State 107
 
    55 else_chain: KW_ELSE stmt_if •
 
     $default  reduce using rule 55 (else_chain)
 
 
-State 107
+State 108
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -2434,19 +2452,19 @@ State 107
    52 stmt_if: • KW_IF parens delimited
    53        | • KW_IF parens delimited else_chain
    56 stmt_case: KW_CASE parens • expr
-   59 stmt_match: • KW_MATCH parens '{' case_block '}'
-   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   61 expr: • full_decl
-   62     | • empty_decl
-   63     | • assignment
-   64     | • typed_val
-   65     | • bare_name
-   66     | • bare_type
-   67     | • bare_val
-   68     | • bare_expr
-   69     | • stmt_if
-   70     | • stmt_match
-   71     | • stmt_for
+   61 stmt_match: • KW_MATCH parens '{' opt_case_block '}'
+   62 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   63 expr: • full_decl
+   64     | • empty_decl
+   65     | • assignment
+   66     | • typed_val
+   67     | • bare_name
+   68     | • bare_type
+   69     | • bare_val
+   70     | • bare_expr
+   71     | • stmt_if
+   72     | • stmt_match
+   73     | • stmt_for
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -2492,45 +2510,45 @@ State 107
     stmt_if       go to state 48
     stmt_match    go to state 49
     stmt_for      go to state 50
-    expr          go to state 112
+    expr          go to state 113
 
 
-State 108
+State 109
 
    58 case_block: stmt_case case_block •
 
     $default  reduce using rule 58 (case_block)
 
 
-State 109
-
-   59 stmt_match: KW_MATCH parens '{' case_block '}' •
-
-    $default  reduce using rule 59 (stmt_match)
-
-
 State 110
 
-   60 stmt_for: KW_FOR '(' opt_expr ';' opt_expr • ';' opt_expr ')' expr
+   61 stmt_match: KW_MATCH parens '{' opt_case_block '}' •
 
-    ';'  shift, and go to state 113
+    $default  reduce using rule 61 (stmt_match)
 
 
 State 111
+
+   62 stmt_for: KW_FOR '(' opt_expr ';' opt_expr • ';' opt_expr ')' expr
+
+    ';'  shift, and go to state 114
+
+
+State 112
 
    44 full_decl: lhs_expr op_type type_expr OP_ASSIGN rhs_expr •
 
     $default  reduce using rule 44 (full_decl)
 
 
-State 112
+State 113
 
    56 stmt_case: KW_CASE parens expr •
 
     $default  reduce using rule 56 (stmt_case)
 
 
-State 113
+State 114
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -2571,22 +2589,22 @@ State 113
    51 bare_expr: • rhs_expr
    52 stmt_if: • KW_IF parens delimited
    53        | • KW_IF parens delimited else_chain
-   59 stmt_match: • KW_MATCH parens '{' case_block '}'
-   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60         | KW_FOR '(' opt_expr ';' opt_expr ';' • opt_expr ')' expr
-   61 expr: • full_decl
-   62     | • empty_decl
-   63     | • assignment
-   64     | • typed_val
-   65     | • bare_name
-   66     | • bare_type
-   67     | • bare_val
-   68     | • bare_expr
-   69     | • stmt_if
-   70     | • stmt_match
-   71     | • stmt_for
-   72 opt_expr: • expr
-   73         | ε •  [')']
+   61 stmt_match: • KW_MATCH parens '{' opt_case_block '}'
+   62 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   62         | KW_FOR '(' opt_expr ';' opt_expr ';' • opt_expr ')' expr
+   63 expr: • full_decl
+   64     | • empty_decl
+   65     | • assignment
+   66     | • typed_val
+   67     | • bare_name
+   68     | • bare_type
+   69     | • bare_val
+   70     | • bare_expr
+   71     | • stmt_if
+   72     | • stmt_match
+   73     | • stmt_for
+   74 opt_expr: • expr
+   75         | ε •  [')']
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -2607,7 +2625,7 @@ State 113
     '+'         shift, and go to state 24
     '-'         shift, and go to state 25
 
-    $default  reduce using rule 73 (opt_expr)
+    $default  reduce using rule 75 (opt_expr)
 
     const         go to state 26
     ident         go to state 27
@@ -2635,17 +2653,17 @@ State 113
     stmt_match    go to state 49
     stmt_for      go to state 50
     expr          go to state 85
-    opt_expr      go to state 114
-
-
-State 114
-
-   60 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr • ')' expr
-
-    ')'  shift, and go to state 115
+    opt_expr      go to state 115
 
 
 State 115
+
+   62 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr • ')' expr
+
+    ')'  shift, and go to state 116
+
+
+State 116
 
     5 const: • TOK_INT
     6      | • TOK_FLOAT
@@ -2686,20 +2704,20 @@ State 115
    51 bare_expr: • rhs_expr
    52 stmt_if: • KW_IF parens delimited
    53        | • KW_IF parens delimited else_chain
-   59 stmt_match: • KW_MATCH parens '{' case_block '}'
-   60 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
-   60         | KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' • expr
-   61 expr: • full_decl
-   62     | • empty_decl
-   63     | • assignment
-   64     | • typed_val
-   65     | • bare_name
-   66     | • bare_type
-   67     | • bare_val
-   68     | • bare_expr
-   69     | • stmt_if
-   70     | • stmt_match
-   71     | • stmt_for
+   61 stmt_match: • KW_MATCH parens '{' opt_case_block '}'
+   62 stmt_for: • KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr
+   62         | KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' • expr
+   63 expr: • full_decl
+   64     | • empty_decl
+   65     | • assignment
+   66     | • typed_val
+   67     | • bare_name
+   68     | • bare_type
+   69     | • bare_val
+   70     | • bare_expr
+   71     | • stmt_if
+   72     | • stmt_match
+   73     | • stmt_for
 
     TOK_IDENT   shift, and go to state 8
     TOK_INT     shift, and go to state 9
@@ -2745,11 +2763,11 @@ State 115
     stmt_if       go to state 48
     stmt_match    go to state 49
     stmt_for      go to state 50
-    expr          go to state 116
+    expr          go to state 117
 
 
-State 116
+State 117
 
-   60 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr •
+   62 stmt_for: KW_FOR '(' opt_expr ';' opt_expr ';' opt_expr ')' expr •
 
-    $default  reduce using rule 60 (stmt_for)
+    $default  reduce using rule 62 (stmt_for)

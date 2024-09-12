@@ -2,10 +2,10 @@
 {
   "configurations": [
     {
-      "name": "(gdb) Launch tempus_main",
+      "name": "(gdb) Launch test_yacc",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/lex_yacc/tempus_main",
+      "program": "${workspaceFolder}/lex_yacc/test_yacc",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
