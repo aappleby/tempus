@@ -12,7 +12,10 @@ std::vector<std::string> string_stack;
 //------------------------------------------------------------------------------
 
 int tem_error (TEM_LTYPE* ltype, yyscan_t yyscanner, sexpr**  result, const char *msg) {
-	fprintf(stderr, "--> %s\n", msg);
+	fprintf(stderr, "%d:%d - %d:%d --> %s\n",
+    ltype->first_line, ltype->first_column,
+    ltype->last_line,  ltype->last_column,
+    msg);
   return 0;
 }
 
@@ -77,6 +80,7 @@ const char* sources[] = {
   "# foo  @x = 1; y : u32 = foo();",
 
   "# prefix ++x",
+  "# prefix ++x;",
   "# suffix x++",
   "# prefix --x",
   "# suffix x--",
@@ -90,23 +94,43 @@ const char* sources[] = {
   "# lhs {} = 1;",
   "# lhs {}[]().()foo().[](){} = 1;",
 
-  "# if1 if (x) {};",
+  "# block { } ",
+  "# block { };",
+  "# block {;;};;",
+  "# block {;;} ",
+  "# block {;;};",
+  "# block {;;} ",
+  "# block {x : blah = 1;;} ",
+  "# block {for(;;){}} ",
+  "# block {for(;;);} ",
+
   "# if2 if (x) {} else {};",
-  "# if3 if (x) {} else if () {};",
-  "# if4 if (x) {} else if () {} else {};",
-  "# if5 if (x) {} else if () {} else if () {};",
-  "# if6 if (x) {} else if () {} else if () {} else {};",
+  "# if3 if (x) {} elif () {};",
+  "# if4 if (x) {} elif () {} else {};",
+  "# if5 if (x) {} elif () {} elif () {};",
+  "# if6 if (x) {} elif () {} elif () {} else {};",
 
   "# bar  a.b.c = zarp(blah : type = 229)()()[1,3,2];",
   "# for1 for (x : int = 0; x < 12; x++) { print(\"asldkflskjfd\"); }",
 
-  // isolated dot doesn't work as ident
-  "# func blah : func(int) = (x : int, y : int, z : int) { . = (x,y,z) };"
-
+  "# func blah : func(int) = (x : int, y : int, z : int) { .  = (x,y,z) };"
   "# func blah : func(int) = (x : int, y : int, z : int) { .a = (x,y,z) };",
 
-  "# match1 match (x) { case (foo) {} case (bar) {} case (baz) {} }",
-  "# match2 match (x) { case (foo) x  case (bar) y  case (baz) z  }",
+  "# match1 match (x) { case (foo) { .. = x } case (bar) {}   case (baz) {}   }",
+  
+  R"(
+  # match2
+  match (x) {
+    x = 3;
+    case (foo) { .. = x }
+    x = 3;
+    case (bar) {y}
+    x = 3;
+    case (baz) {z}
+    x = 3;
+  }
+  )",
+  
   "# match3 match (x) {}",
 
 };
@@ -120,11 +144,11 @@ int main(int argc, char** argv) {
     if (result) printf("FAIL\n");
   }
 
-  //test_parse_file("../uart_tem/simple_rx.tem");
-  int result = test_parse_file("scratch.tem");
-  if (result == 0) {
-    printf("Parse OK\n");
-  }
+  //const char* filename = "../uart_tem/simple_rx.tem";
+  //const char* filename = "scratch.tem";
+  //if (test_parse_file(filename) == 0) {
+  //  printf("Parse OK\n");
+  //}
 
   return 0;
 }

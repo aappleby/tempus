@@ -8,7 +8,7 @@
       "program": "${workspaceFolder}/lex_yacc/test_yacc",
       "args": [],
       "stopAtEntry": false,
-      "cwd": "${fileDirname}",
+      "cwd": "${workspaceFolder}/lex_yacc",
       "environment": [],
       "externalConsole": false,
       "MIMode": "gdb",
@@ -23,7 +23,8 @@
               "text": "-gdb-set disassembly-flavor intel",
               "ignoreFailures": true
           }
-      ]
+      ],
+      "preLaunchTask": "Build lex/yacc stuff"
     },
 
     {

@@ -15,7 +15,9 @@ E           [Ee][+-]?{D}+
 %%
 
 "if"        { return(KW_IF); }
+"then"      { return(KW_THEN); }
 "else"      { return(KW_ELSE); }
+"elif"      { return(KW_ELIF); }
 "match"     { return(KW_MATCH); }
 "case"      { return(KW_CASE); }
 "for"       { return(KW_FOR); }
