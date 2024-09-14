@@ -22,7 +22,8 @@ E           [Ee][+-]?{D}+
 "case"      { return(KW_CASE); }
 "for"       { return(KW_FOR); }
 
-{L}({L}|{D})*      { yylval->val_str   = strdup(yytext);       return(TOK_IDENT); }
+"#"{L}({L}|{D})*   { yylval->val_str   = strdup(yytext);       return(TOK_MARKER); }
+"@"?{L}({L}|{D})*  { yylval->val_str   = strdup(yytext);       return(TOK_IDENT); }
 0[xX]{H}+          { yylval->val_int   = atoi(yytext);         return(TOK_INT); }
 {D}+               { yylval->val_int   = atoi(yytext);         return(TOK_INT); }
 {D}+{E}            { yylval->val_float = atof(yytext);         return(TOK_FLOAT); }

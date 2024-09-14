@@ -5,871 +5,645 @@ Terminals unused in grammar
 
 Grammar
 
-    0 $accept: block_start $end
+    0 $accept: program $end
 
-    1 marker: '#' TOK_IDENT
+    1 marker: TOK_MARKER
 
     2 const: TOK_INT
     3      | TOK_FLOAT
     4      | TOK_STRING
 
-    5 ident: '@' TOK_IDENT
-    6      | TOK_IDENT
+    5 ident: TOK_IDENT
 
-    7 op_type: OP_TYPE
-    8        | ':'
+    6 op_type: OP_TYPE
+    7        | ':'
 
-    9 op_bin: OP_BIN
-   10       | '+'
-   11       | '-'
+    8 op_bin: OP_BIN
+    9       | '+'
+   10       | '-'
 
-   12 op_assign: OP_ASSIGN
+   11 op_assign: OP_ASSIGN
 
-   13 prefix: OP_AFFIX
-   14       | '+'
-   15       | '-'
+   12 prefix: OP_AFFIX
+   13       | '+'
+   14       | '-'
 
-   16 suffix: OP_AFFIX
+   15 suffix: OP_AFFIX
 
-   17 parens: '(' list_start ')'
+   16 program: block
 
-   18 braces: '{' block_start '}'
+   17 parens: '(' list ')'
 
-   19 bracks: '[' list_start ']'
+   18 braces: '{' block '}'
+
+   19 bracks: '[' list ']'
 
    20 atom: ident
    21     | parens
    22     | braces
    23     | bracks
 
-   24 ident_start: ident_node
-   25            | ident_dot
+   24 ident_term: atom
+   25           | '.'
 
-   26 ident_node: atom ident_start
-   27           | atom ident_end
+   26 ident_path: ident_term ident_path
+   27           | ident_term
 
-   28 ident_dot: '.' ident_start
-   29          | '.' ident_end
+   28 expr: expr_prefix expr_term expr_suffix expr_chain
 
-   30 ident_end: ε
+   29 expr_prefix: prefix expr_prefix
+   30            | ε
 
-   31 expr_start: expr_prefix
+   31 expr_term: ident_path
+   32          | const
 
-   32 expr_prefix: prefix expr_prefix
-   33            | expr_term
+   33 expr_suffix: suffix expr_suffix
+   34            | ε
 
-   34 expr_term: ident_start expr_suffix
-   35          | const expr_suffix
+   35 expr_chain: op_bin expr
+   36           | ε
 
-   36 expr_suffix: suffix expr_suffix
-   37            | expr_chain
+   37 stmt: expr stmt_dir
+   38     | expr op_assign expr
+   39     | stmt_dir
+   40     | op_assign expr
+   41     | expr
 
-   38 expr_chain: op_bin expr_start
-   39           | expr_end
+   42 stmt_dir: op_type stmt_type
+   43         | op_type
 
-   40 expr_end: ε
+   44 stmt_type: expr op_assign stmt
+   45          | expr op_assign flow
+   46          | expr
 
-   41 stmt_start: stmt_lhs
-   42           | stmt_dir
-   43           | stmt_assign
-   44           | stmt_rhs
+   47 opt_stmt: stmt
+   48         | ε
 
-   45 stmt_lhs: expr_start stmt_dir
-   46         | expr_start stmt_assign
+   49 list: stmt tail
+   50     | ε
 
-   47 stmt_dir: op_type stmt_type
-   48         | op_type stmt_end
+   51 tail: ',' stmt tail
+   52     | ε
 
-   49 stmt_type: expr_start stmt_assign
-   50          | expr_start stmt_end
+   53 block: marker block
+   54      | flow block
+   55      | stmt ';' block
+   56      | ';' block
+   57      | stmt
+   58      | ε
 
-   51 stmt_assign: op_assign stmt_rhs
+   59 for: KW_FOR '(' opt_stmt ';' opt_stmt ';' opt_stmt ')' braces
 
-   52 stmt_rhs: expr_start stmt_end
+   60 if: KW_IF parens braces elif else
 
-   53 stmt_end: ε
+   61 elif: KW_ELIF parens braces elif
+   62     | ε
 
-   54 list_start: list_node
-   55           | list_end
+   63 else: KW_ELSE braces
+   64     | ε
 
-   56 list_node: stmt_start list_delim
-   57          | stmt_start list_end
+   65 match: KW_MATCH parens braces
 
-   58 list_delim: ',' list_node
+   66 case: KW_CASE parens braces
 
-   59 list_end: ε
-
-   60 ifelse_start: KW_IF ifelse_parens
-
-   61 ifelse_parens: parens ifelse_body
-
-   62 ifelse_body: braces ifelse_elif
-   63            | braces ifelse_else
-   64            | braces ifelse_end
-
-   65 ifelse_elif: KW_ELIF ifelse_parens
-
-   66 ifelse_else: KW_ELSE ifelse_tail
-
-   67 ifelse_tail: braces ifelse_end
-
-   68 ifelse_end: ε
-
-   69 match_start: KW_MATCH match_parens
-
-   70 match_parens: parens match_body
-
-   71 match_body: braces match_end
-
-   72 match_end: ε
-
-   73 case_start: KW_CASE case_parens
-
-   74 case_parens: parens case_body
-
-   75 case_body: braces case_end
-
-   76 case_end: ε
-
-   77 for_start: KW_FOR for_lparen
-
-   78 for_lparen: '(' for_init
-
-   79 for_init: stmt_start for_semi1
-   80         | for_semi1
-
-   81 for_semi1: ';' for_cond
-
-   82 for_cond: stmt_start for_semi2
-   83         | for_semi2
-
-   84 for_semi2: ';' for_step
-
-   85 for_step: stmt_start for_rparen
-   86         | for_rparen
-
-   87 for_rparen: ')' for_end
-
-   88 for_end: braces
-   89        | ';'
-
-   90 flow_start: ifelse_start
-   91           | match_start
-   92           | for_start
-   93           | case_start
-
-   94 block_start: block_mark
-   95            | block_flow
-   96            | block_stmt
-   97            | block_delim
-   98            | block_end
-
-   99 block_mark: marker block_start
-
-  100 block_flow: flow_start block_start
-
-  101 block_stmt: stmt_start block_delim
-  102           | stmt_start block_end
-
-  103 block_delim: ';' block_start
-
-  104 block_end: ε
+   67 flow: for
+   68     | if
+   69     | match
+   70     | case
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    '#' (35) 1
-    '(' (40) 17 78
-    ')' (41) 17 87
-    '+' (43) 10 14
-    ',' (44) 58
-    '-' (45) 11 15
-    '.' (46) 28 29
-    ':' (58) 8
-    ';' (59) 81 84 89 103
-    '@' (64) 5
+    '(' (40) 17 59
+    ')' (41) 17 59
+    '+' (43) 9 13
+    ',' (44) 51
+    '-' (45) 10 14
+    '.' (46) 25
+    ':' (58) 7
+    ';' (59) 55 56 59
     '[' (91) 19
     ']' (93) 19
     '{' (123) 18
     '}' (125) 18
     error (256)
-    TOK_IDENT <val_str> (258) 1 5 6
-    TOK_INT <val_int> (259) 2
-    TOK_FLOAT <val_float> (260) 3
-    TOK_STRING <val_str> (261) 4
-    OP_TYPE <val_str> (262) 7
-    OP_ASSIGN <val_str> (263) 12
-    OP_BIN <val_str> (264) 9
-    OP_AFFIX <val_str> (265) 13 16
-    KW_IF (266) 60
-    KW_THEN (267)
-    KW_ELIF (268) 65
-    KW_ELSE (269) 66
-    KW_MATCH (270) 69
-    KW_CASE (271) 73
-    KW_FOR (272) 77
+    TOK_MARKER <val_str> (258) 1
+    TOK_IDENT <val_str> (259) 5
+    TOK_INT <val_int> (260) 2
+    TOK_FLOAT <val_float> (261) 3
+    TOK_STRING <val_str> (262) 4
+    OP_TYPE <val_str> (263) 6
+    OP_ASSIGN <val_str> (264) 11
+    OP_BIN <val_str> (265) 8
+    OP_AFFIX <val_str> (266) 12 15
+    KW_IF (267) 60
+    KW_THEN (268)
+    KW_ELIF (269) 61
+    KW_ELSE (270) 63
+    KW_MATCH (271) 65
+    KW_CASE (272) 66
+    KW_FOR (273) 59
 
 
 Nonterminals, with rules where they appear
 
-    $accept (32)
+    $accept (31)
         on left: 0
-    marker (33)
+    marker (32)
         on left: 1
-        on right: 99
-    const (34)
+        on right: 53
+    const (33)
         on left: 2 3 4
-        on right: 35
-    ident (35)
-        on left: 5 6
-        on right: 20
-    op_type (36)
-        on left: 7 8
-        on right: 47 48
-    op_bin (37)
-        on left: 9 10 11
-        on right: 38
-    op_assign (38)
-        on left: 12
-        on right: 51
-    prefix (39)
-        on left: 13 14 15
         on right: 32
-    suffix (40)
+    ident (34)
+        on left: 5
+        on right: 20
+    op_type (35)
+        on left: 6 7
+        on right: 42 43
+    op_bin (36)
+        on left: 8 9 10
+        on right: 35
+    op_assign (37)
+        on left: 11
+        on right: 38 40 44 45
+    prefix (38)
+        on left: 12 13 14
+        on right: 29
+    suffix (39)
+        on left: 15
+        on right: 33
+    program (40)
         on left: 16
-        on right: 36
+        on right: 0
     parens (41)
         on left: 17
-        on right: 21 61 70 74
+        on right: 21 60 61 65 66
     braces (42)
         on left: 18
-        on right: 22 62 63 64 67 71 75 88
+        on right: 22 59 60 61 63 65 66
     bracks (43)
         on left: 19
         on right: 23
     atom (44)
         on left: 20 21 22 23
-        on right: 26 27
-    ident_start (45)
-        on left: 24 25
-        on right: 26 28 34
-    ident_node (46)
-        on left: 26 27
         on right: 24
-    ident_dot (47)
-        on left: 28 29
-        on right: 25
-    ident_end (48)
-        on left: 30
-        on right: 27 29
-    expr_start (49)
-        on left: 31
-        on right: 38 45 46 49 50 52
-    expr_prefix (50)
-        on left: 32 33
-        on right: 31 32
-    expr_term (51)
-        on left: 34 35
-        on right: 33
-    expr_suffix (52)
-        on left: 36 37
-        on right: 34 35 36
-    expr_chain (53)
-        on left: 38 39
-        on right: 37
-    expr_end (54)
-        on left: 40
-        on right: 39
-    stmt_start (55)
-        on left: 41 42 43 44
-        on right: 56 57 79 82 85 101 102
-    stmt_lhs (56)
-        on left: 45 46
-        on right: 41
-    stmt_dir (57)
+    ident_term (45)
+        on left: 24 25
+        on right: 26 27
+    ident_path (46)
+        on left: 26 27
+        on right: 26 31
+    expr (47)
+        on left: 28
+        on right: 35 37 38 40 41 44 45 46
+    expr_prefix (48)
+        on left: 29 30
+        on right: 28 29
+    expr_term (49)
+        on left: 31 32
+        on right: 28
+    expr_suffix (50)
+        on left: 33 34
+        on right: 28 33
+    expr_chain (51)
+        on left: 35 36
+        on right: 28
+    stmt (52)
+        on left: 37 38 39 40 41
+        on right: 44 47 49 51 55 57
+    stmt_dir (53)
+        on left: 42 43
+        on right: 37 39
+    stmt_type (54)
+        on left: 44 45 46
+        on right: 42
+    opt_stmt (55)
         on left: 47 48
-        on right: 42 45
-    stmt_type (58)
+        on right: 59
+    list (56)
         on left: 49 50
-        on right: 47
-    stmt_assign (59)
-        on left: 51
-        on right: 43 46 49
-    stmt_rhs (60)
-        on left: 52
-        on right: 44 51
-    stmt_end (61)
-        on left: 53
-        on right: 48 50 52
-    list_start (62)
-        on left: 54 55
         on right: 17 19
-    list_node (63)
-        on left: 56 57
-        on right: 54 58
-    list_delim (64)
-        on left: 58
-        on right: 56
-    list_end (65)
+    tail (57)
+        on left: 51 52
+        on right: 49 51
+    block (58)
+        on left: 53 54 55 56 57 58
+        on right: 16 18 53 54 55 56
+    for (59)
         on left: 59
-        on right: 55 57
-    ifelse_start (66)
+        on right: 67
+    if (60)
         on left: 60
-        on right: 90
-    ifelse_parens (67)
-        on left: 61
-        on right: 60 65
-    ifelse_body (68)
-        on left: 62 63 64
-        on right: 61
-    ifelse_elif (69)
+        on right: 68
+    elif (61)
+        on left: 61 62
+        on right: 60 61
+    else (62)
+        on left: 63 64
+        on right: 60
+    match (63)
         on left: 65
-        on right: 62
-    ifelse_else (70)
-        on left: 66
-        on right: 63
-    ifelse_tail (71)
-        on left: 67
-        on right: 66
-    ifelse_end (72)
-        on left: 68
-        on right: 64 67
-    match_start (73)
-        on left: 69
-        on right: 91
-    match_parens (74)
-        on left: 70
         on right: 69
-    match_body (75)
-        on left: 71
+    case (64)
+        on left: 66
         on right: 70
-    match_end (76)
-        on left: 72
-        on right: 71
-    case_start (77)
-        on left: 73
-        on right: 93
-    case_parens (78)
-        on left: 74
-        on right: 73
-    case_body (79)
-        on left: 75
-        on right: 74
-    case_end (80)
-        on left: 76
-        on right: 75
-    for_start (81)
-        on left: 77
-        on right: 92
-    for_lparen (82)
-        on left: 78
-        on right: 77
-    for_init (83)
-        on left: 79 80
-        on right: 78
-    for_semi1 (84)
-        on left: 81
-        on right: 79 80
-    for_cond (85)
-        on left: 82 83
-        on right: 81
-    for_semi2 (86)
-        on left: 84
-        on right: 82 83
-    for_step (87)
-        on left: 85 86
-        on right: 84
-    for_rparen (88)
-        on left: 87
-        on right: 85 86
-    for_end (89)
-        on left: 88 89
-        on right: 87
-    flow_start (90)
-        on left: 90 91 92 93
-        on right: 100
-    block_start (91)
-        on left: 94 95 96 97 98
-        on right: 0 18 99 100 103
-    block_mark (92)
-        on left: 99
-        on right: 94
-    block_flow (93)
-        on left: 100
-        on right: 95
-    block_stmt (94)
-        on left: 101 102
-        on right: 96
-    block_delim (95)
-        on left: 103
-        on right: 97 101
-    block_end (96)
-        on left: 104
-        on right: 98 102
+    flow (65)
+        on left: 67 68 69 70
+        on right: 45 54
 
 
 State 0
 
-    0 $accept: • block_start $end
-    1 marker: • '#' TOK_IDENT
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   41 stmt_start: • stmt_lhs
-   42           | • stmt_dir
-   43           | • stmt_assign
-   44           | • stmt_rhs
-   45 stmt_lhs: • expr_start stmt_dir
-   46         | • expr_start stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-   60 ifelse_start: • KW_IF ifelse_parens
-   69 match_start: • KW_MATCH match_parens
-   73 case_start: • KW_CASE case_parens
-   77 for_start: • KW_FOR for_lparen
-   90 flow_start: • ifelse_start
-   91           | • match_start
-   92           | • for_start
-   93           | • case_start
-   94 block_start: • block_mark
-   95            | • block_flow
-   96            | • block_stmt
-   97            | • block_delim
-   98            | • block_end
-   99 block_mark: • marker block_start
-  100 block_flow: • flow_start block_start
-  101 block_stmt: • stmt_start block_delim
-  102           | • stmt_start block_end
-  103 block_delim: • ';' block_start
-  104 block_end: ε •  [$end]
+    0 $accept: • program $end
+    1 marker: • TOK_MARKER
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   16 program: • block
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   53 block: • marker block
+   54      | • flow block
+   55      | • stmt ';' block
+   56      | • ';' block
+   57      | • stmt
+   58      | ε •  [$end]
+   59 for: • KW_FOR '(' opt_stmt ';' opt_stmt ';' opt_stmt ')' braces
+   60 if: • KW_IF parens braces elif else
+   65 match: • KW_MATCH parens braces
+   66 case: • KW_CASE parens braces
+   67 flow: • for
+   68     | • if
+   69     | • match
+   70     | • case
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    OP_AFFIX    shift, and go to state 7
-    KW_IF       shift, and go to state 8
-    KW_MATCH    shift, and go to state 9
-    KW_CASE     shift, and go to state 10
-    KW_FOR      shift, and go to state 11
-    '#'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    ':'         shift, and go to state 14
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-    ';'         shift, and go to state 21
+    TOK_MARKER  shift, and go to state 1
+    OP_TYPE     shift, and go to state 2
+    OP_ASSIGN   shift, and go to state 3
+    OP_AFFIX    shift, and go to state 4
+    KW_IF       shift, and go to state 5
+    KW_MATCH    shift, and go to state 6
+    KW_CASE     shift, and go to state 7
+    KW_FOR      shift, and go to state 8
+    ':'         shift, and go to state 9
+    '+'         shift, and go to state 10
+    '-'         shift, and go to state 11
+    ';'         shift, and go to state 12
 
-    $default  reduce using rule 104 (block_end)
+    $end      reduce using rule 58 (block)
+    $default  reduce using rule 30 (expr_prefix)
 
-    marker        go to state 22
-    const         go to state 23
-    ident         go to state 24
-    op_type       go to state 25
-    op_assign     go to state 26
-    prefix        go to state 27
-    parens        go to state 28
-    braces        go to state 29
-    bracks        go to state 30
-    atom          go to state 31
-    ident_start   go to state 32
-    ident_node    go to state 33
-    ident_dot     go to state 34
-    expr_start    go to state 35
-    expr_prefix   go to state 36
-    expr_term     go to state 37
-    stmt_start    go to state 38
-    stmt_lhs      go to state 39
-    stmt_dir      go to state 40
-    stmt_assign   go to state 41
-    stmt_rhs      go to state 42
-    ifelse_start  go to state 43
-    match_start   go to state 44
-    case_start    go to state 45
-    for_start     go to state 46
-    flow_start    go to state 47
-    block_start   go to state 48
-    block_mark    go to state 49
-    block_flow    go to state 50
-    block_stmt    go to state 51
-    block_delim   go to state 52
-    block_end     go to state 53
+    marker       go to state 13
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    program      go to state 17
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 20
+    stmt_dir     go to state 21
+    block        go to state 22
+    for          go to state 23
+    if           go to state 24
+    match        go to state 25
+    case         go to state 26
+    flow         go to state 27
 
 
 State 1
 
-    6 ident: TOK_IDENT •
+    1 marker: TOK_MARKER •
 
-    $default  reduce using rule 6 (ident)
+    $default  reduce using rule 1 (marker)
 
 
 State 2
 
-    2 const: TOK_INT •
+    6 op_type: OP_TYPE •
 
-    $default  reduce using rule 2 (const)
+    $default  reduce using rule 6 (op_type)
 
 
 State 3
 
-    3 const: TOK_FLOAT •
+   11 op_assign: OP_ASSIGN •
 
-    $default  reduce using rule 3 (const)
+    $default  reduce using rule 11 (op_assign)
 
 
 State 4
 
-    4 const: TOK_STRING •
+   12 prefix: OP_AFFIX •
 
-    $default  reduce using rule 4 (const)
+    $default  reduce using rule 12 (prefix)
 
 
 State 5
 
-    7 op_type: OP_TYPE •
+   17 parens: • '(' list ')'
+   60 if: KW_IF • parens braces elif else
 
-    $default  reduce using rule 7 (op_type)
+    '('  shift, and go to state 28
+
+    parens  go to state 29
 
 
 State 6
 
-   12 op_assign: OP_ASSIGN •
+   17 parens: • '(' list ')'
+   65 match: KW_MATCH • parens braces
 
-    $default  reduce using rule 12 (op_assign)
+    '('  shift, and go to state 28
+
+    parens  go to state 30
 
 
 State 7
 
-   13 prefix: OP_AFFIX •
+   17 parens: • '(' list ')'
+   66 case: KW_CASE • parens braces
 
-    $default  reduce using rule 13 (prefix)
+    '('  shift, and go to state 28
+
+    parens  go to state 31
 
 
 State 8
 
-   17 parens: • '(' list_start ')'
-   60 ifelse_start: KW_IF • ifelse_parens
-   61 ifelse_parens: • parens ifelse_body
+   59 for: KW_FOR • '(' opt_stmt ';' opt_stmt ';' opt_stmt ')' braces
 
-    '('  shift, and go to state 17
-
-    parens         go to state 54
-    ifelse_parens  go to state 55
+    '('  shift, and go to state 32
 
 
 State 9
 
-   17 parens: • '(' list_start ')'
-   69 match_start: KW_MATCH • match_parens
-   70 match_parens: • parens match_body
+    7 op_type: ':' •
 
-    '('  shift, and go to state 17
-
-    parens        go to state 56
-    match_parens  go to state 57
+    $default  reduce using rule 7 (op_type)
 
 
 State 10
 
-   17 parens: • '(' list_start ')'
-   73 case_start: KW_CASE • case_parens
-   74 case_parens: • parens case_body
+   13 prefix: '+' •
 
-    '('  shift, and go to state 17
-
-    parens       go to state 58
-    case_parens  go to state 59
+    $default  reduce using rule 13 (prefix)
 
 
 State 11
 
-   77 for_start: KW_FOR • for_lparen
-   78 for_lparen: • '(' for_init
-
-    '('  shift, and go to state 60
-
-    for_lparen  go to state 61
-
-
-State 12
-
-    1 marker: '#' • TOK_IDENT
-
-    TOK_IDENT  shift, and go to state 62
-
-
-State 13
-
-    5 ident: '@' • TOK_IDENT
-
-    TOK_IDENT  shift, and go to state 63
-
-
-State 14
-
-    8 op_type: ':' •
-
-    $default  reduce using rule 8 (op_type)
-
-
-State 15
-
-   14 prefix: '+' •
+   14 prefix: '-' •
 
     $default  reduce using rule 14 (prefix)
 
 
+State 12
+
+    1 marker: • TOK_MARKER
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   53 block: • marker block
+   54      | • flow block
+   55      | • stmt ';' block
+   56      | • ';' block
+   56      | ';' • block
+   57      | • stmt
+   58      | ε •  [$end, '}']
+   59 for: • KW_FOR '(' opt_stmt ';' opt_stmt ';' opt_stmt ')' braces
+   60 if: • KW_IF parens braces elif else
+   65 match: • KW_MATCH parens braces
+   66 case: • KW_CASE parens braces
+   67 flow: • for
+   68     | • if
+   69     | • match
+   70     | • case
+
+    TOK_MARKER  shift, and go to state 1
+    OP_TYPE     shift, and go to state 2
+    OP_ASSIGN   shift, and go to state 3
+    OP_AFFIX    shift, and go to state 4
+    KW_IF       shift, and go to state 5
+    KW_MATCH    shift, and go to state 6
+    KW_CASE     shift, and go to state 7
+    KW_FOR      shift, and go to state 8
+    ':'         shift, and go to state 9
+    '+'         shift, and go to state 10
+    '-'         shift, and go to state 11
+    ';'         shift, and go to state 12
+
+    $end      reduce using rule 58 (block)
+    '}'       reduce using rule 58 (block)
+    $default  reduce using rule 30 (expr_prefix)
+
+    marker       go to state 13
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 20
+    stmt_dir     go to state 21
+    block        go to state 33
+    for          go to state 23
+    if           go to state 24
+    match        go to state 25
+    case         go to state 26
+    flow         go to state 27
+
+
+State 13
+
+    1 marker: • TOK_MARKER
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   53 block: • marker block
+   53      | marker • block
+   54      | • flow block
+   55      | • stmt ';' block
+   56      | • ';' block
+   57      | • stmt
+   58      | ε •  [$end, '}']
+   59 for: • KW_FOR '(' opt_stmt ';' opt_stmt ';' opt_stmt ')' braces
+   60 if: • KW_IF parens braces elif else
+   65 match: • KW_MATCH parens braces
+   66 case: • KW_CASE parens braces
+   67 flow: • for
+   68     | • if
+   69     | • match
+   70     | • case
+
+    TOK_MARKER  shift, and go to state 1
+    OP_TYPE     shift, and go to state 2
+    OP_ASSIGN   shift, and go to state 3
+    OP_AFFIX    shift, and go to state 4
+    KW_IF       shift, and go to state 5
+    KW_MATCH    shift, and go to state 6
+    KW_CASE     shift, and go to state 7
+    KW_FOR      shift, and go to state 8
+    ':'         shift, and go to state 9
+    '+'         shift, and go to state 10
+    '-'         shift, and go to state 11
+    ';'         shift, and go to state 12
+
+    $end      reduce using rule 58 (block)
+    '}'       reduce using rule 58 (block)
+    $default  reduce using rule 30 (expr_prefix)
+
+    marker       go to state 13
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 20
+    stmt_dir     go to state 21
+    block        go to state 34
+    for          go to state 23
+    if           go to state 24
+    match        go to state 25
+    case         go to state 26
+    flow         go to state 27
+
+
+State 14
+
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   42 stmt_dir: op_type • stmt_type
+   43         | op_type •  [$end, ')', '}', ']', ',', ';']
+   44 stmt_type: • expr op_assign stmt
+   45          | • expr op_assign flow
+   46          | • expr
+
+    OP_AFFIX  shift, and go to state 4
+    '+'       shift, and go to state 10
+    '-'       shift, and go to state 11
+
+    $end      reduce using rule 43 (stmt_dir)
+    ')'       reduce using rule 43 (stmt_dir)
+    '}'       reduce using rule 43 (stmt_dir)
+    ']'       reduce using rule 43 (stmt_dir)
+    ','       reduce using rule 43 (stmt_dir)
+    ';'       reduce using rule 43 (stmt_dir)
+    $default  reduce using rule 30 (expr_prefix)
+
+    prefix       go to state 16
+    expr         go to state 35
+    expr_prefix  go to state 19
+    stmt_type    go to state 36
+
+
+State 15
+
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   40 stmt: op_assign • expr
+
+    OP_AFFIX  shift, and go to state 4
+    '+'       shift, and go to state 10
+    '-'       shift, and go to state 11
+
+    $default  reduce using rule 30 (expr_prefix)
+
+    prefix       go to state 16
+    expr         go to state 37
+    expr_prefix  go to state 19
+
+
 State 16
 
-   15 prefix: '-' •
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   29 expr_prefix: • prefix expr_prefix
+   29            | prefix • expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
 
-    $default  reduce using rule 15 (prefix)
+    OP_AFFIX  shift, and go to state 4
+    '+'       shift, and go to state 10
+    '-'       shift, and go to state 11
+
+    $default  reduce using rule 30 (expr_prefix)
+
+    prefix       go to state 16
+    expr_prefix  go to state 38
 
 
 State 17
 
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   17       | '(' • list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   41 stmt_start: • stmt_lhs
-   42           | • stmt_dir
-   43           | • stmt_assign
-   44           | • stmt_rhs
-   45 stmt_lhs: • expr_start stmt_dir
-   46         | • expr_start stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-   54 list_start: • list_node
-   55           | • list_end
-   56 list_node: • stmt_start list_delim
-   57          | • stmt_start list_end
-   59 list_end: ε •  [')']
+    0 $accept: program • $end
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    OP_AFFIX    shift, and go to state 7
-    '@'         shift, and go to state 13
-    ':'         shift, and go to state 14
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-
-    $default  reduce using rule 59 (list_end)
-
-    const        go to state 23
-    ident        go to state 24
-    op_type      go to state 25
-    op_assign    go to state 26
-    prefix       go to state 27
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 32
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    expr_start   go to state 35
-    expr_prefix  go to state 36
-    expr_term    go to state 37
-    stmt_start   go to state 64
-    stmt_lhs     go to state 39
-    stmt_dir     go to state 40
-    stmt_assign  go to state 41
-    stmt_rhs     go to state 42
-    list_start   go to state 65
-    list_node    go to state 66
-    list_end     go to state 67
+    $end  shift, and go to state 39
 
 
 State 18
 
-    1 marker: • '#' TOK_IDENT
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   18       | '{' • block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   41 stmt_start: • stmt_lhs
-   42           | • stmt_dir
-   43           | • stmt_assign
-   44           | • stmt_rhs
-   45 stmt_lhs: • expr_start stmt_dir
-   46         | • expr_start stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-   60 ifelse_start: • KW_IF ifelse_parens
-   69 match_start: • KW_MATCH match_parens
-   73 case_start: • KW_CASE case_parens
-   77 for_start: • KW_FOR for_lparen
-   90 flow_start: • ifelse_start
-   91           | • match_start
-   92           | • for_start
-   93           | • case_start
-   94 block_start: • block_mark
-   95            | • block_flow
-   96            | • block_stmt
-   97            | • block_delim
-   98            | • block_end
-   99 block_mark: • marker block_start
-  100 block_flow: • flow_start block_start
-  101 block_stmt: • stmt_start block_delim
-  102           | • stmt_start block_end
-  103 block_delim: • ';' block_start
-  104 block_end: ε •  ['}']
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   37 stmt: expr • stmt_dir
+   38     | expr • op_assign expr
+   41     | expr •  [$end, ')', '}', ']', ',', ';']
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    OP_AFFIX    shift, and go to state 7
-    KW_IF       shift, and go to state 8
-    KW_MATCH    shift, and go to state 9
-    KW_CASE     shift, and go to state 10
-    KW_FOR      shift, and go to state 11
-    '#'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    ':'         shift, and go to state 14
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-    ';'         shift, and go to state 21
+    OP_TYPE    shift, and go to state 2
+    OP_ASSIGN  shift, and go to state 3
+    ':'        shift, and go to state 9
 
-    $default  reduce using rule 104 (block_end)
+    $default  reduce using rule 41 (stmt)
 
-    marker        go to state 22
-    const         go to state 23
-    ident         go to state 24
-    op_type       go to state 25
-    op_assign     go to state 26
-    prefix        go to state 27
-    parens        go to state 28
-    braces        go to state 29
-    bracks        go to state 30
-    atom          go to state 31
-    ident_start   go to state 32
-    ident_node    go to state 33
-    ident_dot     go to state 34
-    expr_start    go to state 35
-    expr_prefix   go to state 36
-    expr_term     go to state 37
-    stmt_start    go to state 38
-    stmt_lhs      go to state 39
-    stmt_dir      go to state 40
-    stmt_assign   go to state 41
-    stmt_rhs      go to state 42
-    ifelse_start  go to state 43
-    match_start   go to state 44
-    case_start    go to state 45
-    for_start     go to state 46
-    flow_start    go to state 47
-    block_start   go to state 68
-    block_mark    go to state 49
-    block_flow    go to state 50
-    block_stmt    go to state 51
-    block_delim   go to state 52
-    block_end     go to state 53
+    op_type    go to state 14
+    op_assign  go to state 40
+    stmt_dir   go to state 41
 
 
 State 19
@@ -877,2073 +651,1220 @@ State 19
     2 const: • TOK_INT
     3      | • TOK_FLOAT
     4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   19       | '[' • list_start ']'
+    5 ident: • TOK_IDENT
+   17 parens: • '(' list ')'
+   18 braces: • '{' block '}'
+   19 bracks: • '[' list ']'
    20 atom: • ident
    21     | • parens
    22     | • braces
    23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   41 stmt_start: • stmt_lhs
-   42           | • stmt_dir
-   43           | • stmt_assign
-   44           | • stmt_rhs
-   45 stmt_lhs: • expr_start stmt_dir
-   46         | • expr_start stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-   54 list_start: • list_node
-   55           | • list_end
-   56 list_node: • stmt_start list_delim
-   57          | • stmt_start list_end
-   59 list_end: ε •  [']']
+   24 ident_term: • atom
+   25           | • '.'
+   26 ident_path: • ident_term ident_path
+   27           | • ident_term
+   28 expr: expr_prefix • expr_term expr_suffix expr_chain
+   31 expr_term: • ident_path
+   32          | • const
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    OP_AFFIX    shift, and go to state 7
-    '@'         shift, and go to state 13
-    ':'         shift, and go to state 14
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
+    TOK_IDENT   shift, and go to state 42
+    TOK_INT     shift, and go to state 43
+    TOK_FLOAT   shift, and go to state 44
+    TOK_STRING  shift, and go to state 45
+    '('         shift, and go to state 28
+    '{'         shift, and go to state 46
+    '['         shift, and go to state 47
+    '.'         shift, and go to state 48
 
-    $default  reduce using rule 59 (list_end)
-
-    const        go to state 23
-    ident        go to state 24
-    op_type      go to state 25
-    op_assign    go to state 26
-    prefix       go to state 27
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 32
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    expr_start   go to state 35
-    expr_prefix  go to state 36
-    expr_term    go to state 37
-    stmt_start   go to state 64
-    stmt_lhs     go to state 39
-    stmt_dir     go to state 40
-    stmt_assign  go to state 41
-    stmt_rhs     go to state 42
-    list_start   go to state 69
-    list_node    go to state 66
-    list_end     go to state 67
+    const       go to state 49
+    ident       go to state 50
+    parens      go to state 51
+    braces      go to state 52
+    bracks      go to state 53
+    atom        go to state 54
+    ident_term  go to state 55
+    ident_path  go to state 56
+    expr_term   go to state 57
 
 
 State 20
 
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   28          | '.' • ident_start
-   29          | • '.' ident_end
-   29          | '.' • ident_end
-   30 ident_end: ε •  [$end, OP_TYPE, OP_ASSIGN, OP_BIN, OP_AFFIX, ':', '+', '-', ')', '}', ']', ',', ';']
+   55 block: stmt • ';' block
+   57      | stmt •  [$end, '}']
 
-    TOK_IDENT  shift, and go to state 1
-    '@'        shift, and go to state 13
-    '('        shift, and go to state 17
-    '{'        shift, and go to state 18
-    '['        shift, and go to state 19
-    '.'        shift, and go to state 20
+    ';'  shift, and go to state 58
 
-    $default  reduce using rule 30 (ident_end)
-
-    ident        go to state 24
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 70
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    ident_end    go to state 71
+    $default  reduce using rule 57 (block)
 
 
 State 21
 
-    1 marker: • '#' TOK_IDENT
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   41 stmt_start: • stmt_lhs
-   42           | • stmt_dir
-   43           | • stmt_assign
-   44           | • stmt_rhs
-   45 stmt_lhs: • expr_start stmt_dir
-   46         | • expr_start stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-   60 ifelse_start: • KW_IF ifelse_parens
-   69 match_start: • KW_MATCH match_parens
-   73 case_start: • KW_CASE case_parens
-   77 for_start: • KW_FOR for_lparen
-   90 flow_start: • ifelse_start
-   91           | • match_start
-   92           | • for_start
-   93           | • case_start
-   94 block_start: • block_mark
-   95            | • block_flow
-   96            | • block_stmt
-   97            | • block_delim
-   98            | • block_end
-   99 block_mark: • marker block_start
-  100 block_flow: • flow_start block_start
-  101 block_stmt: • stmt_start block_delim
-  102           | • stmt_start block_end
-  103 block_delim: • ';' block_start
-  103            | ';' • block_start
-  104 block_end: ε •  [$end, '}']
+   39 stmt: stmt_dir •
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    OP_AFFIX    shift, and go to state 7
-    KW_IF       shift, and go to state 8
-    KW_MATCH    shift, and go to state 9
-    KW_CASE     shift, and go to state 10
-    KW_FOR      shift, and go to state 11
-    '#'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    ':'         shift, and go to state 14
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-    ';'         shift, and go to state 21
-
-    $default  reduce using rule 104 (block_end)
-
-    marker        go to state 22
-    const         go to state 23
-    ident         go to state 24
-    op_type       go to state 25
-    op_assign     go to state 26
-    prefix        go to state 27
-    parens        go to state 28
-    braces        go to state 29
-    bracks        go to state 30
-    atom          go to state 31
-    ident_start   go to state 32
-    ident_node    go to state 33
-    ident_dot     go to state 34
-    expr_start    go to state 35
-    expr_prefix   go to state 36
-    expr_term     go to state 37
-    stmt_start    go to state 38
-    stmt_lhs      go to state 39
-    stmt_dir      go to state 40
-    stmt_assign   go to state 41
-    stmt_rhs      go to state 42
-    ifelse_start  go to state 43
-    match_start   go to state 44
-    case_start    go to state 45
-    for_start     go to state 46
-    flow_start    go to state 47
-    block_start   go to state 72
-    block_mark    go to state 49
-    block_flow    go to state 50
-    block_stmt    go to state 51
-    block_delim   go to state 52
-    block_end     go to state 53
+    $default  reduce using rule 39 (stmt)
 
 
 State 22
 
-    1 marker: • '#' TOK_IDENT
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   41 stmt_start: • stmt_lhs
-   42           | • stmt_dir
-   43           | • stmt_assign
-   44           | • stmt_rhs
-   45 stmt_lhs: • expr_start stmt_dir
-   46         | • expr_start stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-   60 ifelse_start: • KW_IF ifelse_parens
-   69 match_start: • KW_MATCH match_parens
-   73 case_start: • KW_CASE case_parens
-   77 for_start: • KW_FOR for_lparen
-   90 flow_start: • ifelse_start
-   91           | • match_start
-   92           | • for_start
-   93           | • case_start
-   94 block_start: • block_mark
-   95            | • block_flow
-   96            | • block_stmt
-   97            | • block_delim
-   98            | • block_end
-   99 block_mark: • marker block_start
-   99           | marker • block_start
-  100 block_flow: • flow_start block_start
-  101 block_stmt: • stmt_start block_delim
-  102           | • stmt_start block_end
-  103 block_delim: • ';' block_start
-  104 block_end: ε •  [$end, '}']
+   16 program: block •
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    OP_AFFIX    shift, and go to state 7
-    KW_IF       shift, and go to state 8
-    KW_MATCH    shift, and go to state 9
-    KW_CASE     shift, and go to state 10
-    KW_FOR      shift, and go to state 11
-    '#'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    ':'         shift, and go to state 14
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-    ';'         shift, and go to state 21
-
-    $default  reduce using rule 104 (block_end)
-
-    marker        go to state 22
-    const         go to state 23
-    ident         go to state 24
-    op_type       go to state 25
-    op_assign     go to state 26
-    prefix        go to state 27
-    parens        go to state 28
-    braces        go to state 29
-    bracks        go to state 30
-    atom          go to state 31
-    ident_start   go to state 32
-    ident_node    go to state 33
-    ident_dot     go to state 34
-    expr_start    go to state 35
-    expr_prefix   go to state 36
-    expr_term     go to state 37
-    stmt_start    go to state 38
-    stmt_lhs      go to state 39
-    stmt_dir      go to state 40
-    stmt_assign   go to state 41
-    stmt_rhs      go to state 42
-    ifelse_start  go to state 43
-    match_start   go to state 44
-    case_start    go to state 45
-    for_start     go to state 46
-    flow_start    go to state 47
-    block_start   go to state 73
-    block_mark    go to state 49
-    block_flow    go to state 50
-    block_stmt    go to state 51
-    block_delim   go to state 52
-    block_end     go to state 53
+    $default  reduce using rule 16 (program)
 
 
 State 23
 
-    9 op_bin: • OP_BIN
-   10       | • '+'
-   11       | • '-'
-   16 suffix: • OP_AFFIX
-   35 expr_term: const • expr_suffix
-   36 expr_suffix: • suffix expr_suffix
-   37            | • expr_chain
-   38 expr_chain: • op_bin expr_start
-   39           | • expr_end
-   40 expr_end: ε •  [$end, OP_TYPE, OP_ASSIGN, ':', ')', '}', ']', ',', ';']
+   67 flow: for •
 
-    OP_BIN    shift, and go to state 74
-    OP_AFFIX  shift, and go to state 75
-    '+'       shift, and go to state 76
-    '-'       shift, and go to state 77
-
-    $default  reduce using rule 40 (expr_end)
-
-    op_bin       go to state 78
-    suffix       go to state 79
-    expr_suffix  go to state 80
-    expr_chain   go to state 81
-    expr_end     go to state 82
+    $default  reduce using rule 67 (flow)
 
 
 State 24
+
+   68 flow: if •
+
+    $default  reduce using rule 68 (flow)
+
+
+State 25
+
+   69 flow: match •
+
+    $default  reduce using rule 69 (flow)
+
+
+State 26
+
+   70 flow: case •
+
+    $default  reduce using rule 70 (flow)
+
+
+State 27
+
+    1 marker: • TOK_MARKER
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   53 block: • marker block
+   54      | • flow block
+   54      | flow • block
+   55      | • stmt ';' block
+   56      | • ';' block
+   57      | • stmt
+   58      | ε •  [$end, '}']
+   59 for: • KW_FOR '(' opt_stmt ';' opt_stmt ';' opt_stmt ')' braces
+   60 if: • KW_IF parens braces elif else
+   65 match: • KW_MATCH parens braces
+   66 case: • KW_CASE parens braces
+   67 flow: • for
+   68     | • if
+   69     | • match
+   70     | • case
+
+    TOK_MARKER  shift, and go to state 1
+    OP_TYPE     shift, and go to state 2
+    OP_ASSIGN   shift, and go to state 3
+    OP_AFFIX    shift, and go to state 4
+    KW_IF       shift, and go to state 5
+    KW_MATCH    shift, and go to state 6
+    KW_CASE     shift, and go to state 7
+    KW_FOR      shift, and go to state 8
+    ':'         shift, and go to state 9
+    '+'         shift, and go to state 10
+    '-'         shift, and go to state 11
+    ';'         shift, and go to state 12
+
+    $end      reduce using rule 58 (block)
+    '}'       reduce using rule 58 (block)
+    $default  reduce using rule 30 (expr_prefix)
+
+    marker       go to state 13
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 20
+    stmt_dir     go to state 21
+    block        go to state 59
+    for          go to state 23
+    if           go to state 24
+    match        go to state 25
+    case         go to state 26
+    flow         go to state 27
+
+
+State 28
+
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   17 parens: '(' • list ')'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   49 list: • stmt tail
+   50     | ε •  [')']
+
+    OP_TYPE    shift, and go to state 2
+    OP_ASSIGN  shift, and go to state 3
+    OP_AFFIX   shift, and go to state 4
+    ':'        shift, and go to state 9
+    '+'        shift, and go to state 10
+    '-'        shift, and go to state 11
+
+    ')'       reduce using rule 50 (list)
+    $default  reduce using rule 30 (expr_prefix)
+
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 60
+    stmt_dir     go to state 21
+    list         go to state 61
+
+
+State 29
+
+   18 braces: • '{' block '}'
+   60 if: KW_IF parens • braces elif else
+
+    '{'  shift, and go to state 46
+
+    braces  go to state 62
+
+
+State 30
+
+   18 braces: • '{' block '}'
+   65 match: KW_MATCH parens • braces
+
+    '{'  shift, and go to state 46
+
+    braces  go to state 63
+
+
+State 31
+
+   18 braces: • '{' block '}'
+   66 case: KW_CASE parens • braces
+
+    '{'  shift, and go to state 46
+
+    braces  go to state 64
+
+
+State 32
+
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   47 opt_stmt: • stmt
+   48         | ε •  [';']
+   59 for: KW_FOR '(' • opt_stmt ';' opt_stmt ';' opt_stmt ')' braces
+
+    OP_TYPE    shift, and go to state 2
+    OP_ASSIGN  shift, and go to state 3
+    OP_AFFIX   shift, and go to state 4
+    ':'        shift, and go to state 9
+    '+'        shift, and go to state 10
+    '-'        shift, and go to state 11
+
+    ';'       reduce using rule 48 (opt_stmt)
+    $default  reduce using rule 30 (expr_prefix)
+
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 65
+    stmt_dir     go to state 21
+    opt_stmt     go to state 66
+
+
+State 33
+
+   56 block: ';' block •
+
+    $default  reduce using rule 56 (block)
+
+
+State 34
+
+   53 block: marker block •
+
+    $default  reduce using rule 53 (block)
+
+
+State 35
+
+   11 op_assign: • OP_ASSIGN
+   44 stmt_type: expr • op_assign stmt
+   45          | expr • op_assign flow
+   46          | expr •  [$end, ')', '}', ']', ',', ';']
+
+    OP_ASSIGN  shift, and go to state 3
+
+    $default  reduce using rule 46 (stmt_type)
+
+    op_assign  go to state 67
+
+
+State 36
+
+   42 stmt_dir: op_type stmt_type •
+
+    $default  reduce using rule 42 (stmt_dir)
+
+
+State 37
+
+   40 stmt: op_assign expr •
+
+    $default  reduce using rule 40 (stmt)
+
+
+State 38
+
+   29 expr_prefix: prefix expr_prefix •
+
+    $default  reduce using rule 29 (expr_prefix)
+
+
+State 39
+
+    0 $accept: program $end •
+
+    $default  accept
+
+
+State 40
+
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   38 stmt: expr op_assign • expr
+
+    OP_AFFIX  shift, and go to state 4
+    '+'       shift, and go to state 10
+    '-'       shift, and go to state 11
+
+    $default  reduce using rule 30 (expr_prefix)
+
+    prefix       go to state 16
+    expr         go to state 68
+    expr_prefix  go to state 19
+
+
+State 41
+
+   37 stmt: expr stmt_dir •
+
+    $default  reduce using rule 37 (stmt)
+
+
+State 42
+
+    5 ident: TOK_IDENT •
+
+    $default  reduce using rule 5 (ident)
+
+
+State 43
+
+    2 const: TOK_INT •
+
+    $default  reduce using rule 2 (const)
+
+
+State 44
+
+    3 const: TOK_FLOAT •
+
+    $default  reduce using rule 3 (const)
+
+
+State 45
+
+    4 const: TOK_STRING •
+
+    $default  reduce using rule 4 (const)
+
+
+State 46
+
+    1 marker: • TOK_MARKER
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   18 braces: '{' • block '}'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   53 block: • marker block
+   54      | • flow block
+   55      | • stmt ';' block
+   56      | • ';' block
+   57      | • stmt
+   58      | ε •  ['}']
+   59 for: • KW_FOR '(' opt_stmt ';' opt_stmt ';' opt_stmt ')' braces
+   60 if: • KW_IF parens braces elif else
+   65 match: • KW_MATCH parens braces
+   66 case: • KW_CASE parens braces
+   67 flow: • for
+   68     | • if
+   69     | • match
+   70     | • case
+
+    TOK_MARKER  shift, and go to state 1
+    OP_TYPE     shift, and go to state 2
+    OP_ASSIGN   shift, and go to state 3
+    OP_AFFIX    shift, and go to state 4
+    KW_IF       shift, and go to state 5
+    KW_MATCH    shift, and go to state 6
+    KW_CASE     shift, and go to state 7
+    KW_FOR      shift, and go to state 8
+    ':'         shift, and go to state 9
+    '+'         shift, and go to state 10
+    '-'         shift, and go to state 11
+    ';'         shift, and go to state 12
+
+    '}'       reduce using rule 58 (block)
+    $default  reduce using rule 30 (expr_prefix)
+
+    marker       go to state 13
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 20
+    stmt_dir     go to state 21
+    block        go to state 69
+    for          go to state 23
+    if           go to state 24
+    match        go to state 25
+    case         go to state 26
+    flow         go to state 27
+
+
+State 47
+
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   19 bracks: '[' • list ']'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   49 list: • stmt tail
+   50     | ε •  [']']
+
+    OP_TYPE    shift, and go to state 2
+    OP_ASSIGN  shift, and go to state 3
+    OP_AFFIX   shift, and go to state 4
+    ':'        shift, and go to state 9
+    '+'        shift, and go to state 10
+    '-'        shift, and go to state 11
+
+    ']'       reduce using rule 50 (list)
+    $default  reduce using rule 30 (expr_prefix)
+
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 60
+    stmt_dir     go to state 21
+    list         go to state 70
+
+
+State 48
+
+   25 ident_term: '.' •
+
+    $default  reduce using rule 25 (ident_term)
+
+
+State 49
+
+   32 expr_term: const •
+
+    $default  reduce using rule 32 (expr_term)
+
+
+State 50
 
    20 atom: ident •
 
     $default  reduce using rule 20 (atom)
 
 
-State 25
-
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   47 stmt_dir: op_type • stmt_type
-   48         | op_type • stmt_end
-   49 stmt_type: • expr_start stmt_assign
-   50          | • expr_start stmt_end
-   53 stmt_end: ε •  [$end, ')', '}', ']', ',', ';']
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_AFFIX    shift, and go to state 7
-    '@'         shift, and go to state 13
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-
-    $default  reduce using rule 53 (stmt_end)
-
-    const        go to state 23
-    ident        go to state 24
-    prefix       go to state 27
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 32
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    expr_start   go to state 83
-    expr_prefix  go to state 36
-    expr_term    go to state 37
-    stmt_type    go to state 84
-    stmt_end     go to state 85
-
-
-State 26
-
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   51 stmt_assign: op_assign • stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_AFFIX    shift, and go to state 7
-    '@'         shift, and go to state 13
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-
-    const        go to state 23
-    ident        go to state 24
-    prefix       go to state 27
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 32
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    expr_start   go to state 86
-    expr_prefix  go to state 36
-    expr_term    go to state 37
-    stmt_rhs     go to state 87
-
-
-State 27
-
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   32 expr_prefix: • prefix expr_prefix
-   32            | prefix • expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_AFFIX    shift, and go to state 7
-    '@'         shift, and go to state 13
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-
-    const        go to state 23
-    ident        go to state 24
-    prefix       go to state 27
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 32
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    expr_prefix  go to state 88
-    expr_term    go to state 37
-
-
-State 28
+State 51
 
    21 atom: parens •
 
     $default  reduce using rule 21 (atom)
 
 
-State 29
+State 52
 
    22 atom: braces •
 
     $default  reduce using rule 22 (atom)
 
 
-State 30
+State 53
 
    23 atom: bracks •
 
     $default  reduce using rule 23 (atom)
 
 
-State 31
-
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   26           | atom • ident_start
-   27           | • atom ident_end
-   27           | atom • ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   30 ident_end: ε •  [$end, OP_TYPE, OP_ASSIGN, OP_BIN, OP_AFFIX, ':', '+', '-', ')', '}', ']', ',', ';']
-
-    TOK_IDENT  shift, and go to state 1
-    '@'        shift, and go to state 13
-    '('        shift, and go to state 17
-    '{'        shift, and go to state 18
-    '['        shift, and go to state 19
-    '.'        shift, and go to state 20
-
-    $default  reduce using rule 30 (ident_end)
-
-    ident        go to state 24
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 89
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    ident_end    go to state 90
-
-
-State 32
-
-    9 op_bin: • OP_BIN
-   10       | • '+'
-   11       | • '-'
-   16 suffix: • OP_AFFIX
-   34 expr_term: ident_start • expr_suffix
-   36 expr_suffix: • suffix expr_suffix
-   37            | • expr_chain
-   38 expr_chain: • op_bin expr_start
-   39           | • expr_end
-   40 expr_end: ε •  [$end, OP_TYPE, OP_ASSIGN, ':', ')', '}', ']', ',', ';']
-
-    OP_BIN    shift, and go to state 74
-    OP_AFFIX  shift, and go to state 75
-    '+'       shift, and go to state 76
-    '-'       shift, and go to state 77
-
-    $default  reduce using rule 40 (expr_end)
-
-    op_bin       go to state 78
-    suffix       go to state 79
-    expr_suffix  go to state 91
-    expr_chain   go to state 81
-    expr_end     go to state 82
-
-
-State 33
-
-   24 ident_start: ident_node •
-
-    $default  reduce using rule 24 (ident_start)
-
-
-State 34
-
-   25 ident_start: ident_dot •
-
-    $default  reduce using rule 25 (ident_start)
-
-
-State 35
-
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   45 stmt_lhs: expr_start • stmt_dir
-   46         | expr_start • stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: expr_start • stmt_end
-   53 stmt_end: ε •  [$end, ')', '}', ']', ',', ';']
-
-    OP_TYPE    shift, and go to state 5
-    OP_ASSIGN  shift, and go to state 6
-    ':'        shift, and go to state 14
-
-    $default  reduce using rule 53 (stmt_end)
-
-    op_type      go to state 25
-    op_assign    go to state 26
-    stmt_dir     go to state 92
-    stmt_assign  go to state 93
-    stmt_end     go to state 94
-
-
-State 36
-
-   31 expr_start: expr_prefix •
-
-    $default  reduce using rule 31 (expr_start)
-
-
-State 37
-
-   33 expr_prefix: expr_term •
-
-    $default  reduce using rule 33 (expr_prefix)
-
-
-State 38
-
-  101 block_stmt: stmt_start • block_delim
-  102           | stmt_start • block_end
-  103 block_delim: • ';' block_start
-  104 block_end: ε •  [$end, '}']
-
-    ';'  shift, and go to state 21
-
-    $default  reduce using rule 104 (block_end)
-
-    block_delim  go to state 95
-    block_end    go to state 96
-
-
-State 39
-
-   41 stmt_start: stmt_lhs •
-
-    $default  reduce using rule 41 (stmt_start)
-
-
-State 40
-
-   42 stmt_start: stmt_dir •
-
-    $default  reduce using rule 42 (stmt_start)
-
-
-State 41
-
-   43 stmt_start: stmt_assign •
-
-    $default  reduce using rule 43 (stmt_start)
-
-
-State 42
-
-   44 stmt_start: stmt_rhs •
-
-    $default  reduce using rule 44 (stmt_start)
-
-
-State 43
-
-   90 flow_start: ifelse_start •
-
-    $default  reduce using rule 90 (flow_start)
-
-
-State 44
-
-   91 flow_start: match_start •
-
-    $default  reduce using rule 91 (flow_start)
-
-
-State 45
-
-   93 flow_start: case_start •
-
-    $default  reduce using rule 93 (flow_start)
-
-
-State 46
-
-   92 flow_start: for_start •
-
-    $default  reduce using rule 92 (flow_start)
-
-
-State 47
-
-    1 marker: • '#' TOK_IDENT
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   41 stmt_start: • stmt_lhs
-   42           | • stmt_dir
-   43           | • stmt_assign
-   44           | • stmt_rhs
-   45 stmt_lhs: • expr_start stmt_dir
-   46         | • expr_start stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-   60 ifelse_start: • KW_IF ifelse_parens
-   69 match_start: • KW_MATCH match_parens
-   73 case_start: • KW_CASE case_parens
-   77 for_start: • KW_FOR for_lparen
-   90 flow_start: • ifelse_start
-   91           | • match_start
-   92           | • for_start
-   93           | • case_start
-   94 block_start: • block_mark
-   95            | • block_flow
-   96            | • block_stmt
-   97            | • block_delim
-   98            | • block_end
-   99 block_mark: • marker block_start
-  100 block_flow: • flow_start block_start
-  100           | flow_start • block_start
-  101 block_stmt: • stmt_start block_delim
-  102           | • stmt_start block_end
-  103 block_delim: • ';' block_start
-  104 block_end: ε •  [$end, '}']
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    OP_AFFIX    shift, and go to state 7
-    KW_IF       shift, and go to state 8
-    KW_MATCH    shift, and go to state 9
-    KW_CASE     shift, and go to state 10
-    KW_FOR      shift, and go to state 11
-    '#'         shift, and go to state 12
-    '@'         shift, and go to state 13
-    ':'         shift, and go to state 14
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-    ';'         shift, and go to state 21
-
-    $default  reduce using rule 104 (block_end)
-
-    marker        go to state 22
-    const         go to state 23
-    ident         go to state 24
-    op_type       go to state 25
-    op_assign     go to state 26
-    prefix        go to state 27
-    parens        go to state 28
-    braces        go to state 29
-    bracks        go to state 30
-    atom          go to state 31
-    ident_start   go to state 32
-    ident_node    go to state 33
-    ident_dot     go to state 34
-    expr_start    go to state 35
-    expr_prefix   go to state 36
-    expr_term     go to state 37
-    stmt_start    go to state 38
-    stmt_lhs      go to state 39
-    stmt_dir      go to state 40
-    stmt_assign   go to state 41
-    stmt_rhs      go to state 42
-    ifelse_start  go to state 43
-    match_start   go to state 44
-    case_start    go to state 45
-    for_start     go to state 46
-    flow_start    go to state 47
-    block_start   go to state 97
-    block_mark    go to state 49
-    block_flow    go to state 50
-    block_stmt    go to state 51
-    block_delim   go to state 52
-    block_end     go to state 53
-
-
-State 48
-
-    0 $accept: block_start • $end
-
-    $end  shift, and go to state 98
-
-
-State 49
-
-   94 block_start: block_mark •
-
-    $default  reduce using rule 94 (block_start)
-
-
-State 50
-
-   95 block_start: block_flow •
-
-    $default  reduce using rule 95 (block_start)
-
-
-State 51
-
-   96 block_start: block_stmt •
-
-    $default  reduce using rule 96 (block_start)
-
-
-State 52
-
-   97 block_start: block_delim •
-
-    $default  reduce using rule 97 (block_start)
-
-
-State 53
-
-   98 block_start: block_end •
-
-    $default  reduce using rule 98 (block_start)
-
-
 State 54
 
-   18 braces: • '{' block_start '}'
-   61 ifelse_parens: parens • ifelse_body
-   62 ifelse_body: • braces ifelse_elif
-   63            | • braces ifelse_else
-   64            | • braces ifelse_end
+   24 ident_term: atom •
 
-    '{'  shift, and go to state 18
-
-    braces       go to state 99
-    ifelse_body  go to state 100
+    $default  reduce using rule 24 (ident_term)
 
 
 State 55
 
-   60 ifelse_start: KW_IF ifelse_parens •
+    5 ident: • TOK_IDENT
+   17 parens: • '(' list ')'
+   18 braces: • '{' block '}'
+   19 bracks: • '[' list ']'
+   20 atom: • ident
+   21     | • parens
+   22     | • braces
+   23     | • bracks
+   24 ident_term: • atom
+   25           | • '.'
+   26 ident_path: • ident_term ident_path
+   26           | ident_term • ident_path
+   27           | • ident_term
+   27           | ident_term •  [$end, OP_TYPE, OP_ASSIGN, OP_BIN, OP_AFFIX, ':', '+', '-', ')', '}', ']', ',', ';']
 
-    $default  reduce using rule 60 (ifelse_start)
+    TOK_IDENT  shift, and go to state 42
+    '('        shift, and go to state 28
+    '{'        shift, and go to state 46
+    '['        shift, and go to state 47
+    '.'        shift, and go to state 48
+
+    $default  reduce using rule 27 (ident_path)
+
+    ident       go to state 50
+    parens      go to state 51
+    braces      go to state 52
+    bracks      go to state 53
+    atom        go to state 54
+    ident_term  go to state 55
+    ident_path  go to state 71
 
 
 State 56
 
-   18 braces: • '{' block_start '}'
-   70 match_parens: parens • match_body
-   71 match_body: • braces match_end
+   31 expr_term: ident_path •
 
-    '{'  shift, and go to state 18
-
-    braces      go to state 101
-    match_body  go to state 102
+    $default  reduce using rule 31 (expr_term)
 
 
 State 57
 
-   69 match_start: KW_MATCH match_parens •
+   15 suffix: • OP_AFFIX
+   28 expr: expr_prefix expr_term • expr_suffix expr_chain
+   33 expr_suffix: • suffix expr_suffix
+   34            | ε •  [$end, OP_TYPE, OP_ASSIGN, OP_BIN, ':', '+', '-', ')', '}', ']', ',', ';']
 
-    $default  reduce using rule 69 (match_start)
+    OP_AFFIX  shift, and go to state 72
+
+    $default  reduce using rule 34 (expr_suffix)
+
+    suffix       go to state 73
+    expr_suffix  go to state 74
 
 
 State 58
 
-   18 braces: • '{' block_start '}'
-   74 case_parens: parens • case_body
-   75 case_body: • braces case_end
+    1 marker: • TOK_MARKER
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   53 block: • marker block
+   54      | • flow block
+   55      | • stmt ';' block
+   55      | stmt ';' • block
+   56      | • ';' block
+   57      | • stmt
+   58      | ε •  [$end, '}']
+   59 for: • KW_FOR '(' opt_stmt ';' opt_stmt ';' opt_stmt ')' braces
+   60 if: • KW_IF parens braces elif else
+   65 match: • KW_MATCH parens braces
+   66 case: • KW_CASE parens braces
+   67 flow: • for
+   68     | • if
+   69     | • match
+   70     | • case
 
-    '{'  shift, and go to state 18
+    TOK_MARKER  shift, and go to state 1
+    OP_TYPE     shift, and go to state 2
+    OP_ASSIGN   shift, and go to state 3
+    OP_AFFIX    shift, and go to state 4
+    KW_IF       shift, and go to state 5
+    KW_MATCH    shift, and go to state 6
+    KW_CASE     shift, and go to state 7
+    KW_FOR      shift, and go to state 8
+    ':'         shift, and go to state 9
+    '+'         shift, and go to state 10
+    '-'         shift, and go to state 11
+    ';'         shift, and go to state 12
 
-    braces     go to state 103
-    case_body  go to state 104
+    $end      reduce using rule 58 (block)
+    '}'       reduce using rule 58 (block)
+    $default  reduce using rule 30 (expr_prefix)
+
+    marker       go to state 13
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 20
+    stmt_dir     go to state 21
+    block        go to state 75
+    for          go to state 23
+    if           go to state 24
+    match        go to state 25
+    case         go to state 26
+    flow         go to state 27
 
 
 State 59
 
-   73 case_start: KW_CASE case_parens •
+   54 block: flow block •
 
-    $default  reduce using rule 73 (case_start)
+    $default  reduce using rule 54 (block)
 
 
 State 60
 
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   41 stmt_start: • stmt_lhs
-   42           | • stmt_dir
-   43           | • stmt_assign
-   44           | • stmt_rhs
-   45 stmt_lhs: • expr_start stmt_dir
-   46         | • expr_start stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-   78 for_lparen: '(' • for_init
-   79 for_init: • stmt_start for_semi1
-   80         | • for_semi1
-   81 for_semi1: • ';' for_cond
+   49 list: stmt • tail
+   51 tail: • ',' stmt tail
+   52     | ε •  [')', ']']
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    OP_AFFIX    shift, and go to state 7
-    '@'         shift, and go to state 13
-    ':'         shift, and go to state 14
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-    ';'         shift, and go to state 105
+    ','  shift, and go to state 76
 
-    const        go to state 23
-    ident        go to state 24
-    op_type      go to state 25
-    op_assign    go to state 26
-    prefix       go to state 27
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 32
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    expr_start   go to state 35
-    expr_prefix  go to state 36
-    expr_term    go to state 37
-    stmt_start   go to state 106
-    stmt_lhs     go to state 39
-    stmt_dir     go to state 40
-    stmt_assign  go to state 41
-    stmt_rhs     go to state 42
-    for_init     go to state 107
-    for_semi1    go to state 108
+    $default  reduce using rule 52 (tail)
+
+    tail  go to state 77
 
 
 State 61
 
-   77 for_start: KW_FOR for_lparen •
+   17 parens: '(' list • ')'
 
-    $default  reduce using rule 77 (for_start)
+    ')'  shift, and go to state 78
 
 
 State 62
 
-    1 marker: '#' TOK_IDENT •
+   60 if: KW_IF parens braces • elif else
+   61 elif: • KW_ELIF parens braces elif
+   62     | ε •  [$end, TOK_MARKER, TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, OP_TYPE, OP_ASSIGN, OP_AFFIX, KW_IF, KW_ELSE, KW_MATCH, KW_CASE, KW_FOR, ':', '+', '-', '(', ')', '{', '}', '[', ']', '.', ',', ';']
 
-    $default  reduce using rule 1 (marker)
+    KW_ELIF  shift, and go to state 79
+
+    $default  reduce using rule 62 (elif)
+
+    elif  go to state 80
 
 
 State 63
 
-    5 ident: '@' TOK_IDENT •
+   65 match: KW_MATCH parens braces •
 
-    $default  reduce using rule 5 (ident)
+    $default  reduce using rule 65 (match)
 
 
 State 64
 
-   56 list_node: stmt_start • list_delim
-   57          | stmt_start • list_end
-   58 list_delim: • ',' list_node
-   59 list_end: ε •  [')', ']']
+   66 case: KW_CASE parens braces •
 
-    ','  shift, and go to state 109
-
-    $default  reduce using rule 59 (list_end)
-
-    list_delim  go to state 110
-    list_end    go to state 111
+    $default  reduce using rule 66 (case)
 
 
 State 65
 
-   17 parens: '(' list_start • ')'
+   47 opt_stmt: stmt •
 
-    ')'  shift, and go to state 112
+    $default  reduce using rule 47 (opt_stmt)
 
 
 State 66
 
-   54 list_start: list_node •
+   59 for: KW_FOR '(' opt_stmt • ';' opt_stmt ';' opt_stmt ')' braces
 
-    $default  reduce using rule 54 (list_start)
+    ';'  shift, and go to state 81
 
 
 State 67
 
-   55 list_start: list_end •
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   44 stmt_type: expr op_assign • stmt
+   45          | expr op_assign • flow
+   59 for: • KW_FOR '(' opt_stmt ';' opt_stmt ';' opt_stmt ')' braces
+   60 if: • KW_IF parens braces elif else
+   65 match: • KW_MATCH parens braces
+   66 case: • KW_CASE parens braces
+   67 flow: • for
+   68     | • if
+   69     | • match
+   70     | • case
 
-    $default  reduce using rule 55 (list_start)
+    OP_TYPE    shift, and go to state 2
+    OP_ASSIGN  shift, and go to state 3
+    OP_AFFIX   shift, and go to state 4
+    KW_IF      shift, and go to state 5
+    KW_MATCH   shift, and go to state 6
+    KW_CASE    shift, and go to state 7
+    KW_FOR     shift, and go to state 8
+    ':'        shift, and go to state 9
+    '+'        shift, and go to state 10
+    '-'        shift, and go to state 11
+
+    $default  reduce using rule 30 (expr_prefix)
+
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 82
+    stmt_dir     go to state 21
+    for          go to state 23
+    if           go to state 24
+    match        go to state 25
+    case         go to state 26
+    flow         go to state 83
 
 
 State 68
 
-   18 braces: '{' block_start • '}'
+   38 stmt: expr op_assign expr •
 
-    '}'  shift, and go to state 113
+    $default  reduce using rule 38 (stmt)
 
 
 State 69
 
-   19 bracks: '[' list_start • ']'
+   18 braces: '{' block • '}'
 
-    ']'  shift, and go to state 114
+    '}'  shift, and go to state 84
 
 
 State 70
 
-   28 ident_dot: '.' ident_start •
+   19 bracks: '[' list • ']'
 
-    $default  reduce using rule 28 (ident_dot)
+    ']'  shift, and go to state 85
 
 
 State 71
 
-   29 ident_dot: '.' ident_end •
+   26 ident_path: ident_term ident_path •
 
-    $default  reduce using rule 29 (ident_dot)
+    $default  reduce using rule 26 (ident_path)
 
 
 State 72
 
-  103 block_delim: ';' block_start •
+   15 suffix: OP_AFFIX •
 
-    $default  reduce using rule 103 (block_delim)
+    $default  reduce using rule 15 (suffix)
 
 
 State 73
 
-   99 block_mark: marker block_start •
+   15 suffix: • OP_AFFIX
+   33 expr_suffix: • suffix expr_suffix
+   33            | suffix • expr_suffix
+   34            | ε •  [$end, OP_TYPE, OP_ASSIGN, OP_BIN, ':', '+', '-', ')', '}', ']', ',', ';']
 
-    $default  reduce using rule 99 (block_mark)
+    OP_AFFIX  shift, and go to state 72
+
+    $default  reduce using rule 34 (expr_suffix)
+
+    suffix       go to state 73
+    expr_suffix  go to state 86
 
 
 State 74
 
-    9 op_bin: OP_BIN •
+    8 op_bin: • OP_BIN
+    9       | • '+'
+   10       | • '-'
+   28 expr: expr_prefix expr_term expr_suffix • expr_chain
+   35 expr_chain: • op_bin expr
+   36           | ε •  [$end, OP_TYPE, OP_ASSIGN, ':', ')', '}', ']', ',', ';']
 
-    $default  reduce using rule 9 (op_bin)
+    OP_BIN  shift, and go to state 87
+    '+'     shift, and go to state 88
+    '-'     shift, and go to state 89
+
+    $default  reduce using rule 36 (expr_chain)
+
+    op_bin      go to state 90
+    expr_chain  go to state 91
 
 
 State 75
 
-   16 suffix: OP_AFFIX •
+   55 block: stmt ';' block •
 
-    $default  reduce using rule 16 (suffix)
+    $default  reduce using rule 55 (block)
 
 
 State 76
 
-   10 op_bin: '+' •
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   51 tail: ',' • stmt tail
 
-    $default  reduce using rule 10 (op_bin)
+    OP_TYPE    shift, and go to state 2
+    OP_ASSIGN  shift, and go to state 3
+    OP_AFFIX   shift, and go to state 4
+    ':'        shift, and go to state 9
+    '+'        shift, and go to state 10
+    '-'        shift, and go to state 11
+
+    $default  reduce using rule 30 (expr_prefix)
+
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 92
+    stmt_dir     go to state 21
 
 
 State 77
 
-   11 op_bin: '-' •
+   49 list: stmt tail •
 
-    $default  reduce using rule 11 (op_bin)
+    $default  reduce using rule 49 (list)
 
 
 State 78
 
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   38 expr_chain: op_bin • expr_start
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_AFFIX    shift, and go to state 7
-    '@'         shift, and go to state 13
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-
-    const        go to state 23
-    ident        go to state 24
-    prefix       go to state 27
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 32
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    expr_start   go to state 115
-    expr_prefix  go to state 36
-    expr_term    go to state 37
-
-
-State 79
-
-    9 op_bin: • OP_BIN
-   10       | • '+'
-   11       | • '-'
-   16 suffix: • OP_AFFIX
-   36 expr_suffix: • suffix expr_suffix
-   36            | suffix • expr_suffix
-   37            | • expr_chain
-   38 expr_chain: • op_bin expr_start
-   39           | • expr_end
-   40 expr_end: ε •  [$end, OP_TYPE, OP_ASSIGN, ':', ')', '}', ']', ',', ';']
-
-    OP_BIN    shift, and go to state 74
-    OP_AFFIX  shift, and go to state 75
-    '+'       shift, and go to state 76
-    '-'       shift, and go to state 77
-
-    $default  reduce using rule 40 (expr_end)
-
-    op_bin       go to state 78
-    suffix       go to state 79
-    expr_suffix  go to state 116
-    expr_chain   go to state 81
-    expr_end     go to state 82
-
-
-State 80
-
-   35 expr_term: const expr_suffix •
-
-    $default  reduce using rule 35 (expr_term)
-
-
-State 81
-
-   37 expr_suffix: expr_chain •
-
-    $default  reduce using rule 37 (expr_suffix)
-
-
-State 82
-
-   39 expr_chain: expr_end •
-
-    $default  reduce using rule 39 (expr_chain)
-
-
-State 83
-
-   12 op_assign: • OP_ASSIGN
-   49 stmt_type: expr_start • stmt_assign
-   50          | expr_start • stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   53 stmt_end: ε •  [$end, ')', '}', ']', ',', ';']
-
-    OP_ASSIGN  shift, and go to state 6
-
-    $default  reduce using rule 53 (stmt_end)
-
-    op_assign    go to state 26
-    stmt_assign  go to state 117
-    stmt_end     go to state 118
-
-
-State 84
-
-   47 stmt_dir: op_type stmt_type •
-
-    $default  reduce using rule 47 (stmt_dir)
-
-
-State 85
-
-   48 stmt_dir: op_type stmt_end •
-
-    $default  reduce using rule 48 (stmt_dir)
-
-
-State 86
-
-   52 stmt_rhs: expr_start • stmt_end
-   53 stmt_end: ε •
-
-    $default  reduce using rule 53 (stmt_end)
-
-    stmt_end  go to state 94
-
-
-State 87
-
-   51 stmt_assign: op_assign stmt_rhs •
-
-    $default  reduce using rule 51 (stmt_assign)
-
-
-State 88
-
-   32 expr_prefix: prefix expr_prefix •
-
-    $default  reduce using rule 32 (expr_prefix)
-
-
-State 89
-
-   26 ident_node: atom ident_start •
-
-    $default  reduce using rule 26 (ident_node)
-
-
-State 90
-
-   27 ident_node: atom ident_end •
-
-    $default  reduce using rule 27 (ident_node)
-
-
-State 91
-
-   34 expr_term: ident_start expr_suffix •
-
-    $default  reduce using rule 34 (expr_term)
-
-
-State 92
-
-   45 stmt_lhs: expr_start stmt_dir •
-
-    $default  reduce using rule 45 (stmt_lhs)
-
-
-State 93
-
-   46 stmt_lhs: expr_start stmt_assign •
-
-    $default  reduce using rule 46 (stmt_lhs)
-
-
-State 94
-
-   52 stmt_rhs: expr_start stmt_end •
-
-    $default  reduce using rule 52 (stmt_rhs)
-
-
-State 95
-
-  101 block_stmt: stmt_start block_delim •
-
-    $default  reduce using rule 101 (block_stmt)
-
-
-State 96
-
-  102 block_stmt: stmt_start block_end •
-
-    $default  reduce using rule 102 (block_stmt)
-
-
-State 97
-
-  100 block_flow: flow_start block_start •
-
-    $default  reduce using rule 100 (block_flow)
-
-
-State 98
-
-    0 $accept: block_start $end •
-
-    $default  accept
-
-
-State 99
-
-   62 ifelse_body: braces • ifelse_elif
-   63            | braces • ifelse_else
-   64            | braces • ifelse_end
-   65 ifelse_elif: • KW_ELIF ifelse_parens
-   66 ifelse_else: • KW_ELSE ifelse_tail
-   68 ifelse_end: ε •  [$end, TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, OP_TYPE, OP_ASSIGN, OP_AFFIX, KW_IF, KW_MATCH, KW_CASE, KW_FOR, '#', '@', ':', '+', '-', '(', '{', '}', '[', '.', ';']
-
-    KW_ELIF  shift, and go to state 119
-    KW_ELSE  shift, and go to state 120
-
-    $default  reduce using rule 68 (ifelse_end)
-
-    ifelse_elif  go to state 121
-    ifelse_else  go to state 122
-    ifelse_end   go to state 123
-
-
-State 100
-
-   61 ifelse_parens: parens ifelse_body •
-
-    $default  reduce using rule 61 (ifelse_parens)
-
-
-State 101
-
-   71 match_body: braces • match_end
-   72 match_end: ε •
-
-    $default  reduce using rule 72 (match_end)
-
-    match_end  go to state 124
-
-
-State 102
-
-   70 match_parens: parens match_body •
-
-    $default  reduce using rule 70 (match_parens)
-
-
-State 103
-
-   75 case_body: braces • case_end
-   76 case_end: ε •
-
-    $default  reduce using rule 76 (case_end)
-
-    case_end  go to state 125
-
-
-State 104
-
-   74 case_parens: parens case_body •
-
-    $default  reduce using rule 74 (case_parens)
-
-
-State 105
-
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   41 stmt_start: • stmt_lhs
-   42           | • stmt_dir
-   43           | • stmt_assign
-   44           | • stmt_rhs
-   45 stmt_lhs: • expr_start stmt_dir
-   46         | • expr_start stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-   81 for_semi1: ';' • for_cond
-   82 for_cond: • stmt_start for_semi2
-   83         | • for_semi2
-   84 for_semi2: • ';' for_step
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    OP_AFFIX    shift, and go to state 7
-    '@'         shift, and go to state 13
-    ':'         shift, and go to state 14
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-    ';'         shift, and go to state 126
-
-    const        go to state 23
-    ident        go to state 24
-    op_type      go to state 25
-    op_assign    go to state 26
-    prefix       go to state 27
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 32
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    expr_start   go to state 35
-    expr_prefix  go to state 36
-    expr_term    go to state 37
-    stmt_start   go to state 127
-    stmt_lhs     go to state 39
-    stmt_dir     go to state 40
-    stmt_assign  go to state 41
-    stmt_rhs     go to state 42
-    for_cond     go to state 128
-    for_semi2    go to state 129
-
-
-State 106
-
-   79 for_init: stmt_start • for_semi1
-   81 for_semi1: • ';' for_cond
-
-    ';'  shift, and go to state 105
-
-    for_semi1  go to state 130
-
-
-State 107
-
-   78 for_lparen: '(' for_init •
-
-    $default  reduce using rule 78 (for_lparen)
-
-
-State 108
-
-   80 for_init: for_semi1 •
-
-    $default  reduce using rule 80 (for_init)
-
-
-State 109
-
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   41 stmt_start: • stmt_lhs
-   42           | • stmt_dir
-   43           | • stmt_assign
-   44           | • stmt_rhs
-   45 stmt_lhs: • expr_start stmt_dir
-   46         | • expr_start stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-   56 list_node: • stmt_start list_delim
-   57          | • stmt_start list_end
-   58 list_delim: ',' • list_node
-
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    OP_AFFIX    shift, and go to state 7
-    '@'         shift, and go to state 13
-    ':'         shift, and go to state 14
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
-
-    const        go to state 23
-    ident        go to state 24
-    op_type      go to state 25
-    op_assign    go to state 26
-    prefix       go to state 27
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 32
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    expr_start   go to state 35
-    expr_prefix  go to state 36
-    expr_term    go to state 37
-    stmt_start   go to state 64
-    stmt_lhs     go to state 39
-    stmt_dir     go to state 40
-    stmt_assign  go to state 41
-    stmt_rhs     go to state 42
-    list_node    go to state 131
-
-
-State 110
-
-   56 list_node: stmt_start list_delim •
-
-    $default  reduce using rule 56 (list_node)
-
-
-State 111
-
-   57 list_node: stmt_start list_end •
-
-    $default  reduce using rule 57 (list_node)
-
-
-State 112
-
-   17 parens: '(' list_start ')' •
+   17 parens: '(' list ')' •
 
     $default  reduce using rule 17 (parens)
 
 
-State 113
+State 79
 
-   18 braces: '{' block_start '}' •
+   17 parens: • '(' list ')'
+   61 elif: KW_ELIF • parens braces elif
+
+    '('  shift, and go to state 28
+
+    parens  go to state 93
+
+
+State 80
+
+   60 if: KW_IF parens braces elif • else
+   63 else: • KW_ELSE braces
+   64     | ε •  [$end, TOK_MARKER, TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, OP_TYPE, OP_ASSIGN, OP_AFFIX, KW_IF, KW_MATCH, KW_CASE, KW_FOR, ':', '+', '-', '(', ')', '{', '}', '[', ']', '.', ',', ';']
+
+    KW_ELSE  shift, and go to state 94
+
+    $default  reduce using rule 64 (else)
+
+    else  go to state 95
+
+
+State 81
+
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   47 opt_stmt: • stmt
+   48         | ε •  [';']
+   59 for: KW_FOR '(' opt_stmt ';' • opt_stmt ';' opt_stmt ')' braces
+
+    OP_TYPE    shift, and go to state 2
+    OP_ASSIGN  shift, and go to state 3
+    OP_AFFIX   shift, and go to state 4
+    ':'        shift, and go to state 9
+    '+'        shift, and go to state 10
+    '-'        shift, and go to state 11
+
+    ';'       reduce using rule 48 (opt_stmt)
+    $default  reduce using rule 30 (expr_prefix)
+
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 65
+    stmt_dir     go to state 21
+    opt_stmt     go to state 96
+
+
+State 82
+
+   44 stmt_type: expr op_assign stmt •
+
+    $default  reduce using rule 44 (stmt_type)
+
+
+State 83
+
+   45 stmt_type: expr op_assign flow •
+
+    $default  reduce using rule 45 (stmt_type)
+
+
+State 84
+
+   18 braces: '{' block '}' •
 
     $default  reduce using rule 18 (braces)
 
 
-State 114
+State 85
 
-   19 bracks: '[' list_start ']' •
+   19 bracks: '[' list ']' •
 
     $default  reduce using rule 19 (bracks)
 
 
-State 115
+State 86
 
-   38 expr_chain: op_bin expr_start •
+   33 expr_suffix: suffix expr_suffix •
 
-    $default  reduce using rule 38 (expr_chain)
+    $default  reduce using rule 33 (expr_suffix)
 
 
-State 116
+State 87
 
-   36 expr_suffix: suffix expr_suffix •
+    8 op_bin: OP_BIN •
 
-    $default  reduce using rule 36 (expr_suffix)
+    $default  reduce using rule 8 (op_bin)
 
 
-State 117
+State 88
 
-   49 stmt_type: expr_start stmt_assign •
+    9 op_bin: '+' •
 
-    $default  reduce using rule 49 (stmt_type)
+    $default  reduce using rule 9 (op_bin)
 
 
-State 118
+State 89
 
-   50 stmt_type: expr_start stmt_end •
+   10 op_bin: '-' •
 
-    $default  reduce using rule 50 (stmt_type)
+    $default  reduce using rule 10 (op_bin)
 
 
-State 119
+State 90
 
-   17 parens: • '(' list_start ')'
-   61 ifelse_parens: • parens ifelse_body
-   65 ifelse_elif: KW_ELIF • ifelse_parens
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   35 expr_chain: op_bin • expr
 
-    '('  shift, and go to state 17
+    OP_AFFIX  shift, and go to state 4
+    '+'       shift, and go to state 10
+    '-'       shift, and go to state 11
 
-    parens         go to state 54
-    ifelse_parens  go to state 132
+    $default  reduce using rule 30 (expr_prefix)
 
+    prefix       go to state 16
+    expr         go to state 97
+    expr_prefix  go to state 19
 
-State 120
 
-   18 braces: • '{' block_start '}'
-   66 ifelse_else: KW_ELSE • ifelse_tail
-   67 ifelse_tail: • braces ifelse_end
+State 91
 
-    '{'  shift, and go to state 18
+   28 expr: expr_prefix expr_term expr_suffix expr_chain •
 
-    braces       go to state 133
-    ifelse_tail  go to state 134
+    $default  reduce using rule 28 (expr)
 
 
-State 121
+State 92
 
-   62 ifelse_body: braces ifelse_elif •
+   51 tail: • ',' stmt tail
+   51     | ',' stmt • tail
+   52     | ε •  [')', ']']
 
-    $default  reduce using rule 62 (ifelse_body)
+    ','  shift, and go to state 76
 
+    $default  reduce using rule 52 (tail)
 
-State 122
+    tail  go to state 98
 
-   63 ifelse_body: braces ifelse_else •
 
-    $default  reduce using rule 63 (ifelse_body)
+State 93
 
+   18 braces: • '{' block '}'
+   61 elif: KW_ELIF parens • braces elif
 
-State 123
+    '{'  shift, and go to state 46
 
-   64 ifelse_body: braces ifelse_end •
+    braces  go to state 99
 
-    $default  reduce using rule 64 (ifelse_body)
 
+State 94
 
-State 124
+   18 braces: • '{' block '}'
+   63 else: KW_ELSE • braces
 
-   71 match_body: braces match_end •
+    '{'  shift, and go to state 46
 
-    $default  reduce using rule 71 (match_body)
+    braces  go to state 100
 
 
-State 125
+State 95
 
-   75 case_body: braces case_end •
+   60 if: KW_IF parens braces elif else •
 
-    $default  reduce using rule 75 (case_body)
+    $default  reduce using rule 60 (if)
 
 
-State 126
+State 96
 
-    2 const: • TOK_INT
-    3      | • TOK_FLOAT
-    4      | • TOK_STRING
-    5 ident: • '@' TOK_IDENT
-    6      | • TOK_IDENT
-    7 op_type: • OP_TYPE
-    8        | • ':'
-   12 op_assign: • OP_ASSIGN
-   13 prefix: • OP_AFFIX
-   14       | • '+'
-   15       | • '-'
-   17 parens: • '(' list_start ')'
-   18 braces: • '{' block_start '}'
-   19 bracks: • '[' list_start ']'
-   20 atom: • ident
-   21     | • parens
-   22     | • braces
-   23     | • bracks
-   24 ident_start: • ident_node
-   25            | • ident_dot
-   26 ident_node: • atom ident_start
-   27           | • atom ident_end
-   28 ident_dot: • '.' ident_start
-   29          | • '.' ident_end
-   31 expr_start: • expr_prefix
-   32 expr_prefix: • prefix expr_prefix
-   33            | • expr_term
-   34 expr_term: • ident_start expr_suffix
-   35          | • const expr_suffix
-   41 stmt_start: • stmt_lhs
-   42           | • stmt_dir
-   43           | • stmt_assign
-   44           | • stmt_rhs
-   45 stmt_lhs: • expr_start stmt_dir
-   46         | • expr_start stmt_assign
-   47 stmt_dir: • op_type stmt_type
-   48         | • op_type stmt_end
-   51 stmt_assign: • op_assign stmt_rhs
-   52 stmt_rhs: • expr_start stmt_end
-   84 for_semi2: ';' • for_step
-   85 for_step: • stmt_start for_rparen
-   86         | • for_rparen
-   87 for_rparen: • ')' for_end
+   59 for: KW_FOR '(' opt_stmt ';' opt_stmt • ';' opt_stmt ')' braces
 
-    TOK_IDENT   shift, and go to state 1
-    TOK_INT     shift, and go to state 2
-    TOK_FLOAT   shift, and go to state 3
-    TOK_STRING  shift, and go to state 4
-    OP_TYPE     shift, and go to state 5
-    OP_ASSIGN   shift, and go to state 6
-    OP_AFFIX    shift, and go to state 7
-    '@'         shift, and go to state 13
-    ':'         shift, and go to state 14
-    '+'         shift, and go to state 15
-    '-'         shift, and go to state 16
-    '('         shift, and go to state 17
-    ')'         shift, and go to state 135
-    '{'         shift, and go to state 18
-    '['         shift, and go to state 19
-    '.'         shift, and go to state 20
+    ';'  shift, and go to state 101
 
-    const        go to state 23
-    ident        go to state 24
-    op_type      go to state 25
-    op_assign    go to state 26
-    prefix       go to state 27
-    parens       go to state 28
-    braces       go to state 29
-    bracks       go to state 30
-    atom         go to state 31
-    ident_start  go to state 32
-    ident_node   go to state 33
-    ident_dot    go to state 34
-    expr_start   go to state 35
-    expr_prefix  go to state 36
-    expr_term    go to state 37
-    stmt_start   go to state 136
-    stmt_lhs     go to state 39
-    stmt_dir     go to state 40
-    stmt_assign  go to state 41
-    stmt_rhs     go to state 42
-    for_step     go to state 137
-    for_rparen   go to state 138
 
+State 97
 
-State 127
+   35 expr_chain: op_bin expr •
 
-   82 for_cond: stmt_start • for_semi2
-   84 for_semi2: • ';' for_step
+    $default  reduce using rule 35 (expr_chain)
 
-    ';'  shift, and go to state 126
 
-    for_semi2  go to state 139
+State 98
 
+   51 tail: ',' stmt tail •
 
-State 128
+    $default  reduce using rule 51 (tail)
 
-   81 for_semi1: ';' for_cond •
 
-    $default  reduce using rule 81 (for_semi1)
+State 99
 
+   61 elif: • KW_ELIF parens braces elif
+   61     | KW_ELIF parens braces • elif
+   62     | ε •  [$end, TOK_MARKER, TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, OP_TYPE, OP_ASSIGN, OP_AFFIX, KW_IF, KW_ELSE, KW_MATCH, KW_CASE, KW_FOR, ':', '+', '-', '(', ')', '{', '}', '[', ']', '.', ',', ';']
 
-State 129
+    KW_ELIF  shift, and go to state 79
 
-   83 for_cond: for_semi2 •
+    $default  reduce using rule 62 (elif)
 
-    $default  reduce using rule 83 (for_cond)
+    elif  go to state 102
 
 
-State 130
+State 100
 
-   79 for_init: stmt_start for_semi1 •
+   63 else: KW_ELSE braces •
 
-    $default  reduce using rule 79 (for_init)
+    $default  reduce using rule 63 (else)
 
 
-State 131
+State 101
 
-   58 list_delim: ',' list_node •
+    6 op_type: • OP_TYPE
+    7        | • ':'
+   11 op_assign: • OP_ASSIGN
+   12 prefix: • OP_AFFIX
+   13       | • '+'
+   14       | • '-'
+   28 expr: • expr_prefix expr_term expr_suffix expr_chain
+   29 expr_prefix: • prefix expr_prefix
+   30            | ε •  [TOK_IDENT, TOK_INT, TOK_FLOAT, TOK_STRING, '(', '{', '[', '.']
+   37 stmt: • expr stmt_dir
+   38     | • expr op_assign expr
+   39     | • stmt_dir
+   40     | • op_assign expr
+   41     | • expr
+   42 stmt_dir: • op_type stmt_type
+   43         | • op_type
+   47 opt_stmt: • stmt
+   48         | ε •  [')']
+   59 for: KW_FOR '(' opt_stmt ';' opt_stmt ';' • opt_stmt ')' braces
 
-    $default  reduce using rule 58 (list_delim)
+    OP_TYPE    shift, and go to state 2
+    OP_ASSIGN  shift, and go to state 3
+    OP_AFFIX   shift, and go to state 4
+    ':'        shift, and go to state 9
+    '+'        shift, and go to state 10
+    '-'        shift, and go to state 11
 
+    ')'       reduce using rule 48 (opt_stmt)
+    $default  reduce using rule 30 (expr_prefix)
 
-State 132
+    op_type      go to state 14
+    op_assign    go to state 15
+    prefix       go to state 16
+    expr         go to state 18
+    expr_prefix  go to state 19
+    stmt         go to state 65
+    stmt_dir     go to state 21
+    opt_stmt     go to state 103
 
-   65 ifelse_elif: KW_ELIF ifelse_parens •
 
-    $default  reduce using rule 65 (ifelse_elif)
+State 102
 
+   61 elif: KW_ELIF parens braces elif •
 
-State 133
+    $default  reduce using rule 61 (elif)
 
-   67 ifelse_tail: braces • ifelse_end
-   68 ifelse_end: ε •
 
-    $default  reduce using rule 68 (ifelse_end)
+State 103
 
-    ifelse_end  go to state 140
+   59 for: KW_FOR '(' opt_stmt ';' opt_stmt ';' opt_stmt • ')' braces
 
+    ')'  shift, and go to state 104
 
-State 134
 
-   66 ifelse_else: KW_ELSE ifelse_tail •
+State 104
 
-    $default  reduce using rule 66 (ifelse_else)
+   18 braces: • '{' block '}'
+   59 for: KW_FOR '(' opt_stmt ';' opt_stmt ';' opt_stmt ')' • braces
 
+    '{'  shift, and go to state 46
 
-State 135
+    braces  go to state 105
 
-   18 braces: • '{' block_start '}'
-   87 for_rparen: ')' • for_end
-   88 for_end: • braces
-   89        | • ';'
 
-    '{'  shift, and go to state 18
-    ';'  shift, and go to state 141
+State 105
 
-    braces   go to state 142
-    for_end  go to state 143
+   59 for: KW_FOR '(' opt_stmt ';' opt_stmt ';' opt_stmt ')' braces •
 
-
-State 136
-
-   85 for_step: stmt_start • for_rparen
-   87 for_rparen: • ')' for_end
-
-    ')'  shift, and go to state 135
-
-    for_rparen  go to state 144
-
-
-State 137
-
-   84 for_semi2: ';' for_step •
-
-    $default  reduce using rule 84 (for_semi2)
-
-
-State 138
-
-   86 for_step: for_rparen •
-
-    $default  reduce using rule 86 (for_step)
-
-
-State 139
-
-   82 for_cond: stmt_start for_semi2 •
-
-    $default  reduce using rule 82 (for_cond)
-
-
-State 140
-
-   67 ifelse_tail: braces ifelse_end •
-
-    $default  reduce using rule 67 (ifelse_tail)
-
-
-State 141
-
-   89 for_end: ';' •
-
-    $default  reduce using rule 89 (for_end)
-
-
-State 142
-
-   88 for_end: braces •
-
-    $default  reduce using rule 88 (for_end)
-
-
-State 143
-
-   87 for_rparen: ')' for_end •
-
-    $default  reduce using rule 87 (for_rparen)
-
-
-State 144
-
-   85 for_step: stmt_start for_rparen •
-
-    $default  reduce using rule 85 (for_step)
+    $default  reduce using rule 59 (for)

@@ -62,21 +62,22 @@ extern int tem_debug;
     TEM_EOF = 0,                   /* "end of file"  */
     TEM_error = 256,               /* error  */
     TEM_UNDEF = 257,               /* "invalid token"  */
-    TOK_IDENT = 258,               /* TOK_IDENT  */
-    TOK_INT = 259,                 /* TOK_INT  */
-    TOK_FLOAT = 260,               /* TOK_FLOAT  */
-    TOK_STRING = 261,              /* TOK_STRING  */
-    OP_TYPE = 262,                 /* OP_TYPE  */
-    OP_ASSIGN = 263,               /* OP_ASSIGN  */
-    OP_BIN = 264,                  /* OP_BIN  */
-    OP_AFFIX = 265,                /* OP_AFFIX  */
-    KW_IF = 266,                   /* KW_IF  */
-    KW_THEN = 267,                 /* KW_THEN  */
-    KW_ELIF = 268,                 /* KW_ELIF  */
-    KW_ELSE = 269,                 /* KW_ELSE  */
-    KW_MATCH = 270,                /* KW_MATCH  */
-    KW_CASE = 271,                 /* KW_CASE  */
-    KW_FOR = 272                   /* KW_FOR  */
+    TOK_MARKER = 258,              /* TOK_MARKER  */
+    TOK_IDENT = 259,               /* TOK_IDENT  */
+    TOK_INT = 260,                 /* TOK_INT  */
+    TOK_FLOAT = 261,               /* TOK_FLOAT  */
+    TOK_STRING = 262,              /* TOK_STRING  */
+    OP_TYPE = 263,                 /* OP_TYPE  */
+    OP_ASSIGN = 264,               /* OP_ASSIGN  */
+    OP_BIN = 265,                  /* OP_BIN  */
+    OP_AFFIX = 266,                /* OP_AFFIX  */
+    KW_IF = 267,                   /* KW_IF  */
+    KW_THEN = 268,                 /* KW_THEN  */
+    KW_ELIF = 269,                 /* KW_ELIF  */
+    KW_ELSE = 270,                 /* KW_ELSE  */
+    KW_MATCH = 271,                /* KW_MATCH  */
+    KW_CASE = 272,                 /* KW_CASE  */
+    KW_FOR = 273                   /* KW_FOR  */
   };
   typedef enum tem_tokentype tem_token_kind_t;
 #endif
@@ -92,7 +93,7 @@ union TEM_STYPE
   char*  val_str;
   sexpr* val_node;
 
-#line 96 "tempus_yacc.h"
+#line 97 "tempus_yacc.h"
 
 };
 typedef union TEM_STYPE TEM_STYPE;

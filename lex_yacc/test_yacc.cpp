@@ -102,7 +102,6 @@ const char* sources[] = {
   "# block {;;} ",
   "# block {x : blah = 1;;} ",
   "# block {for(;;){}} ",
-  "# block {for(;;);} ",
 
   "# if2 if (x) {} else {};",
   "# if3 if (x) {} elif () {};",
@@ -117,6 +116,22 @@ const char* sources[] = {
   "# func blah : func(int) = (x : int, y : int, z : int) { .a = (x,y,z) };",
 
   "# match1 match (x) { case (foo) { .. = x } case (bar) {}   case (baz) {}   }",
+
+  R"(
+  plus = {
+    a = _;
+    b = _;
+    .(:vec3, :vec3) = {
+      .x = a.x + b.x;
+      .y = a.y + b.y;
+      .z = a.z + b.z;
+    }
+  }
+  )",
+
+  "c = plus.(:vec3,:vec3)(a,b)",
+
+  "x : int = if (true) {1} elif () {2} else {3}",
   
   R"(
   # match2
