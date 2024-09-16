@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+  #!/usr/bin/python3
 
 from functools import cache
 
@@ -28,7 +28,13 @@ class Fail:
 
 #---------------------------------------------------------------------------------------------------
 
-def Nothing(span, ctx):
+class Context:
+  def __init__(self):
+    self.stack = []
+
+#---------------------------------------------------------------------------------------------------
+
+def Nothing(span, ctx2):
   return span
 
 @cache
@@ -39,8 +45,8 @@ def And(pattern):
   >>> And(Atom('a'))('qwer', [])
   Fail @ 'qwer'
   """
-  def match(span, ctx):
-    tail = pattern(span, ctx)
+  def match(span, ctx2):
+    tail = pattern(span, ctx2)
     return Fail(span) if isinstance(tail, Fail) else span
   return match
 
@@ -52,8 +58,8 @@ def Not(pattern):
   >>> Not(Atom('a'))('qwer', [])
   'qwer'
   """
-  def match(span, ctx):
-    tail = pattern(span, ctx)
+  def match(span, ctx2):
+    tail = pattern(span, ctx2)
     return span if isinstance(tail, Fail) else Fail(span)
   return match
 
@@ -67,7 +73,9 @@ def Atom(const):
   >>> Atom('a')('qwer', [])
   Fail @ 'qwer'
   """
-  def match(span, ctx):
+  def match(span, ctx2):
+    assert(isinstance(span, (list, str)))
+    assert(isinstance(ctx2, Context))
     return span[1:] if (span and not atom_cmp(span[0], const)) else Fail(span)
   return match
 
@@ -81,7 +89,7 @@ def NotAtom(const):
   >>> NotAtom('a')('qwer', [])
   'wer'
   """
-  def match(span, ctx):
+  def match(span, ctx2):
     return span[1:] if (span and atom_cmp(span[0], const)) else Fail(span)
   return match
 
@@ -97,7 +105,7 @@ def Atoms(*oneof):
   >>> Atoms('a', 'b')('qwer', [])
   Fail @ 'qwer'
   """
-  def match(span, ctx):
+  def match(span, ctx2):
     if not span:
       return Fail(span)
     for arg in oneof:
@@ -110,7 +118,7 @@ def Atoms(*oneof):
 
 @cache
 def NotAtoms(*seq):
-  def match(span, ctx):
+  def match(span, ctx2):
     for arg in seq:
       if not atom_cmp(span[0], arg):
         return Fail(span)
@@ -119,7 +127,7 @@ def NotAtoms(*seq):
 
 #---------------------------------------------------------------------------------------------------
 
-def AnyAtom(span, ctx):
+def AnyAtom(span, ctx2):
   r"""
   >>> AnyAtom('asdf', [])
   'sdf'
@@ -143,7 +151,7 @@ def Range(A, B):
   A = ord(A) if isinstance(A, str) else A
   B = ord(B) if isinstance(B, str) else B
 
-  def match(span, ctx):
+  def match(span, ctx2):
     if span and atom_cmp(A, span[0]) >= 0 and atom_cmp(span[0], B) >= 0:
       return span[1:]
     return Fail(span)
@@ -168,9 +176,9 @@ def Ranges(*args):
   for i in range(0, len(args), 2):
     ranges.append(Range(args[i+0], args[i+1]))
 
-  def match(span, ctx):
+  def match(span, ctx2):
     for range in ranges:
-      tail = range(span, ctx)
+      tail = range(span, ctx2)
       if not isinstance(tail, Fail):
         return tail
     return Fail(span)
@@ -186,7 +194,7 @@ def Lit(lit):
   >>> Lit('foo')('barfoo', [])
   Fail @ 'barfoo'
   """
-  def match(span, ctx):
+  def match(span, ctx2):
     if len(span) < len(lit):
       return Fail(span)
     for i in range(len(lit)):
@@ -199,7 +207,7 @@ def Lit(lit):
 
 @cache
 def Charset(lit):
-  def match(span, ctx):
+  def match(span, ctx2):
     return span[1:] if (span and span[0] in lit) else Fail(span)
   return match
 
@@ -215,12 +223,12 @@ def Seq(*seq):
   >>> Seq(Atom('a'), Atom('s'))('qwer', [])
   Fail @ 'qwer'
   """
-  def match(span, ctx):
-    top = len(ctx)
+  def match(span, ctx2):
+    top = len(ctx2.stack)
     for arg in seq:
-      tail = arg(span, ctx)
+      tail = arg(span, ctx2)
       if isinstance(tail, Fail):
-        del ctx[top:]
+        del ctx2.stack[top:]
         return tail
       span = tail
     return span
@@ -238,13 +246,13 @@ def Oneof(*oneof):
   >>> Oneof(Atom('b'), Atom('a'))('qwer', [])
   Fail @ 'qwer'
   """
-  def match(span, ctx):
-    top = len(ctx)
+  def match(span, ctx2):
+    top = len(ctx2.stack)
     for arg in oneof:
-      tail = arg(span, ctx)
+      tail = arg(span, ctx2)
       if not isinstance(tail, Fail):
         return tail
-      del ctx[top:]
+      del ctx2.stack[top:]
     return Fail(span)
   return match
 
@@ -260,9 +268,9 @@ def Opt(*oneof):
   >>> Opt(Atom('a'))('qwer', [])
   'qwer'
   """
-  def match(span, ctx):
+  def match(span, ctx2):
     for pattern in oneof:
-      tail = pattern(span, ctx)
+      tail = pattern(span, ctx2)
       if not isinstance(tail, Fail):
         return tail
     return span
@@ -283,9 +291,9 @@ def Any(*oneof):
   'baaaasdf'
   """
   pattern = Oneof(*oneof)
-  def match(span, ctx):
+  def match(span, ctx2):
     while True:
-      tail = pattern(span, ctx)
+      tail = pattern(span, ctx2)
       if isinstance(tail, Fail):
         return span
       span = tail
@@ -303,12 +311,12 @@ def Rep(count, pattern):
   >>> Rep(4, Atom('a'))('aaaaasdf', [])
   'asdf'
   """
-  def match(span, ctx):
-    top = len(ctx)
+  def match(span, ctx2):
+    top = len(ctx2.stack)
     for _ in range(count):
-      tail = pattern(span, ctx)
+      tail = pattern(span, ctx2)
       if isinstance(tail, Fail):
-        del ctx[top:]
+        del ctx2.stack[top:]
         return tail
       span = tail
     return span
@@ -336,12 +344,12 @@ def Some(*oneof):
   Fail @ 'baaaasdf'
   """
   pattern = Oneof(*oneof)
-  def match(span, ctx):
-    span = pattern(span, ctx)
+  def match(span, ctx2):
+    span = pattern(span, ctx2)
     if isinstance(span, Fail):
       return span
     while True:
-      tail = pattern(span, ctx)
+      tail = pattern(span, ctx2)
       if isinstance(tail, Fail):
         return span
       span = tail
@@ -360,10 +368,10 @@ def Until(pattern):
 
 @cache
 def Cycle(*seq):
-  def match(span, ctx):
+  def match(span, ctx2):
     while True:
       for pattern in seq:
-        tail = pattern(span, ctx)
+        tail = pattern(span, ctx2)
         if isinstance(tail, Fail):
           return span
         span = tail
@@ -403,13 +411,13 @@ def Capture(pattern):
   """
   Adds the span matched by 'pattern' to the context stack
   """
-  def match(span, ctx):
-    tail = pattern(span, ctx)
+  def match(span, ctx2):
+    tail = pattern(span, ctx2)
     if not isinstance(tail, Fail):
       token = span[:len(span) - len(tail)]
       if len(token) == 1:
         token = token[0]
-      ctx.append(token)
+      ctx2.stack.append(token)
     return tail
   return match
 
@@ -418,25 +426,28 @@ def Node(node_type, *seq):
   """
   Turns all (key, value) tuples added to the context stack after this matcher into a parse node.
   """
-  def match(span, ctx):
-    top = len(ctx)
+  def match(span, ctx2):
+    assert isinstance(span, (list, str))
+    assert isinstance(ctx2, Context)
+
+    top = len(ctx2.stack)
     tail = span
 
     for pattern in seq:
-      tail = pattern(tail, ctx)
+      tail = pattern(tail, ctx2)
       if isinstance(tail, Fail):
-        del ctx[top:]
+        del ctx2.stack[top:]
         return tail
 
-    values = ctx[top:]
-    del ctx[top:]
+    values = ctx2.stack[top:]
+    del ctx2.stack[top:]
 
     for val in values:
       assert isinstance(val, tuple)
       assert len(val) == 2
 
     if len(values) == 0:
-      ctx.append(None)
+      ctx2.stack.append(None)
       return tail
 
     result = node_type()
@@ -450,71 +461,97 @@ def Node(node_type, *seq):
         assert False
       result[field[0]] = field[1]
 
-    ctx.append(result)
+    ctx2.stack.append(result)
     return tail
 
   return match
 
 @cache
 def Tuple(*seq):
-  def match(span, ctx):
-    top = len(ctx)
+  def match(span, ctx2):
+    top = len(ctx2.stack)
     tail = span
 
     for pattern in seq:
-      tail = pattern(tail, ctx)
+      tail = pattern(tail, ctx2)
       if isinstance(tail, Fail):
-        del ctx[top:]
+        del ctx2.stack[top:]
         return tail
 
-    values = ctx[top:]
-    del ctx[top:]
-
-    ctx.append(tuple(values))
-
-    #result = node_type()
-    #for key, val in enumerate(values):
-    #  result[key] = val
-    #ctx.append(result)
+    values = ctx2.stack[top:]
+    del ctx2.stack[top:]
+    ctx2.stack.append(tuple(values))
     return tail
-
   return match
-
 
 @cache
-def List3(pattern):
-  def match(span, ctx):
-    top = len(ctx)
-    tail = pattern(span, ctx)
+def Tuple2(tuple_type, *seq):
+  def match(span, ctx2):
+    top = len(ctx2.stack)
+    tail = span
+
+    for pattern in seq:
+      tail = pattern(tail, ctx2)
+      if isinstance(tail, Fail):
+        del ctx2.stack[top:]
+        return tail
+
+    values = ctx2.stack[top:]
+    del ctx2.stack[top:]
+    ctx2.stack.append(tuple_type(values))
+    return tail
+  return match
+
+@cache
+def List(pattern):
+  def match(span, ctx2):
+    top = len(ctx2.stack)
+    tail = pattern(span, ctx2)
 
     if isinstance(tail, Fail):
-      del ctx[top:]
+      del ctx2.stack[top:]
       return tail
 
-    values = ctx[top:]
-    del ctx[top:]
+    values = ctx2.stack[top:]
+    del ctx2.stack[top:]
 
-    ctx.append(values)
+    ctx2.stack.append(values)
     return tail
 
   return match
 
+@cache
+def List2(list_type, pattern):
+  def match(span, ctx2):
+    top = len(ctx2.stack)
+    tail = pattern(span, ctx2)
 
+    if isinstance(tail, Fail):
+      del ctx2.stack[top:]
+      return tail
+
+    values = ctx2.stack[top:]
+    del ctx2.stack[top:]
+
+    ctx2.stack.append(list_type(values))
+    return tail
+
+  return match
 
 @cache
 def KeyVal(key, pattern):
   """
   Turns the top of the context stack into a (name, value) tuple
   """
-  def match(span, ctx):
-    top = len(ctx)
+  def match(span, ctx2):
+    top = len(ctx2.stack)
 
-    val_tail = pattern(span, ctx)
+    val_tail = pattern(span, ctx2)
     if isinstance(val_tail, Fail):
-      del ctx[top:]
+      del ctx2.stack[top:]
       return Fail(span)
-    val = ctx[top:]
-    del ctx[top:]
+    val = ctx2.stack[top:]
+    del ctx2.stack[top:]
 
     if len(val) == 0:
       field = (key, None)
@@ -523,7 +560,7 @@ def KeyVal(key, pattern):
     else:
       field = (key, val)
 
-    ctx.append(field)
+    ctx2.stack.append(field)
     return val_tail
 
   return match
@@ -551,13 +588,13 @@ def Railway(railway):
   })
   """
 
-  def step(state, tail, ctx):
-    top = len(ctx)
+  def step(state, tail, ctx2):
+    top = len(ctx2.stack)
     # If the current state doesn't match, we fail
     if state is not None:
-      tail = state(tail, ctx)
+      tail = state(tail, ctx2)
       if isinstance(tail, Fail):
-        del ctx[top:]
+        del ctx2.stack[top:]
         return tail
 
     # Check all the possible next steps from this state
@@ -567,16 +604,17 @@ def Railway(railway):
         return tail
 
       # If next_state matches, we succeed.
-      next_tail = step(next_state, tail, ctx)
+      next_tail = step(next_state, tail, ctx2)
       if not isinstance(next_tail, Fail):
         return next_tail
 
     # If none of the next_state patterns match, we fail
-    del ctx[top:]
+    del ctx2.stack[top:]
     return Fail(tail)
 
-  def match(span, ctx):
-    return step(None, span, ctx)
+  def match(span, ctx2):
+    assert isinstance(span, (list, str))
+    return step(None, span, ctx2)
 
   return match
 
@@ -605,7 +643,7 @@ class BaseNode:
         self.__dict__[key] = val
 
     def __repr__(self):
-        return type(self).__name__ + ":" + self.__dict__.__repr__()
+        return self.__class__.__name__ + ":" + self.__dict__.__repr__()
 
 #---------------------------------------------------------------------------------------------------
 

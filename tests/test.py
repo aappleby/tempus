@@ -15,6 +15,7 @@ import inspect
 
 from parser import tem_lexer
 from parser import tem_parser
+from parser import matcheroni
 
 from parser.tem_lexer import Lexeme
 from parser.tem_parser import BaseNode
@@ -28,7 +29,7 @@ def print_indent(indent):
   """
   asdf
   """
-  print("  " * indent, end='')
+  print("   " * indent, end='')
   #for i in range(indent - 1):
   #  print("┃ ", end="")
   #print("┗ ", end='')
@@ -37,7 +38,7 @@ def dump_node(node, indent = 0):
   """
   asdf
   """
-  print(f"{type(node).__name__}{{}}")
+  print(f"{node.__class__.__name__}{{}}")
   for key, val in node.items():
     print_indent(indent + 1)
     if type(key) == int:
@@ -50,7 +51,7 @@ def dump_array(array, indent = 0):
   """
   asdf
   """
-  print(f"Array[{len(array)}]")
+  print(f"{array.__class__.__name__}[{len(array)}]")
   for key, val in enumerate(array):
     print_indent(indent + 1)
     print(f"[{key}] : ", end="")
@@ -60,7 +61,7 @@ def dump_tuple(t, indent = 0):
   """
   asdf
   """
-  print(f"Tuple({len(t)})")
+  print(f"{t.__class__.__name__}({len(t)})")
   for key, val in enumerate(t):
     print_indent(indent + 1)
     print(f"({key}) : ", end="")
@@ -70,7 +71,7 @@ def dump_lexeme(lexeme, indent = 0):
   """
   asdf
   """
-  print(f"{lexeme.type.name} {lexeme.text}")
+  print(f"{lexeme.type.name} {repr(lexeme.text)[1:-1]}")
 
 def dump_variant(variant, indent = 0):
   """
@@ -122,29 +123,36 @@ def run_tests():
 
 if __name__ == "__main__":
 
-  source  = inspect.cleandoc("""
-    # asdf
+  source  = inspect.cleandoc(r"""
+    # Testcode
     if (blah) {
-      x = 1;
+      @x = 1;
       y = 2;
       z = 3;
     }
-    //elif (blee) {
-    //}
-    //elif (bloo) {
-    //}
-    //elif (blah) a = 7;
-    //else {
-    //}
+    elif (blee) {
+      y : int = 7;
+      print("Hello world! %d\n", y);
+      print("Goodbye Beeps! %d", y + 1);
+    }
+    elif (bloo) {
+    }
+    elif (blah) a = 7;
+    else {
+    }
+    match(bar) {
+      case (foo) x = 1
+      case (baz) z = 7
+    }
     """)
   print(source)
   print()
-  lexemes = tem_lexer.lex_string(source)
-  ctx = []
-  tem_parser._node_decl(lexemes, ctx)
-  trees   = tem_parser.parse_lexemes(lexemes)
+  lex_ctx = matcheroni.Context()
+  tem_lexer.lex_string(source, lex_ctx)
+  parse_ctx = matcheroni.Context()
+  tem_parser.parse_lexemes(lex_ctx.stack, parse_ctx)
   print("# trees")
-  dump_variant(trees)
+  dump_variant(parse_ctx.stack)
 
   sys.exit(0)
 

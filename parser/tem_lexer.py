@@ -151,7 +151,7 @@ match_comment = Oneof(
 
 match_punct = Charset(",;.()[]{}@#")
 
-def match_op(span, ctx):
+def match_op(span, ctx2):
   for op in tem_constants.tem_allops:
     if span.startswith(op):
       return span[len(op):]
@@ -163,10 +163,10 @@ match_char = Seq(
   Atom('\'')
 )
 
-match_ident = Seq(nondigit, Any(dec_digit, nondigit))
+match_ident = Seq(Opt(Atom('@')), nondigit, Any(dec_digit, nondigit))
 
-def match_keyword(span, ctx):
-  tail = match_ident(span, ctx)
+def match_keyword(span, ctx2):
+  tail = match_ident(span, ctx2)
   if isinstance(tail, Fail):
     return tail
   lexeme = span[:len(span) - len(tail)]
@@ -175,16 +175,16 @@ def match_keyword(span, ctx):
 #---------------------------------------------------------------------------------------------------
 
 def MatchToLex(pattern, type):
-  def match(span, ctx):
-    tail = pattern(span, ctx)
+  def match(span, ctx2):
+    tail = pattern(span, ctx2)
     if not isinstance(tail, Fail):
-      ctx.append(Lexeme(type, span[:len(span) - len(tail)]))
+      ctx2.stack.append(Lexeme(type, span[:len(span) - len(tail)]))
     return tail
   return match
 
 #---------------------------------------------------------------------------------------------------
 
-def next_lexeme(span, ctx):
+def next_lexeme(span, ctx2):
   matchers = [
     match_space,
     #MatchToLex(match_newline,  LexemeType.LEX_NEWLINE),
@@ -202,18 +202,20 @@ def next_lexeme(span, ctx):
   ]
 
   for matcher in matchers:
-    tail = matcher(span, ctx)
+    tail = matcher(span, ctx2)
     if not isinstance(tail, Fail):
       return tail
 
   raise ValueError(f"Don't know how to lex '{span[:8]}...'")
 
-def lex_string(source):
+def lex_string(source, ctx):
   span = source
-  ctx = []
   while span:
-    span = next_lexeme(span, ctx)
-  return ctx
+    tail = next_lexeme(span, ctx)
+    if isinstance(tail, Fail):
+      ctx.stack.append(("fail @ ", span[0]))
+      tail = span[1:]
+    span = tail
 
 
 #---------------------------------------------------------------------------------------------------

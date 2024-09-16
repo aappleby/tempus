@@ -22,29 +22,28 @@ class AtomNode(BaseNode):
     pass
   pass
 
-class BlockNode(BaseNode):    pass
 class CallNode(BaseNode):     pass
 class CaseNode(BaseNode):     pass
 class DefaultNode(BaseNode):  pass
 
-class BranchNode(BaseNode):   pass
 class CondNode(BaseNode):     pass
-
-#class IfNode(BaseNode):       pass
-#class ElifNode(BaseNode):     pass
-#class ElseNode(BaseNode):     pass
 
 class ExprNode(BaseNode):     pass
 class IdentNode(BaseNode):    pass
 class LambdaNode(BaseNode):   pass
 class MarkerNode(BaseNode):   pass
 class MatchNode(BaseNode):    pass
-class PrimedNode(BaseNode):   pass
+
 class ReturnNode(BaseNode):   pass
 class SectionNode(BaseNode):  pass
-class SquishNode(BaseNode):   pass
 class TupleNode(BaseNode):    pass
 class TypeNode(BaseNode):     pass
+
+class ParenNode(tuple):    pass
+class CatNode(tuple):   pass
+
+class BranchNode(list):   pass
+class BlockNode(list):    pass
 
 #---------------------------------------------------------------------------------------------------
 # Define our atom types for the parser
@@ -92,7 +91,7 @@ KW_UNSIGNED   = LexToAtom(LexemeType.LEX_KEYWORD, "unsigned")
 #---------------------------------------------------------------------------------------------------
 
 def match_op(ops):
-  def match(span, ctx):
+  def match(span, ctx2):
     if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in ops:
       return span[1:]
     return Fail(span)
@@ -101,20 +100,20 @@ def match_op(ops):
 cap_binop   = Capture(match_op(tem_constants.tem_binops))
 match_ident = Some(PUNCT_DOT, ATOM_IDENT)
 cap_ident   = Capture(match_ident)
+cap_keyword = Capture(ATOM_KEYWORD)
 
 #---------------------------------------------------------------------------------------------------
 # Forward decls
 
-def parse_stmt(span, ctx):
-  return _parse_stmt(span, ctx)
+def parse_stmt(span, ctx2):
+  return _parse_stmt(span, ctx2)
 
-def node_expr(span, ctx):
-  return _node_expr(span, ctx)
+def node_expr(span, ctx2):
+  return _node_expr(span, ctx2)
 
-def node_decl(span, ctx):
-  return _node_decl(span, ctx)
+def node_decl(span, ctx2):
+  return _node_decl(span, ctx2)
 
-node_primed = Node(PrimedNode, PUNCT_AT, KeyVal("ident", cap_ident))
 parse_expr_or_decl = Oneof(node_expr, node_decl)
 
 #---------------------------------------------------------------------------------------------------
@@ -143,12 +142,16 @@ parse_brace_tuple = Railway({
 # Curly-braced, semicolon-delimited lists of statements. Excess semicolons are OK. No semicolon
 # after the last statement is OK.
 
-stmt_delim = Seq(PUNCT_LBRACE, Any(parse_stmt), PUNCT_RBRACE)
+stmt_delim = List2(BlockNode, Seq(PUNCT_LBRACE, Any(parse_stmt), PUNCT_RBRACE))
 stmt_semi  = Seq(parse_stmt, PUNCT_SEMI)
 
 stmt_delim_or_semi = Oneof(stmt_delim, stmt_semi)
 
-node_tuple = Oneof(parse_paren_tuple, parse_brace_tuple)
+node_tuple = Oneof(
+  #Node(ParenNode, KeyVal("contents", parse_paren_tuple)),
+  Tuple2(ParenNode, parse_paren_tuple),
+  parse_brace_tuple
+)
 
 #---------------------------------------------------------------------------------------------------
 
@@ -162,29 +165,28 @@ node_lambda = Node(LambdaNode,
   KeyVal("body",   stmt_delim)
 )
 
-squishable = Oneof(
+cat_atom = Oneof(
   node_tuple,
   stmt_delim,
-  node_primed,
   cap_ident,
-  Capture(ATOM_KEYWORD),
+  #Capture(ATOM_KEYWORD),
+)
+
+cat_list = Tuple2(CatNode, AtLeast(2, cat_atom))
+
+parse_expr_unit = Oneof(
+  cat_list,
+  cat_atom,
   Capture(ATOM_INT),
   Capture(ATOM_FLOAT),
   Capture(ATOM_STRING),
 )
 
-squish_list = Tuple(AtLeast(2, squishable))
-
-parse_expr_unit = Oneof(
-  squish_list,
-  squishable
-)
-
 # unit op unit op unit...
 _node_expr = Seq(parse_expr_unit, Any(Seq(cap_binop, parse_expr_unit)))
 
-node_if = Node(BranchNode,
-  KeyVal("branches", List3(Seq(
+node_if = List2(BranchNode,
+  Seq(
     KW_IF,
     Node(CondNode,
       KeyVal("condition",    parse_paren_tuple),
@@ -204,18 +206,18 @@ node_if = Node(BranchNode,
         KeyVal("then",       stmt_delim_or_semi),
       ),
     ))
-  )))
+  )
 )
 
 node_case = Node(CaseNode,
   KW_CASE,
   KeyVal("condition",  node_tuple),
-  KeyVal("block",      stmt_delim),
+  KeyVal("body",       Seq(parse_stmt, Opt(PUNCT_SEMI))),
 )
 
 node_default = Node(DefaultNode,
   KW_DEFAULT,
-  KeyVal("block", stmt_delim),
+  KeyVal("body", stmt_delim),
 )
 
 node_match = Node(MatchNode,
@@ -223,7 +225,7 @@ node_match = Node(MatchNode,
   KeyVal("condition", node_tuple),
   PUNCT_LBRACE,
   KeyVal("body",
-    List3(Any(Oneof(node_case, node_default)))
+    List2(BlockNode, Any(Oneof(node_case, node_default)))
   ),
   PUNCT_RBRACE
 )
@@ -232,14 +234,15 @@ node_type = Node(TypeNode,
   KeyVal("base", Oneof(
     node_call,
     node_tuple,
-    cap_ident
+    cap_ident,
+    cap_keyword
   )),
   Opt(KeyVal("suffix", node_tuple))
 )
 
 #----------------------------------------
 
-decl_name = KeyVal("name", Oneof(node_primed, cap_ident))
+decl_name = KeyVal("name", cap_ident)
 decl_dir  = KeyVal("dir",  Capture(match_op(tem_declops)))
 decl_type = KeyVal("type", node_type)
 decl_eq   = KeyVal("eq",   Capture(match_op(tem_assignops)))
@@ -257,7 +260,7 @@ _node_decl = Node(AtomNode, Railway({
 #----------------------------------------
 
 node_marker = Node(MarkerNode, PUNCT_POUND, KeyVal("name", cap_ident))
-node_return = Node(ReturnNode, KW_RETURN,   KeyVal("val", Opt(node_expr)))
+node_return = Node(ReturnNode, KW_RETURN,   KeyVal("val",  Opt(node_expr)))
 
 _parse_stmt = Oneof(
   # Order matters!
@@ -274,17 +277,14 @@ _parse_stmt = Oneof(
 
 #---------------------------------------------------------------------------------------------------
 
-def parse_lexemes(lexemes):
+def parse_lexemes(lexemes, ctx):
   span = lexemes
-  ctx = []
   while span:
     tail = parse_stmt(span, ctx)
     if isinstance(tail, Fail):
-      print("fail!")
-      ctx.append(span[0])
+      ctx.stack.append(("fail @ ", span[0]))
       tail = span[1:]
     span = tail
-  return ctx
 
 #---------------------------------------------------------------------------------------------------
 
