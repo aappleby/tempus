@@ -32,7 +32,7 @@ def Nothing(span, ctx):
   return span
 
 @cache
-def And(P):
+def And(pattern):
   r"""
   >>> And(Atom('a'))('asdf', [])
   'asdf'
@@ -40,12 +40,12 @@ def And(P):
   Fail @ 'qwer'
   """
   def match(span, ctx):
-    tail = P(span, ctx)
+    tail = pattern(span, ctx)
     return Fail(span) if isinstance(tail, Fail) else span
   return match
 
 @cache
-def Not(P):
+def Not(pattern):
   r"""
   >>> Not(Atom('a'))('asdf', [])
   Fail @ 'asdf'
@@ -53,14 +53,14 @@ def Not(P):
   'qwer'
   """
   def match(span, ctx):
-    tail = P(span, ctx)
+    tail = pattern(span, ctx)
     return span if isinstance(tail, Fail) else Fail(span)
   return match
 
 #---------------------------------------------------------------------------------------------------
 
 @cache
-def Atom(C):
+def Atom(const):
   r"""
   >>> Atom('a')('asdf', [])
   'sdf'
@@ -68,13 +68,13 @@ def Atom(C):
   Fail @ 'qwer'
   """
   def match(span, ctx):
-    return span[1:] if (span and not atom_cmp(span[0], C)) else Fail(span)
+    return span[1:] if (span and not atom_cmp(span[0], const)) else Fail(span)
   return match
 
 #---------------------------------------------------------------------------------------------------
 
 @cache
-def NotAtom(C):
+def NotAtom(const):
   r"""
   >>> NotAtom('a')('asdf', [])
   Fail @ 'asdf'
@@ -82,13 +82,13 @@ def NotAtom(C):
   'wer'
   """
   def match(span, ctx):
-    return span[1:] if (span and atom_cmp(span[0], C)) else Fail(span)
+    return span[1:] if (span and atom_cmp(span[0], const)) else Fail(span)
   return match
 
 #---------------------------------------------------------------------------------------------------
 
 @cache
-def Atoms(*args):
+def Atoms(*oneof):
   r"""
   >>> Atoms('a', 'b')('asdf', [])
   'sdf'
@@ -100,7 +100,7 @@ def Atoms(*args):
   def match(span, ctx):
     if not span:
       return Fail(span)
-    for arg in args:
+    for arg in oneof:
       if not atom_cmp(span[0], arg):
         return span[1:]
     return Fail(span)
@@ -109,9 +109,9 @@ def Atoms(*args):
 #---------------------------------------------------------------------------------------------------
 
 @cache
-def NotAtoms(*args):
+def NotAtoms(*seq):
   def match(span, ctx):
-    for arg in args:
+    for arg in seq:
       if not atom_cmp(span[0], arg):
         return Fail(span)
     return span[1:]
@@ -206,7 +206,7 @@ def Charset(lit):
 #---------------------------------------------------------------------------------------------------
 
 @cache
-def Seq(*args):
+def Seq(*seq):
   r"""
   >>> Seq(Atom('a'), Atom('s'))('asdf', [])
   'df'
@@ -217,7 +217,7 @@ def Seq(*args):
   """
   def match(span, ctx):
     top = len(ctx)
-    for arg in args:
+    for arg in seq:
       tail = arg(span, ctx)
       if isinstance(tail, Fail):
         del ctx[top:]
@@ -229,7 +229,7 @@ def Seq(*args):
 #---------------------------------------------------------------------------------------------------
 
 @cache
-def Oneof(*args):
+def Oneof(*oneof):
   r"""
   >>> Oneof(Atom('a'), Atom('b'))('asdf', [])
   'sdf'
@@ -240,7 +240,7 @@ def Oneof(*args):
   """
   def match(span, ctx):
     top = len(ctx)
-    for arg in args:
+    for arg in oneof:
       tail = arg(span, ctx)
       if not isinstance(tail, Fail):
         return tail
@@ -251,7 +251,7 @@ def Oneof(*args):
 #---------------------------------------------------------------------------------------------------
 
 @cache
-def Opt(*args):
+def Opt(*oneof):
   r"""
   >>> Opt(Atom('a'))('asdf', [])
   'sdf'
@@ -261,7 +261,7 @@ def Opt(*args):
   'qwer'
   """
   def match(span, ctx):
-    for pattern in args:
+    for pattern in oneof:
       tail = pattern(span, ctx)
       if not isinstance(tail, Fail):
         return tail
@@ -269,20 +269,20 @@ def Opt(*args):
   return match
 
 @cache
-def OptSeq(*args):
-  return Opt(Seq(*args))
+def OptSeq(*seq):
+  return Opt(Seq(*seq))
 
 #---------------------------------------------------------------------------------------------------
 
 @cache
-def Any(*args):
+def Any(*oneof):
   r"""
   >>> Any(Atom('a'))('aaaasdf', [])
   'sdf'
   >>> Any(Atom('a'))('baaaasdf', [])
   'baaaasdf'
   """
-  pattern = Oneof(*args)
+  pattern = Oneof(*oneof)
   def match(span, ctx):
     while True:
       tail = pattern(span, ctx)
@@ -294,7 +294,7 @@ def Any(*args):
 #---------------------------------------------------------------------------------------------------
 
 @cache
-def Rep(count, P):
+def Rep(count, pattern):
   r"""
   >>> Rep(4, Atom('a'))('aaasdf', [])
   Fail @ 'sdf'
@@ -306,7 +306,7 @@ def Rep(count, P):
   def match(span, ctx):
     top = len(ctx)
     for _ in range(count):
-      tail = P(span, ctx)
+      tail = pattern(span, ctx)
       if isinstance(tail, Fail):
         del ctx[top:]
         return tail
@@ -314,7 +314,7 @@ def Rep(count, P):
     return span
   return match
 
-def AtLeast(count, P):
+def AtLeast(count, pattern):
   r"""
   >>> AtLeast(4, Atom('a'))('aaasdf', [])
   Fail @ 'sdf'
@@ -323,19 +323,19 @@ def AtLeast(count, P):
   >>> AtLeast(4, Atom('a'))('aaaaasdf', [])
   'sdf'
   """
-  return Seq(Rep(count, P), Any(P))
+  return Seq(Rep(count, pattern), Any(pattern))
 
 #---------------------------------------------------------------------------------------------------
 
 @cache
-def Some(*args):
+def Some(*oneof):
   r"""
   >>> Some(Atom('a'))('aaaasdf', [])
   'sdf'
   >>> Some(Atom('a'))('baaaasdf', [])
   Fail @ 'baaaasdf'
   """
-  pattern = Oneof(*args)
+  pattern = Oneof(*oneof)
   def match(span, ctx):
     span = pattern(span, ctx)
     if isinstance(span, Fail):
@@ -352,17 +352,17 @@ def Some(*args):
 # The pattern is _not_ consumed.
 
 @cache
-def Until(P):
-  return Any(Seq(Not(P), AnyAtom))
+def Until(pattern):
+  return Any(Seq(Not(pattern), AnyAtom))
 
 #---------------------------------------------------------------------------------------------------
 # Separated = a,b,c,d,
 
 @cache
-def Cycle(*args):
+def Cycle(*seq):
   def match(span, ctx):
     while True:
-      for pattern in args:
+      for pattern in seq:
         tail = pattern(span, ctx)
         if isinstance(tail, Fail):
           return span
@@ -414,15 +414,15 @@ def Capture(pattern):
   return match
 
 @cache
-def Node(node_type, *args):
+def Node(node_type, *seq):
   """
-  Turns all (name, value) tuples added to the context stack after this matcher into a parse node.
+  Turns all (key, value) tuples added to the context stack after this matcher into a parse node.
   """
   def match(span, ctx):
     top = len(ctx)
     tail = span
 
-    for pattern in args:
+    for pattern in seq:
       tail = pattern(tail, ctx)
       if isinstance(tail, Fail):
         del ctx[top:]
@@ -430,6 +430,10 @@ def Node(node_type, *args):
 
     values = ctx[top:]
     del ctx[top:]
+
+    for val in values:
+      assert isinstance(val, tuple)
+      assert len(val) == 2
 
     if len(values) == 0:
       ctx.append(None)
@@ -451,38 +455,13 @@ def Node(node_type, *args):
 
   return match
 
-
-
 @cache
-def List2(node_type, *args):
+def Tuple(*seq):
   def match(span, ctx):
     top = len(ctx)
     tail = span
 
-    for pattern in args:
-      tail = pattern(tail, ctx)
-      if isinstance(tail, Fail):
-        del ctx[top:]
-        return tail
-
-    values = ctx[top:]
-    del ctx[top:]
-
-    result = node_type()
-    for key, val in enumerate(values):
-      result[key] = val
-    ctx.append(result)
-    return tail
-
-  return match
-
-@cache
-def Tuple(*args):
-  def match(span, ctx):
-    top = len(ctx)
-    tail = span
-
-    for pattern in args:
+    for pattern in seq:
       tail = pattern(tail, ctx)
       if isinstance(tail, Fail):
         del ctx[top:]
@@ -512,7 +491,6 @@ def List3(pattern):
       del ctx[top:]
       return tail
 
-
     values = ctx[top:]
     del ctx[top:]
 
@@ -524,14 +502,14 @@ def List3(pattern):
 
 
 @cache
-def Field(key, val_pattern):
+def KeyVal(key, pattern):
   """
   Turns the top of the context stack into a (name, value) tuple
   """
   def match(span, ctx):
     top = len(ctx)
 
-    val_tail = val_pattern(span, ctx)
+    val_tail = pattern(span, ctx)
     if isinstance(val_tail, Fail):
       del ctx[top:]
       return Fail(span)

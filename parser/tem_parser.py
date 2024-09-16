@@ -98,16 +98,9 @@ def match_op(ops):
     return Fail(span)
   return match
 
-match_binop = match_op(tem_constants.tem_binops)
-
-match_ident = Seq(
-  Opt(PUNCT_DOT),
-  ATOM_IDENT,
-  Any(Seq(
-    PUNCT_DOT,
-    ATOM_IDENT,
-  ))
-)
+cap_binop   = Capture(match_op(tem_constants.tem_binops))
+match_ident = Some(PUNCT_DOT, ATOM_IDENT)
+cap_ident   = Capture(match_ident)
 
 #---------------------------------------------------------------------------------------------------
 # Forward decls
@@ -121,8 +114,7 @@ def node_expr(span, ctx):
 def node_decl(span, ctx):
   return _node_decl(span, ctx)
 
-parse_ident = Capture(match_ident)
-node_primed = Node(PrimedNode, PUNCT_AT, Field("ident", parse_ident))
+node_primed = Node(PrimedNode, PUNCT_AT, KeyVal("ident", cap_ident))
 parse_expr_or_decl = Oneof(node_expr, node_decl)
 
 #---------------------------------------------------------------------------------------------------
@@ -156,27 +148,25 @@ stmt_semi  = Seq(parse_stmt, PUNCT_SEMI)
 
 stmt_delim_or_semi = Oneof(stmt_delim, stmt_semi)
 
-node_block = List3(stmt_delim)
-
-node_tuple = Tuple(Oneof(parse_paren_tuple, parse_brace_tuple))
+node_tuple = Oneof(parse_paren_tuple, parse_brace_tuple)
 
 #---------------------------------------------------------------------------------------------------
 
 node_call = Node(CallNode,
-  Field("func",   Capture(Oneof(match_ident, ATOM_KEYWORD))),
-  Field("params", node_tuple)
+  KeyVal("func",   Capture(Oneof(match_ident, ATOM_KEYWORD))),
+  KeyVal("params", node_tuple)
 )
 
 node_lambda = Node(LambdaNode,
-  Field("params", node_tuple),
-  Field("body",   node_block)
+  KeyVal("params", node_tuple),
+  KeyVal("body",   stmt_delim)
 )
 
 squishable = Oneof(
   node_tuple,
-  node_block,
+  stmt_delim,
   node_primed,
-  parse_ident,
+  cap_ident,
   Capture(ATOM_KEYWORD),
   Capture(ATOM_INT),
   Capture(ATOM_FLOAT),
@@ -191,35 +181,27 @@ parse_expr_unit = Oneof(
 )
 
 # unit op unit op unit...
-_node_expr = Oneof(
-  Tuple(
-    parse_expr_unit,
-    Capture(match_op(tem_binops)),
-    parse_expr_unit,
-    Any(Seq(Capture(match_binop), parse_expr_unit))
-  ),
-  parse_expr_unit,
-)
+_node_expr = Seq(parse_expr_unit, Any(Seq(cap_binop, parse_expr_unit)))
 
 node_if = Node(BranchNode,
-  Field("branches", List3(Seq(
+  KeyVal("branches", List3(Seq(
     KW_IF,
     Node(CondNode,
-      Field("condition",    parse_paren_tuple),
-      Field("then",         stmt_delim_or_semi),
+      KeyVal("condition",    parse_paren_tuple),
+      KeyVal("then",         stmt_delim_or_semi),
     ),
     Any(Seq(
       KW_ELIF,
       Node(CondNode,
-        Field("condition",  parse_paren_tuple),
-        Field("then",       stmt_delim_or_semi),
+        KeyVal("condition",  parse_paren_tuple),
+        KeyVal("then",       stmt_delim_or_semi),
       ),
     )),
     Opt(Seq(
       KW_ELSE,
       Node(CondNode,
-        Field("condition",  Nothing),
-        Field("then",       stmt_delim_or_semi),
+        KeyVal("condition",  Nothing),
+        KeyVal("then",       stmt_delim_or_semi),
       ),
     ))
   )))
@@ -227,41 +209,41 @@ node_if = Node(BranchNode,
 
 node_case = Node(CaseNode,
   KW_CASE,
-  Field("condition",  node_tuple),
-  Field("block",      node_block),
+  KeyVal("condition",  node_tuple),
+  KeyVal("block",      stmt_delim),
 )
 
 node_default = Node(DefaultNode,
   KW_DEFAULT,
-  Field("block", node_block),
+  KeyVal("block", stmt_delim),
 )
 
 node_match = Node(MatchNode,
   KW_MATCH,
-  Field("condition", node_tuple),
+  KeyVal("condition", node_tuple),
   PUNCT_LBRACE,
-  Field("body",
+  KeyVal("body",
     List3(Any(Oneof(node_case, node_default)))
   ),
   PUNCT_RBRACE
 )
 
 node_type = Node(TypeNode,
-  Field("base", Oneof(
+  KeyVal("base", Oneof(
     node_call,
     node_tuple,
-    parse_ident
+    cap_ident
   )),
-  Opt(Field("suffix", node_tuple))
+  Opt(KeyVal("suffix", node_tuple))
 )
 
 #----------------------------------------
 
-decl_name = Field("name", Oneof(node_primed, parse_ident))
-decl_dir  = Field("dir",  Capture(match_op(tem_declops)))
-decl_type = Field("type", node_type)
-decl_eq   = Field("eq",   Capture(match_op(tem_assignops)))
-decl_val  = Field("val",  node_expr)
+decl_name = KeyVal("name", Oneof(node_primed, cap_ident))
+decl_dir  = KeyVal("dir",  Capture(match_op(tem_declops)))
+decl_type = KeyVal("type", node_type)
+decl_eq   = KeyVal("eq",   Capture(match_op(tem_assignops)))
+decl_val  = KeyVal("val",  node_expr)
 
 _node_decl = Node(AtomNode, Railway({
   None      : [decl_name, decl_dir, decl_eq],
@@ -274,8 +256,8 @@ _node_decl = Node(AtomNode, Railway({
 
 #----------------------------------------
 
-node_marker = Node(MarkerNode, PUNCT_POUND, Field("name", parse_ident))
-node_return = Node(ReturnNode, KW_RETURN,   Field("val", Opt(node_expr)))
+node_marker = Node(MarkerNode, PUNCT_POUND, KeyVal("name", cap_ident))
+node_return = Node(ReturnNode, KW_RETURN,   KeyVal("val", Opt(node_expr)))
 
 _parse_stmt = Oneof(
   # Order matters!
@@ -284,9 +266,9 @@ _parse_stmt = Oneof(
   node_return,
   node_marker,
 
-  node_block,
-  node_decl, PUNCT_SEMI,
-  node_expr, PUNCT_SEMI,
+  stmt_delim,
+  node_decl,
+  node_expr,
   PUNCT_SEMI
 )
 

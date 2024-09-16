@@ -124,14 +124,11 @@ if __name__ == "__main__":
 
   source  = inspect.cleandoc("""
     # asdf
-    x : blah = 2;
-    y : blee = 6 + 8 + 9;
-    z : bloo = 6 + {a=5; 7*7*7} + 7;
-    //if (blah) {
-    //  x = 1;
-    //  y = 2;
-    //  z = 3;
-    //}
+    if (blah) {
+      x = 1;
+      y = 2;
+      z = 3;
+    }
     //elif (blee) {
     //}
     //elif (bloo) {
