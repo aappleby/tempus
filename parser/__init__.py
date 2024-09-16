@@ -1,3 +1,3 @@
-import parser.tem_constants
-import parser.tem_lexer
-import parser.tem_parser
+from .tem_constants import *
+from .tem_lexer import *
+from .tem_parser import *

@@ -28,6 +28,22 @@ class Fail:
 
 #---------------------------------------------------------------------------------------------------
 
+def Nothing(span, ctx):
+  return span
+
+@cache
+def And(P):
+  r"""
+  >>> And(Atom('a'))('asdf', [])
+  'asdf'
+  >>> And(Atom('a'))('qwer', [])
+  Fail @ 'qwer'
+  """
+  def match(span, ctx):
+    tail = P(span, ctx)
+    return Fail(span) if isinstance(tail, Fail) else span
+  return match
+
 @cache
 def Not(P):
   r"""
@@ -460,7 +476,50 @@ def List2(node_type, *args):
 
   return match
 
+@cache
+def Tuple(*args):
+  def match(span, ctx):
+    top = len(ctx)
+    tail = span
 
+    for pattern in args:
+      tail = pattern(tail, ctx)
+      if isinstance(tail, Fail):
+        del ctx[top:]
+        return tail
+
+    values = ctx[top:]
+    del ctx[top:]
+
+    ctx.append(tuple(values))
+
+    #result = node_type()
+    #for key, val in enumerate(values):
+    #  result[key] = val
+    #ctx.append(result)
+    return tail
+
+  return match
+
+
+@cache
+def List3(pattern):
+  def match(span, ctx):
+    top = len(ctx)
+    tail = pattern(span, ctx)
+
+    if isinstance(tail, Fail):
+      del ctx[top:]
+      return tail
+
+
+    values = ctx[top:]
+    del ctx[top:]
+
+    ctx.append(values)
+    return tail
+
+  return match
 
 
 

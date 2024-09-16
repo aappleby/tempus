@@ -1,8 +1,13 @@
 #!/usr/bin/python3
 
-import parser
-from parser.matcheroni import *
-from parser.tem_lexer import *
+from . import matcheroni
+from . import tem_constants
+from . import tem_lexer
+
+from .matcheroni import *
+from .tem_constants import *
+from .tem_lexer import *
+
 from functools import cache
 
 #---------------------------------------------------------------------------------------------------
@@ -21,11 +26,18 @@ class BlockNode(BaseNode):    pass
 class CallNode(BaseNode):     pass
 class CaseNode(BaseNode):     pass
 class DefaultNode(BaseNode):  pass
-class ElseNode(BaseNode):     pass
+
+class BranchNode(BaseNode):   pass
+class CondNode(BaseNode):     pass
+
+#class IfNode(BaseNode):       pass
+#class ElifNode(BaseNode):     pass
+#class ElseNode(BaseNode):     pass
+
 class ExprNode(BaseNode):     pass
 class IdentNode(BaseNode):    pass
-class IfNode(BaseNode):       pass
 class LambdaNode(BaseNode):   pass
+class MarkerNode(BaseNode):   pass
 class MatchNode(BaseNode):    pass
 class PrimedNode(BaseNode):   pass
 class ReturnNode(BaseNode):   pass
@@ -71,6 +83,7 @@ KW_MATCH      = LexToAtom(LexemeType.LEX_KEYWORD, "match")
 KW_CASE       = LexToAtom(LexemeType.LEX_KEYWORD, "case")
 KW_DEFAULT    = LexToAtom(LexemeType.LEX_KEYWORD, "default")
 KW_RETURN     = LexToAtom(LexemeType.LEX_KEYWORD, "return")
+KW_ELIF       = LexToAtom(LexemeType.LEX_KEYWORD, "elif")
 KW_ELSE       = LexToAtom(LexemeType.LEX_KEYWORD, "else")
 KW_IF         = LexToAtom(LexemeType.LEX_KEYWORD, "if")
 KW_SIGNED     = LexToAtom(LexemeType.LEX_KEYWORD, "signed")
@@ -84,6 +97,8 @@ def match_op(ops):
       return span[1:]
     return Fail(span)
   return match
+
+match_binop = match_op(tem_constants.tem_binops)
 
 match_ident = Seq(
   Opt(PUNCT_DOT),
@@ -135,9 +150,15 @@ parse_brace_tuple = Railway({
 
 # Curly-braced, semicolon-delimited lists of statements. Excess semicolons are OK. No semicolon
 # after the last statement is OK.
-node_block = List2(BlockNode, PUNCT_LBRACE, Any(parse_stmt), PUNCT_RBRACE)
 
-node_tuple = List2(TupleNode, Oneof(parse_paren_tuple, parse_brace_tuple))
+stmt_delim = Seq(PUNCT_LBRACE, Any(parse_stmt), PUNCT_RBRACE)
+stmt_semi  = Seq(parse_stmt, PUNCT_SEMI)
+
+stmt_delim_or_semi = Oneof(stmt_delim, stmt_semi)
+
+node_block = List3(stmt_delim)
+
+node_tuple = Tuple(Oneof(parse_paren_tuple, parse_brace_tuple))
 
 #---------------------------------------------------------------------------------------------------
 
@@ -162,7 +183,7 @@ squishable = Oneof(
   Capture(ATOM_STRING),
 )
 
-squish_list = List2(SquishNode, AtLeast(2, squishable))
+squish_list = Tuple(AtLeast(2, squishable))
 
 parse_expr_unit = Oneof(
   squish_list,
@@ -171,25 +192,37 @@ parse_expr_unit = Oneof(
 
 # unit op unit op unit...
 _node_expr = Oneof(
-  List2(ExprNode,
+  Tuple(
     parse_expr_unit,
-    Capture(match_op(parser.tem_parser.tem_binops)),
+    Capture(match_op(tem_binops)),
     parse_expr_unit,
     Any(Seq(Capture(match_binop), parse_expr_unit))
   ),
   parse_expr_unit,
 )
 
-node_else = Node(ElseNode,
-  KW_ELSE,
-  Field("block", node_block),
-)
-
-node_if = Node(IfNode,
-  KW_IF,
-  Field("condition",  node_tuple),
-  Field("block",      node_block),
-  Field("else",       Opt(node_else))
+node_if = Node(BranchNode,
+  Field("branches", List3(Seq(
+    KW_IF,
+    Node(CondNode,
+      Field("condition",    parse_paren_tuple),
+      Field("then",         stmt_delim_or_semi),
+    ),
+    Any(Seq(
+      KW_ELIF,
+      Node(CondNode,
+        Field("condition",  parse_paren_tuple),
+        Field("then",       stmt_delim_or_semi),
+      ),
+    )),
+    Opt(Seq(
+      KW_ELSE,
+      Node(CondNode,
+        Field("condition",  Nothing),
+        Field("then",       stmt_delim_or_semi),
+      ),
+    ))
+  )))
 )
 
 node_case = Node(CaseNode,
@@ -208,7 +241,7 @@ node_match = Node(MatchNode,
   Field("condition", node_tuple),
   PUNCT_LBRACE,
   Field("body",
-    List2(BlockNode, Any(node_case, node_default))
+    List3(Any(Oneof(node_case, node_default)))
   ),
   PUNCT_RBRACE
 )
@@ -225,9 +258,9 @@ node_type = Node(TypeNode,
 #----------------------------------------
 
 decl_name = Field("name", Oneof(node_primed, parse_ident))
-decl_dir  = Field("dir",  Capture(match_op(parser.tem_parser.tem_declops)))
+decl_dir  = Field("dir",  Capture(match_op(tem_declops)))
 decl_type = Field("type", node_type)
-decl_eq   = Field("eq",   Capture(match_op(parser.tem_constants.tem_assignops)))
+decl_eq   = Field("eq",   Capture(match_op(tem_assignops)))
 decl_val  = Field("val",  node_expr)
 
 _node_decl = Node(AtomNode, Railway({
@@ -241,25 +274,20 @@ _node_decl = Node(AtomNode, Railway({
 
 #----------------------------------------
 
-node_return = Node(ReturnNode,
-  KW_RETURN,
-  Field("val", Opt(node_expr))
-)
+node_marker = Node(MarkerNode, PUNCT_POUND, Field("name", parse_ident))
+node_return = Node(ReturnNode, KW_RETURN,   Field("val", Opt(node_expr)))
 
 _parse_stmt = Oneof(
-  node_match,
+  # Order matters!
   node_if,
+  node_match,
   node_return,
-  node_decl,
-  node_block,
-  node_expr,
-  PUNCT_SEMI
-)
+  node_marker,
 
-node_section = Node(SectionNode,
-  PUNCT_POUND,
-  Field("name", parse_ident),
-  Field("body", Any(parse_stmt))
+  node_block,
+  node_decl, PUNCT_SEMI,
+  node_expr, PUNCT_SEMI,
+  PUNCT_SEMI
 )
 
 #---------------------------------------------------------------------------------------------------
@@ -268,8 +296,9 @@ def parse_lexemes(lexemes):
   span = lexemes
   ctx = []
   while span:
-    tail = node_section(span, ctx)
+    tail = parse_stmt(span, ctx)
     if isinstance(tail, Fail):
+      print("fail!")
       ctx.append(span[0])
       tail = span[1:]
     span = tail

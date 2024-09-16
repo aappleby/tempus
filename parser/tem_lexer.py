@@ -1,7 +1,10 @@
 #!/usr/bin/python3
 
-import parser
-from parser.matcheroni import *
+from . import matcheroni
+from . import tem_constants
+
+from .matcheroni import *
+
 from enum import Enum
 import re
 
@@ -33,7 +36,7 @@ def strcmp(str1, str2):
     else:
         return 0
 
-def atom_cmp(a, b, base = parser.matcheroni.atom_cmp):
+def atom_cmp(a, b, base = matcheroni.atom_cmp):
   if isinstance(a, Lexeme) and isinstance(b, Lexeme):
     if a.type.value != b.type.value:
       return b.type.value - a.type.value
@@ -43,7 +46,7 @@ def atom_cmp(a, b, base = parser.matcheroni.atom_cmp):
     return b.value - a.type.value
   return base(a, b)
 
-parser.matcheroni.atom_cmp = atom_cmp
+matcheroni.atom_cmp = atom_cmp
 
 #---------------------------------------------------------------------------------------------------
 
@@ -146,10 +149,10 @@ match_comment = Oneof(
 
 #match_punct = Charset("-,;:!?.()[]{}<>*/&#%^+=|~@")
 
-match_punct = Charset(",;.()[]{}@")
+match_punct = Charset(",;.()[]{}@#")
 
 def match_op(span, ctx):
-  for op in parser.tem_constants.tem_allops:
+  for op in tem_constants.tem_allops:
     if span.startswith(op):
       return span[len(op):]
   return Fail(span)
@@ -167,7 +170,7 @@ def match_keyword(span, ctx):
   if isinstance(tail, Fail):
     return tail
   lexeme = span[:len(span) - len(tail)]
-  return tail if lexeme in parser.tem_constants.tem_keywords else Fail(span)
+  return tail if lexeme in tem_constants.tem_keywords else Fail(span)
 
 #---------------------------------------------------------------------------------------------------
 

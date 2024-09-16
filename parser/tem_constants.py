@@ -12,6 +12,7 @@ tem_keywords = longest_first(
 "const",
 "default",
 "do",
+"elif",
 "else",
 "enum",
 "for",
