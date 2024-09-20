@@ -1,16 +1,11 @@
   #!/usr/bin/python3
 
 from functools import cache
+import doctest
+import sys
 
 #---------------------------------------------------------------------------------------------------
-# FIXME probably need a better way to handle atom_cmp
-
-def atom_cmp(a, b):
-  if isinstance(a, (str, int)) and isinstance(b, (str, int)):
-    a_value = ord(a) if isinstance(a, str) else a
-    b_value = ord(b) if isinstance(b, str) else b
-    return b_value - a_value
-  raise ValueError(F"Don't know how to compare {type(a)} and {type(b)}")
+# _FIXME probably need a better way to handle atom_cmp
 
 #---------------------------------------------------------------------------------------------------
 
@@ -28,13 +23,34 @@ class Fail:
 
 #---------------------------------------------------------------------------------------------------
 
+def default_atom_cmp(a, b):
+  if isinstance(a, (str, int)) and isinstance(b, (str, int)):
+    a_value = ord(a) if isinstance(a, str) else a
+    b_value = ord(b) if isinstance(b, str) else b
+    return b_value - a_value
+  raise ValueError(F"Don't know how to compare {type(a)} and {type(b)}")
+
 class Context:
-  def __init__(self):
+  def __init__(self, cmp):
     self.stack = []
+    self.cmp = cmp
+
+def apply(source, ctx, pattern):
+  span = source
+  any_fail = False
+  while span:
+    tail = pattern(span, ctx)
+    if isinstance(tail, Fail):
+      any_fail = True
+      ctx.stack.append((f"fail @ {len(source) - len(span)}", span[0]))
+      tail = span[1:]
+    span = tail
+  return any_fail
 
 #---------------------------------------------------------------------------------------------------
 
-def Nothing(span, ctx2):
+# pylint: disable=unused-argument
+def nothing(span, ctx2):
   return span
 
 @cache
@@ -76,7 +92,7 @@ def Atom(const):
   def match(span, ctx2):
     assert(isinstance(span, (list, str)))
     assert(isinstance(ctx2, Context))
-    return span[1:] if (span and not atom_cmp(span[0], const)) else Fail(span)
+    return span[1:] if (span and not ctx2.cmp(span[0], const)) else Fail(span)
   return match
 
 #---------------------------------------------------------------------------------------------------
@@ -90,7 +106,7 @@ def NotAtom(const):
   'wer'
   """
   def match(span, ctx2):
-    return span[1:] if (span and atom_cmp(span[0], const)) else Fail(span)
+    return span[1:] if (span and ctx2.cmp(span[0], const)) else Fail(span)
   return match
 
 #---------------------------------------------------------------------------------------------------
@@ -109,7 +125,7 @@ def Atoms(*oneof):
     if not span:
       return Fail(span)
     for arg in oneof:
-      if not atom_cmp(span[0], arg):
+      if not ctx2.cmp(span[0], arg):
         return span[1:]
     return Fail(span)
   return match
@@ -120,7 +136,7 @@ def Atoms(*oneof):
 def NotAtoms(*seq):
   def match(span, ctx2):
     for arg in seq:
-      if not atom_cmp(span[0], arg):
+      if not ctx2.cmp(span[0], arg):
         return Fail(span)
     return span[1:]
   return match
@@ -152,7 +168,7 @@ def Range(A, B):
   B = ord(B) if isinstance(B, str) else B
 
   def match(span, ctx2):
-    if span and atom_cmp(A, span[0]) >= 0 and atom_cmp(span[0], B) >= 0:
+    if span and ctx2.cmp(A, span[0]) >= 0 and ctx2.cmp(span[0], B) >= 0:
       return span[1:]
     return Fail(span)
   return match
@@ -177,8 +193,8 @@ def Ranges(*args):
     ranges.append(Range(args[i+0], args[i+1]))
 
   def match(span, ctx2):
-    for range in ranges:
-      tail = range(span, ctx2)
+    for r in ranges:
+      tail = r(span, ctx2)
       if not isinstance(tail, Fail):
         return tail
     return Fail(span)
@@ -197,8 +213,8 @@ def Lit(lit):
   def match(span, ctx2):
     if len(span) < len(lit):
       return Fail(span)
-    for i in range(len(lit)):
-      if atom_cmp(span[i], lit[i]):
+    for i, c in enumerate(lit):
+      if ctx2.cmp(span[i], c):
         return Fail(span)
     return span[len(lit):]
   return match
@@ -422,7 +438,7 @@ def Capture(pattern):
   return match
 
 @cache
-def Node(node_type, *seq):
+def Node(node_type, pattern):
   """
   Turns all (key, value) tuples added to the context stack after this matcher into a parse node.
   """
@@ -431,13 +447,10 @@ def Node(node_type, *seq):
     assert isinstance(ctx2, Context)
 
     top = len(ctx2.stack)
-    tail = span
-
-    for pattern in seq:
-      tail = pattern(tail, ctx2)
-      if isinstance(tail, Fail):
-        del ctx2.stack[top:]
-        return tail
+    tail = pattern(span, ctx2)
+    if isinstance(tail, Fail):
+      del ctx2.stack[top:]
+      return tail
 
     values = ctx2.stack[top:]
     del ctx2.stack[top:]
@@ -446,9 +459,9 @@ def Node(node_type, *seq):
       assert isinstance(val, tuple)
       assert len(val) == 2
 
-    if len(values) == 0:
-      ctx2.stack.append(None)
-      return tail
+    #if len(values) == 0:
+    #  ctx2.stack.append(None)
+    #  return tail
 
     result = node_type()
 
@@ -467,34 +480,13 @@ def Node(node_type, *seq):
   return match
 
 @cache
-def Tuple(*seq):
+def TupleNode(tuple_type, pattern):
   def match(span, ctx2):
     top = len(ctx2.stack)
-    tail = span
-
-    for pattern in seq:
-      tail = pattern(tail, ctx2)
-      if isinstance(tail, Fail):
-        del ctx2.stack[top:]
-        return tail
-
-    values = ctx2.stack[top:]
-    del ctx2.stack[top:]
-    ctx2.stack.append(tuple(values))
-    return tail
-  return match
-
-@cache
-def Tuple2(tuple_type, *seq):
-  def match(span, ctx2):
-    top = len(ctx2.stack)
-    tail = span
-
-    for pattern in seq:
-      tail = pattern(tail, ctx2)
-      if isinstance(tail, Fail):
-        del ctx2.stack[top:]
-        return tail
+    tail = pattern(span, ctx2)
+    if isinstance(tail, Fail):
+      del ctx2.stack[top:]
+      return tail
 
     values = ctx2.stack[top:]
     del ctx2.stack[top:]
@@ -503,36 +495,16 @@ def Tuple2(tuple_type, *seq):
   return match
 
 @cache
-def List(pattern):
+def ListNode(list_type, pattern):
   def match(span, ctx2):
     top = len(ctx2.stack)
     tail = pattern(span, ctx2)
-
     if isinstance(tail, Fail):
       del ctx2.stack[top:]
       return tail
 
     values = ctx2.stack[top:]
     del ctx2.stack[top:]
-
-    ctx2.stack.append(values)
-    return tail
-
-  return match
-
-@cache
-def List2(list_type, pattern):
-  def match(span, ctx2):
-    top = len(ctx2.stack)
-    tail = pattern(span, ctx2)
-
-    if isinstance(tail, Fail):
-      del ctx2.stack[top:]
-      return tail
-
-    values = ctx2.stack[top:]
-    del ctx2.stack[top:]
-
     ctx2.stack.append(list_type(values))
     return tail
 
@@ -545,23 +517,21 @@ def KeyVal(key, pattern):
   """
   def match(span, ctx2):
     top = len(ctx2.stack)
-
-    val_tail = pattern(span, ctx2)
-    if isinstance(val_tail, Fail):
+    tail = pattern(span, ctx2)
+    if isinstance(tail, Fail):
       del ctx2.stack[top:]
       return Fail(span)
-    val = ctx2.stack[top:]
+    
+    values = ctx2.stack[top:]
     del ctx2.stack[top:]
-
-    if len(val) == 0:
+    if len(values) == 0:
       field = (key, None)
-    elif len(val) == 1:
-      field = (key, val[0])
+    elif len(values) == 1:
+      field = (key, values[0])
     else:
-      field = (key, val)
-
+      field = (key, values)
     ctx2.stack.append(field)
-    return val_tail
+    return tail
 
   return match
 
@@ -621,35 +591,31 @@ def Railway(railway):
 #---------------------------------------------------------------------------------------------------
 
 class BaseNode:
-    def items(self):
-        return self.__dict__.items()
+  def items(self):
+    return self.__dict__.items()
 
-    def keys(self):
-        return self.__dict__.keys()
+  def keys(self):
+    return self.__dict__.keys()
 
-    def __contains__(self, key):
-        return key in self.__dict__
+  def __contains__(self, key):
+    return key in self.__dict__
 
-    def __getitem__(self, key):
-        return self.__dict__[key]
+  def __getitem__(self, key):
+    return self.__dict__[key]
 
-    def __setitem__(self, key, val):
-        self.__dict__[key] = val
+  def __setitem__(self, key, val):
+    self.__dict__[key] = val
 
-    def __getattr__(self, key):
-        return self.__dict__[key]
+  def __getattr__(self, key):
+    return self.__dict__[key]
 
-    def __setattr__(self, key, val):
-        self.__dict__[key] = val
+  def __setattr__(self, key, val):
+    self.__dict__[key] = val
 
-    def __repr__(self):
-        return self.__class__.__name__ + ":" + self.__dict__.__repr__()
+  def __repr__(self):
+    return self.__class__.__name__ + ":" + self.__dict__.__repr__()
 
 #---------------------------------------------------------------------------------------------------
-
-import doctest
-import sys
-import os
 
 testresult = doctest.testmod(sys.modules[__name__])
 print(f"Testing {__name__} : {testresult}")

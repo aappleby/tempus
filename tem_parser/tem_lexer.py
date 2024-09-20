@@ -1,18 +1,23 @@
 #!/usr/bin/python3
 
+import doctest
+import sys
+from enum import Enum
+from functools import cache
+
 from . import matcheroni
 from . import tem_constants
 
-from .matcheroni import *
-
-from enum import Enum
-import re
+#from .matcheroni import *
+from .matcheroni import Some, Opt, Atoms, Atom, Seq, Oneof, Range, Any
+from .matcheroni import Lit, NotAtom, Until, Charset, Fail, NotAtoms
 
 #---------------------------------------------------------------------------------------------------
 
+# pylint: disable=too-few-public-methods
 class Lexeme:
-  def __init__(self, type, span):
-    self.type = type
+  def __init__(self, lexeme_type, span):
+    self.lexeme_type = lexeme_type
     self.text = span
 
   def __repr__(self):
@@ -20,33 +25,31 @@ class Lexeme:
     if len(span) > 40:
       span = span[:40] + "..."
 
-    match self.type:
+    match self.lexeme_type:
       case LexemeType.LEX_NEWLINE:
-        return f"{self.type.name}"
+        return f"{self.lexeme_type.name}"
       case _:
-        return f"{self.type.name}({span})"
+        return f"{self.lexeme_type.name}({span})"
 
 #---------------------------------------------------------------------------------------------------
 
 def strcmp(str1, str2):
-    if str1 < str2:
-        return -1
-    elif str1 > str2:
-        return 1
-    else:
-        return 0
+  if str1 < str2:
+    return -1
+  elif str1 > str2:
+    return 1
+  else:
+    return 0
 
-def atom_cmp(a, b, base = matcheroni.atom_cmp):
+def atom_cmp_tokens(a, b):
   if isinstance(a, Lexeme) and isinstance(b, Lexeme):
     if a.type.value != b.type.value:
       return b.type.value - a.type.value
     return strcmp(a.text, b.text)
 
-  if isinstance(a, Lexeme) and isinstance(b, LexemeType):
+  if isinstance(a, Lexeme) and isinstance(b, Enum):
     return b.value - a.type.value
-  return base(a, b)
-
-matcheroni.atom_cmp = atom_cmp
+  return matcheroni.default_atom_cmp(a, b)
 
 #---------------------------------------------------------------------------------------------------
 
@@ -91,23 +94,23 @@ match_newline = Seq(Opt(Atom('\r')), Atom('\n'))
 sign = Atoms('+','-')
 
 @cache
-def Ticked(c):
+def ticked(c):
   return Seq(Opt(Atom('\'')), c)
 
 nondigit     = Oneof(Range('a', 'z'), Range('A', 'Z'), Atom('_'))
 
 dec_digit    = Range('0', '9')
-dec_digits   = Seq(dec_digit, Any(Ticked(dec_digit)))
+dec_digits   = Seq(dec_digit, Any(ticked(dec_digit)))
 dec_constant = dec_digits
 
 hex_prefix   = Oneof(Lit("0x"), Lit("0X"))
 hex_digit    = Oneof(Range('0','9'), Range('a','f'), Range('A', 'F'))
-hex_digits   = Seq(hex_digit, Any(Ticked(hex_digit)))
+hex_digits   = Seq(hex_digit, Any(ticked(hex_digit)))
 hex_constant = Seq(hex_prefix, hex_digits)
 
 bin_prefix   = Oneof(Lit("0b"), Lit("0B"))
 bin_digit    = Atoms('0', '1')
-bin_digits   = Seq(bin_digit, Any(Ticked(bin_digit)))
+bin_digits   = Seq(bin_digit, Any(ticked(bin_digit)))
 bin_constant = Seq(bin_prefix, bin_digits)
 
 bit_suffix = Seq(
@@ -151,6 +154,7 @@ match_comment = Oneof(
 
 match_punct = Charset(",;.()[]{}@#")
 
+# pylint: disable=unused-argument
 def match_op(span, ctx2):
   for op in tem_constants.tem_allops:
     if span.startswith(op):
@@ -174,11 +178,11 @@ def match_keyword(span, ctx2):
 
 #---------------------------------------------------------------------------------------------------
 
-def MatchToLex(pattern, type):
+def match_to_lex(pattern, lexeme_type):
   def match(span, ctx2):
     tail = pattern(span, ctx2)
     if not isinstance(tail, Fail):
-      ctx2.stack.append(Lexeme(type, span[:len(span) - len(tail)]))
+      ctx2.stack.append(Lexeme(lexeme_type, span[:len(span) - len(tail)]))
     return tail
   return match
 
@@ -189,16 +193,16 @@ def next_lexeme(span, ctx2):
     match_space,
     #MatchToLex(match_newline,  LexemeType.LEX_NEWLINE),
     match_newline,
-    MatchToLex(match_string,   LexemeType.LEX_STRING),
-    MatchToLex(match_char,     LexemeType.LEX_CHAR),
-    MatchToLex(match_keyword,  LexemeType.LEX_KEYWORD),
-    MatchToLex(match_ident,    LexemeType.LEX_IDENT),
+    match_to_lex(match_string,   LexemeType.LEX_STRING),
+    match_to_lex(match_char,     LexemeType.LEX_CHAR),
+    match_to_lex(match_keyword,  LexemeType.LEX_KEYWORD),
+    match_to_lex(match_ident,    LexemeType.LEX_IDENT),
     #MatchToLex(match_comment,  LexemeType.LEX_COMMENT),
     match_comment,
-    MatchToLex(match_float,    LexemeType.LEX_FLOAT),
-    MatchToLex(match_int,      LexemeType.LEX_INT),
-    MatchToLex(match_op,       LexemeType.LEX_OP),
-    MatchToLex(match_punct,    LexemeType.LEX_PUNCT),
+    match_to_lex(match_float,    LexemeType.LEX_FLOAT),
+    match_to_lex(match_int,      LexemeType.LEX_INT),
+    match_to_lex(match_op,       LexemeType.LEX_OP),
+    match_to_lex(match_punct,    LexemeType.LEX_PUNCT),
   ]
 
   for matcher in matchers:
@@ -209,20 +213,9 @@ def next_lexeme(span, ctx2):
   raise ValueError(f"Don't know how to lex '{span[:8]}...'")
 
 def lex_string(source, ctx):
-  span = source
-  while span:
-    tail = next_lexeme(span, ctx)
-    if isinstance(tail, Fail):
-      ctx.stack.append(("fail @ ", span[0]))
-      tail = span[1:]
-    span = tail
-
+  return matcheroni.apply(source, ctx, next_lexeme)
 
 #---------------------------------------------------------------------------------------------------
-
-import doctest
-import sys
-import os
 
 testresult = doctest.testmod(sys.modules[__name__])
 print(f"Testing {__name__} : {testresult}")

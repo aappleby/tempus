@@ -99,11 +99,11 @@ def prefix_precedence(op):
 def prefix_assoc(op):
   if op in ["++", "--", "+", "-", "!", "~", "*", "&"]:
     return -2
-  return 0;
+  return 0
 
 #------------------------------------------------------------------------------
 
-# FIXME should just compare by indexof in some list or something
+# _FIXME should just compare by indexof in some list or something
 
 def binary_precedence(op):
   if op == "::"  : return 1

@@ -1,0 +1,26 @@
+// Simple message transmitter with a delay between transmissions
+
+# consts
+max_delay   : const = 20;
+max_cursor  : const = len(text) - 1;
+text : u8[] const   = read("ping.hex");
+
+# ports
+.dst.data  :> u8 = text[cursor];
+.dst.valid :> u1 = delay == 0;
+.dst.ready >: u1;
+
+# state
+delay  : counter(max_delay)  = max_delay;
+cursor : counter(max_cursor) = 0;
+
+# update
+if (delay)
+  @delay = delay - 1;
+elif (dst.ready) {
+  if (cursor == max_cursor) {
+    @cursor = 0;
+    @delay = max_delay;
+  }
+  else @cursor = cursor + 1;
+}

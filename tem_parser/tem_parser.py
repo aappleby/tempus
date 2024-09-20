@@ -1,14 +1,15 @@
 #!/usr/bin/python3
 
-from . import matcheroni
-from . import tem_constants
-from . import tem_lexer
-
-from .matcheroni import *
-from .tem_constants import *
-from .tem_lexer import *
-
+import doctest
+import sys
 from functools import cache
+
+from . import tem_constants
+from . import matcheroni
+from .matcheroni import BaseNode, Atom, Fail, Capture, Some, Any, Railway, ListNode, Seq, Oneof
+from .matcheroni import Node, KeyVal, TupleNode, AtLeast, nothing, Opt
+from .tem_constants import tem_declops, tem_assignops
+from .tem_lexer import Lexeme, LexemeType
 
 #---------------------------------------------------------------------------------------------------
 
@@ -19,85 +20,83 @@ class AtomNode(BaseNode):
     self.type = None
     self.eq   = None
     self.val  = None
-    pass
-  pass
 
+# fmt : off
+class BlockNode(list):        pass
+class BranchNode(list):       pass
 class CallNode(BaseNode):     pass
 class CaseNode(BaseNode):     pass
-class DefaultNode(BaseNode):  pass
-
+class CatNode(tuple):         pass
 class CondNode(BaseNode):     pass
-
+class DefaultNode(BaseNode):  pass
 class ExprNode(BaseNode):     pass
 class IdentNode(BaseNode):    pass
 class LambdaNode(BaseNode):   pass
 class MarkerNode(BaseNode):   pass
 class MatchNode(BaseNode):    pass
-
+class ParenNode(tuple):       pass
 class ReturnNode(BaseNode):   pass
 class SectionNode(BaseNode):  pass
-class TupleNode(BaseNode):    pass
 class TypeNode(BaseNode):     pass
-
-class ParenNode(tuple):    pass
-class CatNode(tuple):   pass
-
-class BranchNode(list):   pass
-class BlockNode(list):    pass
+# fmt : on
 
 #---------------------------------------------------------------------------------------------------
 # Define our atom types for the parser
 
-def LexToAtom(type, span = None):
+def lex_to_atom(lexeme_type, span = None):
   if span is None:
-    return Atom(type)
-  return Atom(Lexeme(type, span))
+    return Atom(lexeme_type)
+  return Atom(Lexeme(lexeme_type, span))
 
-ATOM_STRING   = LexToAtom(LexemeType.LEX_STRING)
-ATOM_CHAR     = LexToAtom(LexemeType.LEX_CHAR)
-ATOM_KEYWORD  = LexToAtom(LexemeType.LEX_KEYWORD)
-ATOM_IDENT    = LexToAtom(LexemeType.LEX_IDENT)
-ATOM_COMMENT  = LexToAtom(LexemeType.LEX_COMMENT)
-ATOM_FLOAT    = LexToAtom(LexemeType.LEX_FLOAT)
-ATOM_INT      = LexToAtom(LexemeType.LEX_INT)
-ATOM_PUNC     = LexToAtom(LexemeType.LEX_PUNCT)
-ATOM_OP       = LexToAtom(LexemeType.LEX_OP)
+# fmt : off
+ATOM_STRING   = lex_to_atom(LexemeType.LEX_STRING)
+ATOM_CHAR     = lex_to_atom(LexemeType.LEX_CHAR)
+ATOM_KEYWORD  = lex_to_atom(LexemeType.LEX_KEYWORD)
+ATOM_IDENT    = lex_to_atom(LexemeType.LEX_IDENT)
+ATOM_COMMENT  = lex_to_atom(LexemeType.LEX_COMMENT)
+ATOM_FLOAT    = lex_to_atom(LexemeType.LEX_FLOAT)
+ATOM_INT      = lex_to_atom(LexemeType.LEX_INT)
+ATOM_PUNC     = lex_to_atom(LexemeType.LEX_PUNCT)
+ATOM_OP       = lex_to_atom(LexemeType.LEX_OP)
 
-PUNCT_NEWLINE = LexToAtom(LexemeType.LEX_NEWLINE)
+PUNCT_NEWLINE = lex_to_atom(LexemeType.LEX_NEWLINE)
 
-PUNCT_COMMA   = LexToAtom(LexemeType.LEX_PUNCT, ",")
-PUNCT_SEMI    = LexToAtom(LexemeType.LEX_PUNCT, ";")
-PUNCT_DOT     = LexToAtom(LexemeType.LEX_PUNCT, ".")
-PUNCT_LPAREN  = LexToAtom(LexemeType.LEX_PUNCT, "(")
-PUNCT_RPAREN  = LexToAtom(LexemeType.LEX_PUNCT, ")")
-PUNCT_LBRACK  = LexToAtom(LexemeType.LEX_PUNCT, "[")
-PUNCT_RBRACK  = LexToAtom(LexemeType.LEX_PUNCT, "]")
-PUNCT_LBRACE  = LexToAtom(LexemeType.LEX_PUNCT, "{")
-PUNCT_RBRACE  = LexToAtom(LexemeType.LEX_PUNCT, "}")
-PUNCT_POUND   = LexToAtom(LexemeType.LEX_PUNCT, "#")
+PUNCT_COMMA   = lex_to_atom(LexemeType.LEX_PUNCT, ",")
+PUNCT_SEMI    = lex_to_atom(LexemeType.LEX_PUNCT, ";")
+PUNCT_DOT     = lex_to_atom(LexemeType.LEX_PUNCT, ".")
+PUNCT_LPAREN  = lex_to_atom(LexemeType.LEX_PUNCT, "(")
+PUNCT_RPAREN  = lex_to_atom(LexemeType.LEX_PUNCT, ")")
+PUNCT_LBRACK  = lex_to_atom(LexemeType.LEX_PUNCT, "[")
+PUNCT_RBRACK  = lex_to_atom(LexemeType.LEX_PUNCT, "]")
+PUNCT_LBRACE  = lex_to_atom(LexemeType.LEX_PUNCT, "{")
+PUNCT_RBRACE  = lex_to_atom(LexemeType.LEX_PUNCT, "}")
+PUNCT_POUND   = lex_to_atom(LexemeType.LEX_PUNCT, "#")
 
-PUNCT_AT      = LexToAtom(LexemeType.LEX_PUNCT, "@")
+PUNCT_AT      = lex_to_atom(LexemeType.LEX_PUNCT, "@")
 
-KW_MATCH      = LexToAtom(LexemeType.LEX_KEYWORD, "match")
-KW_CASE       = LexToAtom(LexemeType.LEX_KEYWORD, "case")
-KW_DEFAULT    = LexToAtom(LexemeType.LEX_KEYWORD, "default")
-KW_RETURN     = LexToAtom(LexemeType.LEX_KEYWORD, "return")
-KW_ELIF       = LexToAtom(LexemeType.LEX_KEYWORD, "elif")
-KW_ELSE       = LexToAtom(LexemeType.LEX_KEYWORD, "else")
-KW_IF         = LexToAtom(LexemeType.LEX_KEYWORD, "if")
-KW_SIGNED     = LexToAtom(LexemeType.LEX_KEYWORD, "signed")
-KW_UNSIGNED   = LexToAtom(LexemeType.LEX_KEYWORD, "unsigned")
+KW_MATCH      = lex_to_atom(LexemeType.LEX_KEYWORD, "match")
+KW_CASE       = lex_to_atom(LexemeType.LEX_KEYWORD, "case")
+KW_DEFAULT    = lex_to_atom(LexemeType.LEX_KEYWORD, "default")
+KW_RETURN     = lex_to_atom(LexemeType.LEX_KEYWORD, "return")
+KW_ELIF       = lex_to_atom(LexemeType.LEX_KEYWORD, "elif")
+KW_ELSE       = lex_to_atom(LexemeType.LEX_KEYWORD, "else")
+KW_IF         = lex_to_atom(LexemeType.LEX_KEYWORD, "if")
+KW_SIGNED     = lex_to_atom(LexemeType.LEX_KEYWORD, "signed")
+KW_UNSIGNED   = lex_to_atom(LexemeType.LEX_KEYWORD, "unsigned")
+# fmt : on
 
 #---------------------------------------------------------------------------------------------------
 
-def match_op(ops):
-  def match(span, ctx2):
+@cache
+def match_op_token(ops):
+  # pylint: disable=unused-argument
+  def match(span, ctx):
     if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in ops:
       return span[1:]
     return Fail(span)
   return match
 
-cap_binop   = Capture(match_op(tem_constants.tem_binops))
+cap_binop   = Capture(match_op_token(tem_constants.tem_binops))
 match_ident = Some(PUNCT_DOT, ATOM_IDENT)
 cap_ident   = Capture(match_ident)
 cap_keyword = Capture(ATOM_KEYWORD)
@@ -142,28 +141,27 @@ parse_brace_tuple = Railway({
 # Curly-braced, semicolon-delimited lists of statements. Excess semicolons are OK. No semicolon
 # after the last statement is OK.
 
-stmt_delim = List2(BlockNode, Seq(PUNCT_LBRACE, Any(parse_stmt), PUNCT_RBRACE))
+stmt_delim = ListNode(BlockNode, Seq(PUNCT_LBRACE, Any(parse_stmt), PUNCT_RBRACE))
 stmt_semi  = Seq(parse_stmt, PUNCT_SEMI)
 
 stmt_delim_or_semi = Oneof(stmt_delim, stmt_semi)
 
 node_tuple = Oneof(
-  #Node(ParenNode, KeyVal("contents", parse_paren_tuple)),
-  Tuple2(ParenNode, parse_paren_tuple),
+  TupleNode(ParenNode, parse_paren_tuple),
   parse_brace_tuple
 )
 
 #---------------------------------------------------------------------------------------------------
 
-node_call = Node(CallNode,
+node_call = Node(CallNode, Seq(
   KeyVal("func",   Capture(Oneof(match_ident, ATOM_KEYWORD))),
   KeyVal("params", node_tuple)
-)
+))
 
-node_lambda = Node(LambdaNode,
+node_lambda = Node(LambdaNode, Seq(
   KeyVal("params", node_tuple),
   KeyVal("body",   stmt_delim)
-)
+))
 
 cat_atom = Oneof(
   node_tuple,
@@ -172,7 +170,7 @@ cat_atom = Oneof(
   #Capture(ATOM_KEYWORD),
 )
 
-cat_list = Tuple2(CatNode, AtLeast(2, cat_atom))
+cat_list = TupleNode(CatNode, AtLeast(2, cat_atom))
 
 parse_expr_unit = Oneof(
   cat_list,
@@ -185,52 +183,44 @@ parse_expr_unit = Oneof(
 # unit op unit op unit...
 _node_expr = Seq(parse_expr_unit, Any(Seq(cap_binop, parse_expr_unit)))
 
-node_if = List2(BranchNode,
-  Seq(
-    KW_IF,
-    Node(CondNode,
-      KeyVal("condition",    parse_paren_tuple),
-      KeyVal("then",         stmt_delim_or_semi),
-    ),
-    Any(Seq(
-      KW_ELIF,
-      Node(CondNode,
-        KeyVal("condition",  parse_paren_tuple),
-        KeyVal("then",       stmt_delim_or_semi),
-      ),
-    )),
-    Opt(Seq(
-      KW_ELSE,
-      Node(CondNode,
-        KeyVal("condition",  Nothing),
-        KeyVal("then",       stmt_delim_or_semi),
-      ),
-    ))
-  )
-)
+node_cond = Node(CondNode, Seq(
+  KeyVal("condition",    parse_paren_tuple),
+  KeyVal("then",         stmt_delim_or_semi),
+))
 
-node_case = Node(CaseNode,
+node_else = Node(CondNode, Seq(
+  KeyVal("condition",    nothing),
+  KeyVal("then",         stmt_delim_or_semi),
+))
+
+node_if = ListNode(BranchNode, Seq(
+      Seq(KW_IF,   node_cond),
+  Any(Seq(KW_ELIF, node_cond)),
+  Opt(Seq(KW_ELSE, node_else))
+))
+
+node_case = Node(CaseNode, Seq(
   KW_CASE,
   KeyVal("condition",  node_tuple),
   KeyVal("body",       Seq(parse_stmt, Opt(PUNCT_SEMI))),
-)
+))
 
-node_default = Node(DefaultNode,
+node_default = Node(DefaultNode, Seq(
   KW_DEFAULT,
   KeyVal("body", stmt_delim),
-)
+))
 
-node_match = Node(MatchNode,
+node_match = Node(MatchNode, Seq(
   KW_MATCH,
   KeyVal("condition", node_tuple),
   PUNCT_LBRACE,
   KeyVal("body",
-    List2(BlockNode, Any(Oneof(node_case, node_default)))
+    ListNode(BlockNode, Any(Oneof(node_case, node_default)))
   ),
   PUNCT_RBRACE
-)
+))
 
-node_type = Node(TypeNode,
+node_type = Node(TypeNode, Seq(
   KeyVal("base", Oneof(
     node_call,
     node_tuple,
@@ -238,14 +228,14 @@ node_type = Node(TypeNode,
     cap_keyword
   )),
   Opt(KeyVal("suffix", node_tuple))
-)
+))
 
 #----------------------------------------
 
 decl_name = KeyVal("name", cap_ident)
-decl_dir  = KeyVal("dir",  Capture(match_op(tem_declops)))
+decl_dir  = KeyVal("dir",  Capture(match_op_token(tem_declops)))
 decl_type = KeyVal("type", node_type)
-decl_eq   = KeyVal("eq",   Capture(match_op(tem_assignops)))
+decl_eq   = KeyVal("eq",   Capture(match_op_token(tem_assignops)))
 decl_val  = KeyVal("val",  node_expr)
 
 _node_decl = Node(AtomNode, Railway({
@@ -259,8 +249,8 @@ _node_decl = Node(AtomNode, Railway({
 
 #----------------------------------------
 
-node_marker = Node(MarkerNode, PUNCT_POUND, KeyVal("name", cap_ident))
-node_return = Node(ReturnNode, KW_RETURN,   KeyVal("val",  Opt(node_expr)))
+node_marker = Node(MarkerNode, Seq(PUNCT_POUND, KeyVal("name", cap_ident)))
+node_return = Node(ReturnNode, Seq(KW_RETURN,   KeyVal("val",  Opt(node_expr))))
 
 _parse_stmt = Oneof(
   # Order matters!
@@ -278,19 +268,9 @@ _parse_stmt = Oneof(
 #---------------------------------------------------------------------------------------------------
 
 def parse_lexemes(lexemes, ctx):
-  span = lexemes
-  while span:
-    tail = parse_stmt(span, ctx)
-    if isinstance(tail, Fail):
-      ctx.stack.append(("fail @ ", span[0]))
-      tail = span[1:]
-    span = tail
+  return matcheroni.apply(lexemes, ctx, parse_stmt)
 
 #---------------------------------------------------------------------------------------------------
-
-import doctest
-import sys
-import os
 
 testresult = doctest.testmod(sys.modules[__name__])
 print(f"Testing {__name__} : {testresult}")
