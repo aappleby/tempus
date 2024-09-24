@@ -1,12 +1,8 @@
-[functions]
 max = (a >: int, b >: int){
-  if (a > b) {
-    .result = a;
-  } else {
-    .result = b;
-  }
+  if (a > b) . = a;
+  else       . = b;
 };
 
-max_or_3 : int = max(a >: int, 3);
+max_or_3 = max(_, b = 3);
 
 blah = max_or_3(100);

@@ -6,22 +6,16 @@ list[1]
       .then : BlockNode[3]
         [0] : AtomNode{}
           .name : LEX_IDENT @x
-          .dir : <None>
-          .type : <None>
           .eq : LEX_OP =
           .val : ExprNode[1]
             [0] : LEX_INT 1
         [1] : AtomNode{}
           .name : LEX_IDENT y
-          .dir : <None>
-          .type : <None>
           .eq : LEX_OP =
           .val : ExprNode[1]
             [0] : LEX_INT 2
         [2] : AtomNode{}
           .name : LEX_IDENT z
-          .dir : <None>
-          .type : <None>
           .eq : LEX_OP =
           .val : ExprNode[1]
             [0] : LEX_INT 3
@@ -64,8 +58,6 @@ list[1]
         [0] : LEX_IDENT blah
       .then : AtomNode{}
         .name : LEX_IDENT a
-        .dir : <None>
-        .type : <None>
         .eq : LEX_OP =
         .val : ExprNode[1]
           [0] : LEX_INT 7

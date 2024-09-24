@@ -1,4 +1,4 @@
-list[2]
+list[4]
   [0] : AtomNode{}
     .name : LEX_IDENT x
     .dir : LEX_OP :
@@ -11,14 +11,89 @@ list[2]
     .condition : ParenNode(1)
       (0) : ExprNode[1]
         [0] : LEX_IDENT x
-    .body : BlockNode[2]
+    .body : BlockNode[3]
       [0] : CaseNode{}
         .condition : ParenNode(1)
           (0) : ExprNode[1]
             [0] : LEX_INT 1
-        .body : BlockNode[0]
+        .body : ExprNode[3]
+          [0] : LEX_IDENT a
+          [1] : LEX_OP +
+          [2] : LEX_IDENT b
       [1] : CaseNode{}
         .condition : ParenNode(1)
           (0) : ExprNode[1]
             [0] : LEX_INT 2
-        .body : BlockNode[0]
+        .body : ExprNode[3]
+          [0] : LEX_IDENT z
+          [1] : LEX_OP +
+          [2] : LEX_IDENT c
+      [2] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : LEX_INT 3
+        .body : ExprNode[3]
+          [0] : LEX_IDENT b
+          [1] : LEX_OP +
+          [2] : LEX_IDENT d
+  [2] : MatchNode{}
+    .condition : ParenNode(1)
+      (0) : ExprNode[1]
+        [0] : LEX_IDENT x
+    .body : BlockNode[3]
+      [0] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : LEX_INT 1
+        .body : ExprNode[3]
+          [0] : LEX_IDENT a
+          [1] : LEX_OP +
+          [2] : LEX_IDENT b
+      [1] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : LEX_INT 2
+        .body : ExprNode[3]
+          [0] : LEX_IDENT z
+          [1] : LEX_OP +
+          [2] : LEX_IDENT c
+      [2] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : LEX_INT 3
+        .body : ExprNode[3]
+          [0] : LEX_IDENT b
+          [1] : LEX_OP +
+          [2] : LEX_IDENT d
+  [3] : MatchNode{}
+    .condition : ParenNode(1)
+      (0) : ExprNode[1]
+        [0] : LEX_IDENT x
+    .body : BlockNode[3]
+      [0] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : LEX_INT 1
+        .body : BlockNode[1]
+          [0] : ExprNode[3]
+            [0] : LEX_IDENT a
+            [1] : LEX_OP +
+            [2] : LEX_IDENT b
+      [1] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : LEX_INT 2
+        .body : BlockNode[1]
+          [0] : ExprNode[3]
+            [0] : LEX_IDENT z
+            [1] : LEX_OP +
+            [2] : LEX_IDENT c
+      [2] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : LEX_INT 3
+        .body : BlockNode[1]
+          [0] : ExprNode[3]
+            [0] : LEX_IDENT b
+            [1] : LEX_OP +
+            [2] : LEX_IDENT d

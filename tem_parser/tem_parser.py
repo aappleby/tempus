@@ -15,11 +15,12 @@ from .tem_lexer import Lexeme, LexemeType
 
 class AtomNode(BaseNode):
   def __init__(self):
-    self.name = None
-    self.dir  = None
-    self.type = None
-    self.eq   = None
-    self.val  = None
+    #self.name = None
+    #self.dir  = None
+    #self.type = None
+    #self.eq   = None
+    #self.val  = None
+    pass
 
 # fmt : off
 class BlockNode(list):        pass

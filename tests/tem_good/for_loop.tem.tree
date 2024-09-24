@@ -14,8 +14,6 @@ list[1]
       [2] : LEX_INT 2
     .step : AtomNode{}
       .name : LEX_IDENT x
-      .dir : <None>
-      .type : <None>
       .eq : LEX_OP =
       .val : ExprNode[3]
         [0] : LEX_IDENT x

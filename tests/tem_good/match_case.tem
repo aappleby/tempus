@@ -1,5 +1,16 @@
 x : int = 7;
 match (x) {
-    case (1) {}
-    case (2) {}
+    case (1) a + b
+    case (2) z + c
+    case (3) b + d
+}
+match (x) {
+    case (1) a + b;
+    case (2) z + c;
+    case (3) b + d;
+}
+match (x) {
+    case (1) {a + b}
+    case (2) {z + c}
+    case (3) {b + d}
 }
