@@ -190,12 +190,12 @@ _node_expr = ListNode(ExprNode, Seq(parse_expr_unit, Any(Seq(cap_binop, parse_ex
 
 node_cond = Node(CondNode, Seq(
   KeyVal("condition",    parse_paren_tuple),
-  KeyVal("then",         stmt_delim_or_semi),
+  KeyVal("then",         Seq(parse_stmt, Opt(PUNCT_SEMI))),
 ))
 
 node_else = Node(CondNode, Seq(
   KeyVal("condition",    nothing),
-  KeyVal("then",         stmt_delim_or_semi),
+  KeyVal("then",         Seq(parse_stmt, Opt(PUNCT_SEMI))),
 ))
 
 node_if = ListNode(BranchNode, Seq(
