@@ -2,9 +2,10 @@
 
 import argparse
 import glob
-import inspect
 import os
 import sys
+import unittest
+import inspect
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
@@ -19,137 +20,148 @@ from tem_parser import matcheroni
 from tem_parser.tem_lexer import Lexeme
 from tem_parser.tem_parser import BaseNode
 
-# Loading modules runs self-test, add a break after them
-print()
-
 #---------------------------------------------------------------------------------------------------
 
-def print_indent(indent):
-  print("   " * indent, end='')
-  #for i in range(indent - 1):
-  #  print("┃ ", end="")
-  #print("┗ ", end='')
+def dump_indent(indent):
+  return "  " * indent
 
 def dump_node(node, indent = 0):
-  print(f"{node.__class__.__name__}{{}}")
+  result = f"{node.__class__.__name__}{{}}\n"
   for key, val in node.items():
-    print_indent(indent + 1)
+    result += dump_indent(indent + 1)
     if isinstance(key, int):
-      print(f"[{key}] : ", end='')
+      result += f"[{key}] : "
     else:
-      print(f".{key} : ", end='')
-    dump_variant(val, indent + 1)
+      result += f".{key} : "
+    result += dump_variant(val, indent + 1)
+  return result
 
 def dump_array(array, indent = 0):
-  print(f"{array.__class__.__name__}[{len(array)}]")
+  result = f"{array.__class__.__name__}[{len(array)}]\n"
   for key, val in enumerate(array):
-    print_indent(indent + 1)
-    print(f"[{key}] : ", end="")
-    dump_variant(val, indent + 1)
+    result += dump_indent(indent + 1)
+    result += f"[{key}] : "
+    result += dump_variant(val, indent + 1)
+  return result
 
 def dump_tuple(t, indent = 0):
-  print(f"{t.__class__.__name__}({len(t)})")
+  result = f"{t.__class__.__name__}({len(t)})\n"
   for key, val in enumerate(t):
-    print_indent(indent + 1)
-    print(f"({key}) : ", end="")
-    dump_variant(val, indent + 1)
+    result += dump_indent(indent + 1)
+    result += f"({key}) : "
+    result += dump_variant(val, indent + 1)
+  return result
 
 def dump_lexeme(lexeme, *_):
-  print(f"{lexeme.type.name} {repr(lexeme.text)[1:-1]}")
+  return f"{lexeme.lex_type.name} {repr(lexeme.text)[1:-1]}\n"
 
 def dump_variant(variant, indent = 0):
+  result = ""
   if isinstance(variant, BaseNode):
-    dump_node(variant, indent)
+    result += dump_node(variant, indent)
   elif isinstance(variant, list):
-    dump_array(variant, indent)
+    result += dump_array(variant, indent)
   elif isinstance(variant, tuple):
-    dump_tuple(variant, indent)
+    result += dump_tuple(variant, indent)
   elif isinstance(variant, Lexeme):
-    dump_lexeme(variant, indent)
+    result += dump_lexeme(variant, indent)
   elif variant is None:
-    print("<None>")
+    result += "<None>\n"
   else:
-    print(f"??? {variant}")
+    result +=  f"??? {variant}\n"
+  return result
 
+def dump_tree(tree):
+  return dump_variant(tree, 0).strip()
 
 #---------------------------------------------------------------------------------------------------
 
-def test_parse(filename):
-
-  source = open(filename, encoding="utf-8").read()
-
+def parse_source(source):
   lex_ctx    = matcheroni.Context(matcheroni.default_atom_cmp)
   lex_fail   = tem_lexer.lex_string(source, lex_ctx)
+  if lex_fail:
+    raise ValueError("Lexing failed", lex_ctx.stack)
+
   parse_ctx  = matcheroni.Context(tem_lexer.atom_cmp_tokens)
   parse_fail = tem_parser.parse_lexemes(lex_ctx.stack, parse_ctx)
+  if parse_fail:
+    raise ValueError("Parsing failed", parse_ctx.stack)
 
-  if lex_fail or parse_fail:
-    print(f"Parsing file {filename} failed")
-    return False
-  else:
-    print(f"Parsing {filename} OK")
-    return True
+  return parse_ctx.stack
+
+def parse_file(filename):
+  print(filename)
+  with open(filename, encoding="utf-8") as file:
+    source = file.read()
+    return parse_source(source)
 
 #---------------------------------------------------------------------------------------------------
 
-def test_oneoff():
-  source  = inspect.cleandoc(r"""
-    # Testcode
-    if (blah) {
-      @x = 1;
-      y = 2;
-      z = 3;
-    }
-    elif (blee) {
-      y : int = 7;
-      print("Hello world! %d\n", y);
-      print("Goodbye Beeps! %d", y + 1);
-    }
-    elif (bloo) {
-    }
-    elif (blah) a = 7;
-    else {
-    }
-    match(bar) {
-      case (foo) x = 1
-      case (baz) z = 7
-    }
-    """)
-  print(source)
-  print()
-  lex_ctx = matcheroni.Context(matcheroni.default_atom_cmp)
-  tem_lexer.lex_string(source, lex_ctx)
-  parse_ctx = matcheroni.Context(tem_lexer.atom_cmp_tokens)
-  tem_parser.parse_lexemes(lex_ctx.stack, parse_ctx)
-  print("# trees")
-  dump_variant(parse_ctx.stack)
+class TestTempus(unittest.TestCase):
+
+  #----------------------------------------
+
+  example1 = (
+    #--------------------
+    r"""
+    # asdf
+    x : int = 1;
+    """,
+    #--------------------
+    r"""
+    list[2]
+      [0] : MarkerNode{}
+        .name : LEX_IDENT asdf
+      [1] : AtomNode{}
+        .name : LEX_IDENT x
+        .dir : LEX_OP :
+        .type : TypeNode{}
+          .base : LEX_IDENT int
+        .eq : LEX_OP =
+        .val : LEX_INT 1
+    """
+    #--------------------
+  )
+
+  def test_one(self):
+    self.assertEqual(
+      dump_tree(parse_source(self.example1[0])),
+      inspect.cleandoc(self.example1[1])
+    )
+
+  #----------------------------------------
+
+  def test_tem_good(self):
+    for filename in glob.glob("tem_good/*.tem"):
+      tree = parse_file(filename)
+      with open(filename + ".tree", "w", encoding="utf-8") as file:
+        file.write(dump_tree(tree))
+
+  def test_uart(self):
+    pass
+
+
+  #----------------------------------------
 
 #---------------------------------------------------------------------------------------------------
 
 def main():
-
-  args = argparse.ArgumentParser()
-  args.add_argument("filename", type=str, nargs="?")
-  (flags, _) = args.parse_known_args()
-
-  print("Testing uart_tem/*.tem")
-  for filename in glob.glob("../uart_tem/*.tem"):
-    print(f"Testing {filename}")
-    print("  ", end='')
-    test_parse(filename)
-
-  print("Testing tem_good/*.tem")
-  for filename in glob.glob("../tem_good/*.tem"):
-    print(f"Testing {filename}")
-    print("  ", end='')
-    test_parse(filename)
+  # Loading modules runs self-test, add a break after them
+  print()
   
+  args = argparse.ArgumentParser()
+  args.add_argument("filename", type=str, default=None, nargs="?")
+  (flags, _) = args.parse_known_args()
   if flags.filename:
-    print(f"Testing {flags.filename}")
-    test_parse(flags.filename)
+    print(f"Parsing {flags.filename}")
+    with open(flags.filename, encoding="utf-8") as file:
+      source = file.read()
+      tree = parse_source(source)
+  else:   
+    print("Running unit tests")
+    unittest.main()
 
-#---------------------------------------------------------------------------------------------------
+  print("Done")
 
 if __name__ == "__main__":
   main()
-

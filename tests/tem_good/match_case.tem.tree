@@ -1,0 +1,20 @@
+list[2]
+  [0] : AtomNode{}
+    .name : LEX_IDENT x
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT int
+    .eq : LEX_OP =
+    .val : LEX_INT 7
+  [1] : MatchNode{}
+    .condition : ParenNode(1)
+      (0) : LEX_IDENT x
+    .body : BlockNode[2]
+      [0] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : LEX_INT 1
+        .body : BlockNode[0]
+      [1] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : LEX_INT 2
+        .body : BlockNode[0]

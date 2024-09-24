@@ -5,7 +5,18 @@ import doctest
 import sys
 
 #---------------------------------------------------------------------------------------------------
-# _FIXME probably need a better way to handle atom_cmp
+
+def default_atom_cmp(a, b):
+  if isinstance(a, (str, int)) and isinstance(b, (str, int)):
+    a_value = ord(a) if isinstance(a, str) else a
+    b_value = ord(b) if isinstance(b, str) else b
+    return b_value - a_value
+  raise ValueError(F"Don't know how to compare {type(a)} and {type(b)}")
+
+class Context:
+  def __init__(self, cmp=default_atom_cmp):
+    self.stack = []
+    self.cmp = cmp
 
 #---------------------------------------------------------------------------------------------------
 
@@ -22,18 +33,6 @@ class Fail:
     return False
 
 #---------------------------------------------------------------------------------------------------
-
-def default_atom_cmp(a, b):
-  if isinstance(a, (str, int)) and isinstance(b, (str, int)):
-    a_value = ord(a) if isinstance(a, str) else a
-    b_value = ord(b) if isinstance(b, str) else b
-    return b_value - a_value
-  raise ValueError(F"Don't know how to compare {type(a)} and {type(b)}")
-
-class Context:
-  def __init__(self, cmp):
-    self.stack = []
-    self.cmp = cmp
 
 def apply(source, ctx, pattern):
   span = source
@@ -56,9 +55,9 @@ def nothing(span, ctx2):
 @cache
 def And(pattern):
   r"""
-  >>> And(Atom('a'))('asdf', [])
+  >>> And(Atom('a'))('asdf', Context())
   'asdf'
-  >>> And(Atom('a'))('qwer', [])
+  >>> And(Atom('a'))('qwer', Context())
   Fail @ 'qwer'
   """
   def match(span, ctx2):
@@ -69,9 +68,9 @@ def And(pattern):
 @cache
 def Not(pattern):
   r"""
-  >>> Not(Atom('a'))('asdf', [])
+  >>> Not(Atom('a'))('asdf', Context())
   Fail @ 'asdf'
-  >>> Not(Atom('a'))('qwer', [])
+  >>> Not(Atom('a'))('qwer', Context())
   'qwer'
   """
   def match(span, ctx2):
@@ -84,9 +83,9 @@ def Not(pattern):
 @cache
 def Atom(const):
   r"""
-  >>> Atom('a')('asdf', [])
+  >>> Atom('a')('asdf', Context())
   'sdf'
-  >>> Atom('a')('qwer', [])
+  >>> Atom('a')('qwer', Context())
   Fail @ 'qwer'
   """
   def match(span, ctx2):
@@ -100,9 +99,9 @@ def Atom(const):
 @cache
 def NotAtom(const):
   r"""
-  >>> NotAtom('a')('asdf', [])
+  >>> NotAtom('a')('asdf', Context())
   Fail @ 'asdf'
-  >>> NotAtom('a')('qwer', [])
+  >>> NotAtom('a')('qwer', Context())
   'wer'
   """
   def match(span, ctx2):
@@ -114,11 +113,11 @@ def NotAtom(const):
 @cache
 def Atoms(*oneof):
   r"""
-  >>> Atoms('a', 'b')('asdf', [])
+  >>> Atoms('a', 'b')('asdf', Context())
   'sdf'
-  >>> Atoms('b', 'a')('asdf', [])
+  >>> Atoms('b', 'a')('asdf', Context())
   'sdf'
-  >>> Atoms('a', 'b')('qwer', [])
+  >>> Atoms('a', 'b')('qwer', Context())
   Fail @ 'qwer'
   """
   def match(span, ctx2):
@@ -145,9 +144,9 @@ def NotAtoms(*seq):
 
 def AnyAtom(span, ctx2):
   r"""
-  >>> AnyAtom('asdf', [])
+  >>> AnyAtom('asdf', Context())
   'sdf'
-  >>> AnyAtom('', [])
+  >>> AnyAtom('', Context())
   Fail @ ''
   """
   return span[1:] if span else Fail(span)
@@ -157,11 +156,11 @@ def AnyAtom(span, ctx2):
 @cache
 def Range(A, B):
   r"""
-  >>> Range('a', 'z')('asdf', [])
+  >>> Range('a', 'z')('asdf', Context())
   'sdf'
-  >>> Range('b', 'y')('asdf', [])
+  >>> Range('b', 'y')('asdf', Context())
   Fail @ 'asdf'
-  >>> Range('a', 'z')('1234', [])
+  >>> Range('a', 'z')('1234', Context())
   Fail @ '1234'
   """
   A = ord(A) if isinstance(A, str) else A
@@ -175,16 +174,14 @@ def Range(A, B):
 
 #---------------------------------------------------------------------------------------------------
 
-#---------------------------------------------------------------------------------------------------
-
 @cache
 def Ranges(*args):
   r"""
-  >>> Ranges('a', 'z', 'A', 'Z')('asdf', [])
+  >>> Ranges('a', 'z', 'A', 'Z')('asdf', Context())
   'sdf'
-  >>> Ranges('a', 'z', 'A', 'Z')('QWER', [])
+  >>> Ranges('a', 'z', 'A', 'Z')('QWER', Context())
   'WER'
-  >>> Ranges('a', 'z', 'A', 'Z')('1234', [])
+  >>> Ranges('a', 'z', 'A', 'Z')('1234', Context())
   Fail @ '1234'
   """
 
@@ -205,9 +202,9 @@ def Ranges(*args):
 @cache
 def Lit(lit):
   r"""
-  >>> Lit('foo')('foobar', [])
+  >>> Lit('foo')('foobar', Context())
   'bar'
-  >>> Lit('foo')('barfoo', [])
+  >>> Lit('foo')('barfoo', Context())
   Fail @ 'barfoo'
   """
   def match(span, ctx2):
@@ -232,11 +229,11 @@ def Charset(lit):
 @cache
 def Seq(*seq):
   r"""
-  >>> Seq(Atom('a'), Atom('s'))('asdf', [])
+  >>> Seq(Atom('a'), Atom('s'))('asdf', Context())
   'df'
-  >>> Seq(Atom('a'), Atom('s'))('a', [])
+  >>> Seq(Atom('a'), Atom('s'))('a', Context())
   Fail @ ''
-  >>> Seq(Atom('a'), Atom('s'))('qwer', [])
+  >>> Seq(Atom('a'), Atom('s'))('qwer', Context())
   Fail @ 'qwer'
   """
   def match(span, ctx2):
@@ -255,11 +252,11 @@ def Seq(*seq):
 @cache
 def Oneof(*oneof):
   r"""
-  >>> Oneof(Atom('a'), Atom('b'))('asdf', [])
+  >>> Oneof(Atom('a'), Atom('b'))('asdf', Context())
   'sdf'
-  >>> Oneof(Atom('b'), Atom('a'))('asdf', [])
+  >>> Oneof(Atom('b'), Atom('a'))('asdf', Context())
   'sdf'
-  >>> Oneof(Atom('b'), Atom('a'))('qwer', [])
+  >>> Oneof(Atom('b'), Atom('a'))('qwer', Context())
   Fail @ 'qwer'
   """
   def match(span, ctx2):
@@ -277,11 +274,11 @@ def Oneof(*oneof):
 @cache
 def Opt(*oneof):
   r"""
-  >>> Opt(Atom('a'))('asdf', [])
+  >>> Opt(Atom('a'))('asdf', Context())
   'sdf'
-  >>> Opt(Atom('b'), Atom('a'))('asdf', [])
+  >>> Opt(Atom('b'), Atom('a'))('asdf', Context())
   'sdf'
-  >>> Opt(Atom('a'))('qwer', [])
+  >>> Opt(Atom('a'))('qwer', Context())
   'qwer'
   """
   def match(span, ctx2):
@@ -301,9 +298,9 @@ def OptSeq(*seq):
 @cache
 def Any(*oneof):
   r"""
-  >>> Any(Atom('a'))('aaaasdf', [])
+  >>> Any(Atom('a'))('aaaasdf', Context())
   'sdf'
-  >>> Any(Atom('a'))('baaaasdf', [])
+  >>> Any(Atom('a'))('baaaasdf', Context())
   'baaaasdf'
   """
   pattern = Oneof(*oneof)
@@ -320,11 +317,11 @@ def Any(*oneof):
 @cache
 def Rep(count, pattern):
   r"""
-  >>> Rep(4, Atom('a'))('aaasdf', [])
+  >>> Rep(4, Atom('a'))('aaasdf', Context())
   Fail @ 'sdf'
-  >>> Rep(4, Atom('a'))('aaaasdf', [])
+  >>> Rep(4, Atom('a'))('aaaasdf', Context())
   'sdf'
-  >>> Rep(4, Atom('a'))('aaaaasdf', [])
+  >>> Rep(4, Atom('a'))('aaaaasdf', Context())
   'asdf'
   """
   def match(span, ctx2):
@@ -340,11 +337,11 @@ def Rep(count, pattern):
 
 def AtLeast(count, pattern):
   r"""
-  >>> AtLeast(4, Atom('a'))('aaasdf', [])
+  >>> AtLeast(4, Atom('a'))('aaasdf', Context())
   Fail @ 'sdf'
-  >>> AtLeast(4, Atom('a'))('aaaasdf', [])
+  >>> AtLeast(4, Atom('a'))('aaaasdf', Context())
   'sdf'
-  >>> AtLeast(4, Atom('a'))('aaaaasdf', [])
+  >>> AtLeast(4, Atom('a'))('aaaaasdf', Context())
   'sdf'
   """
   return Seq(Rep(count, pattern), Any(pattern))
@@ -354,9 +351,9 @@ def AtLeast(count, pattern):
 @cache
 def Some(*oneof):
   r"""
-  >>> Some(Atom('a'))('aaaasdf', [])
+  >>> Some(Atom('a'))('aaaasdf', Context())
   'sdf'
-  >>> Some(Atom('a'))('baaaasdf', [])
+  >>> Some(Atom('a'))('baaaasdf', Context())
   Fail @ 'baaaasdf'
   """
   pattern = Oneof(*oneof)
@@ -521,7 +518,7 @@ def KeyVal(key, pattern):
     if isinstance(tail, Fail):
       del ctx2.stack[top:]
       return Fail(span)
-    
+
     values = ctx2.stack[top:]
     del ctx2.stack[top:]
     if len(values) == 0:

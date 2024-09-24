@@ -1,5 +1,3 @@
-[asdf]
-
 // Every atom shape with underscores
 x : int = 2;
 x : int = _;

@@ -16,8 +16,8 @@ from .matcheroni import Lit, NotAtom, Until, Charset, Fail, NotAtoms
 
 # pylint: disable=too-few-public-methods
 class Lexeme:
-  def __init__(self, lexeme_type, span):
-    self.lexeme_type = lexeme_type
+  def __init__(self, lex_type, span):
+    self.lex_type = lex_type
     self.text = span
 
   def __repr__(self):
@@ -25,30 +25,29 @@ class Lexeme:
     if len(span) > 40:
       span = span[:40] + "..."
 
-    match self.lexeme_type:
+    match self.lex_type:
       case LexemeType.LEX_NEWLINE:
-        return f"{self.lexeme_type.name}"
+        return f"{self.lex_type.name}"
       case _:
-        return f"{self.lexeme_type.name}({span})"
+        return f"{self.lex_type.name}({span})"
 
 #---------------------------------------------------------------------------------------------------
 
 def strcmp(str1, str2):
   if str1 < str2:
     return -1
-  elif str1 > str2:
+  if str1 > str2:
     return 1
-  else:
-    return 0
+  return 0
 
 def atom_cmp_tokens(a, b):
   if isinstance(a, Lexeme) and isinstance(b, Lexeme):
-    if a.type.value != b.type.value:
-      return b.type.value - a.type.value
+    if a.lex_type.value != b.lex_type.value:
+      return b.lex_type.value - a.lex_type.value
     return strcmp(a.text, b.text)
 
   if isinstance(a, Lexeme) and isinstance(b, Enum):
-    return b.value - a.type.value
+    return b.value - a.lex_type.value
   return matcheroni.default_atom_cmp(a, b)
 
 #---------------------------------------------------------------------------------------------------
@@ -178,11 +177,11 @@ def match_keyword(span, ctx2):
 
 #---------------------------------------------------------------------------------------------------
 
-def match_to_lex(pattern, lexeme_type):
+def match_to_lex(pattern, lex_type):
   def match(span, ctx2):
     tail = pattern(span, ctx2)
     if not isinstance(tail, Fail):
-      ctx2.stack.append(Lexeme(lexeme_type, span[:len(span) - len(tail)]))
+      ctx2.stack.append(Lexeme(lex_type, span[:len(span) - len(tail)]))
     return tail
   return match
 

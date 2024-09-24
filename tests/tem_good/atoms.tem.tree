@@ -1,0 +1,167 @@
+list[17]
+  [0] : AtomNode{}
+    .name : LEX_IDENT x
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT int
+    .eq : LEX_OP =
+    .val : LEX_INT 2
+  [1] : AtomNode{}
+    .name : LEX_IDENT x
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT int
+    .eq : LEX_OP =
+    .val : LEX_IDENT _
+  [2] : AtomNode{}
+    .name : LEX_IDENT x
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT _
+    .eq : LEX_OP =
+    .val : LEX_INT 2
+  [3] : AtomNode{}
+    .name : LEX_IDENT x
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT _
+    .eq : LEX_OP =
+    .val : LEX_IDENT _
+  [4] : AtomNode{}
+    .name : LEX_IDENT _
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT int
+    .eq : LEX_OP =
+    .val : LEX_INT 2
+  [5] : AtomNode{}
+    .name : LEX_IDENT _
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT int
+    .eq : LEX_OP =
+    .val : LEX_IDENT _
+  [6] : AtomNode{}
+    .name : LEX_IDENT _
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT _
+    .eq : LEX_OP =
+    .val : LEX_INT 2
+  [7] : AtomNode{}
+    .name : LEX_IDENT _
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT _
+    .eq : LEX_OP =
+    .val : LEX_IDENT _
+  [8] : AtomNode{}
+    .name : LEX_IDENT x
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT int
+    .eq : LEX_OP =
+    .val : LEX_INT 2
+  [9] : AtomNode{}
+    .name : LEX_IDENT x
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT int
+    .eq : <None>
+    .val : <None>
+  [10] : AtomNode{}
+    .name : LEX_IDENT x
+    .dir : <None>
+    .type : <None>
+    .eq : LEX_OP =
+    .val : LEX_INT 2
+  [11] : AtomNode{}
+    .name : LEX_IDENT x
+    .dir : LEX_OP :
+    .type : <None>
+    .eq : <None>
+    .val : <None>
+  [12] : AtomNode{}
+    .name : <None>
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT int
+    .eq : LEX_OP =
+    .val : LEX_INT 2
+  [13] : AtomNode{}
+    .name : <None>
+    .dir : LEX_OP :
+    .type : TypeNode{}
+      .base : LEX_IDENT int
+    .eq : <None>
+    .val : <None>
+  [14] : AtomNode{}
+    .name : <None>
+    .dir : <None>
+    .type : <None>
+    .eq : LEX_OP =
+    .val : LEX_INT 2
+  [15] : AtomNode{}
+    .name : <None>
+    .dir : LEX_OP :
+    .type : <None>
+    .eq : <None>
+    .val : <None>
+  [16] : AtomNode{}
+    .name : LEX_IDENT a
+    .dir : <None>
+    .type : <None>
+    .eq : LEX_OP =
+    .val : ParenNode(8)
+      (0) : AtomNode{}
+        .name : LEX_IDENT x
+        .dir : LEX_OP :
+        .type : TypeNode{}
+          .base : LEX_IDENT int
+        .eq : LEX_OP =
+        .val : LEX_INT 2
+      (1) : AtomNode{}
+        .name : LEX_IDENT x
+        .dir : LEX_OP :
+        .type : TypeNode{}
+          .base : LEX_IDENT int
+        .eq : <None>
+        .val : <None>
+      (2) : AtomNode{}
+        .name : LEX_IDENT x
+        .dir : <None>
+        .type : <None>
+        .eq : LEX_OP =
+        .val : LEX_INT 2
+      (3) : AtomNode{}
+        .name : LEX_IDENT x
+        .dir : LEX_OP :
+        .type : <None>
+        .eq : <None>
+        .val : <None>
+      (4) : AtomNode{}
+        .name : <None>
+        .dir : LEX_OP :
+        .type : TypeNode{}
+          .base : LEX_IDENT int
+        .eq : LEX_OP =
+        .val : LEX_INT 2
+      (5) : AtomNode{}
+        .name : <None>
+        .dir : LEX_OP :
+        .type : TypeNode{}
+          .base : LEX_IDENT int
+        .eq : <None>
+        .val : <None>
+      (6) : AtomNode{}
+        .name : <None>
+        .dir : <None>
+        .type : <None>
+        .eq : LEX_OP =
+        .val : LEX_INT 2
+      (7) : AtomNode{}
+        .name : <None>
+        .dir : LEX_OP :
+        .type : <None>
+        .eq : <None>
+        .val : <None>

@@ -2,7 +2,7 @@
 
 import doctest
 import sys
-from functools import cache
+#from functools import cache
 
 from . import tem_constants
 from . import matcheroni
@@ -43,10 +43,10 @@ class TypeNode(BaseNode):     pass
 #---------------------------------------------------------------------------------------------------
 # Define our atom types for the parser
 
-def lex_to_atom(lexeme_type, span = None):
+def lex_to_atom(lex_type, span = None):
   if span is None:
-    return Atom(lexeme_type)
-  return Atom(Lexeme(lexeme_type, span))
+    return Atom(lex_type)
+  return Atom(Lexeme(lex_type, span))
 
 # fmt : off
 ATOM_STRING   = lex_to_atom(LexemeType.LEX_STRING)
@@ -87,11 +87,11 @@ KW_UNSIGNED   = lex_to_atom(LexemeType.LEX_KEYWORD, "unsigned")
 
 #---------------------------------------------------------------------------------------------------
 
-@cache
+#@cache
 def match_op_token(ops):
   # pylint: disable=unused-argument
   def match(span, ctx):
-    if len(span) and span[0].type == LexemeType.LEX_OP and span[0].text in ops:
+    if len(span) and span[0].lex_type == LexemeType.LEX_OP and span[0].text in ops:
       return span[1:]
     return Fail(span)
   return match
@@ -249,7 +249,7 @@ _node_decl = Node(AtomNode, Railway({
 
 #----------------------------------------
 
-node_marker = Node(MarkerNode, Seq(PUNCT_POUND, KeyVal("name", cap_ident)))
+node_marker = Node(MarkerNode, Seq(PUNCT_POUND, KeyVal("name", Capture(ATOM_IDENT))))
 node_return = Node(ReturnNode, Seq(KW_RETURN,   KeyVal("val",  Opt(node_expr))))
 
 _parse_stmt = Oneof(

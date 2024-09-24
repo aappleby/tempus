@@ -1,9 +1,9 @@
 // Simple message transmitter with a delay between transmissions
 
 # consts
-max_delay   : const = 20;
-max_cursor  : const = len(text) - 1;
-text : u8[] const   = read("ping.hex");
+max_delay : const = 20;
+max_cursor : const = len(text) - 1;
+text : u8[] const = read("ping.hex");
 
 # ports
 .dst.data  :> u8 = text[cursor];
