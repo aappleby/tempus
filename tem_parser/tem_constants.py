@@ -84,6 +84,8 @@ tem_assignops = longest_first(
 tem_declops = longest_first(
   ":",  # not a port
   ">:", # input port
+  "<:", # input port
+  ":<", # input port
   ":>", # output port
 )
 

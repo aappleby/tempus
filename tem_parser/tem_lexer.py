@@ -88,6 +88,8 @@ def lex_to_color(lex_type):
 
 match_space = Some(Atoms(' ', '\t'))
 
+match_dots = Some(Atom('.'))
+
 match_newline = Seq(Opt(Atom('\r')), Atom('\n'))
 
 sign = Atoms('+','-')
@@ -192,6 +194,7 @@ def next_lexeme(span, ctx2):
     match_space,
     #MatchToLex(match_newline,  LexemeType.LEX_NEWLINE),
     match_newline,
+    match_to_lex(match_dots,     LexemeType.LEX_PUNCT),
     match_to_lex(match_string,   LexemeType.LEX_STRING),
     match_to_lex(match_char,     LexemeType.LEX_CHAR),
     match_to_lex(match_keyword,  LexemeType.LEX_KEYWORD),
