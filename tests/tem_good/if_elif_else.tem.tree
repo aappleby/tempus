@@ -1,28 +1,33 @@
 list[1]
   [0] : BranchNode[5]
     [0] : CondNode{}
-      .condition : LEX_IDENT blah
+      .condition : ExprNode[1]
+        [0] : LEX_IDENT blah
       .then : BlockNode[3]
         [0] : AtomNode{}
           .name : LEX_IDENT @x
           .dir : <None>
           .type : <None>
           .eq : LEX_OP =
-          .val : LEX_INT 1
+          .val : ExprNode[1]
+            [0] : LEX_INT 1
         [1] : AtomNode{}
           .name : LEX_IDENT y
           .dir : <None>
           .type : <None>
           .eq : LEX_OP =
-          .val : LEX_INT 2
+          .val : ExprNode[1]
+            [0] : LEX_INT 2
         [2] : AtomNode{}
           .name : LEX_IDENT z
           .dir : <None>
           .type : <None>
           .eq : LEX_OP =
-          .val : LEX_INT 3
+          .val : ExprNode[1]
+            [0] : LEX_INT 3
     [1] : CondNode{}
-      .condition : LEX_IDENT blee
+      .condition : ExprNode[1]
+        [0] : LEX_IDENT blee
       .then : BlockNode[3]
         [0] : AtomNode{}
           .name : LEX_IDENT y
@@ -30,30 +35,40 @@ list[1]
           .type : TypeNode{}
             .base : LEX_IDENT int
           .eq : LEX_OP =
-          .val : LEX_INT 7
-        [1] : CatNode(2)
-          (0) : LEX_IDENT print
-          (1) : ParenNode(2)
-            (0) : LEX_STRING "Hello world! %d\\n"
-            (1) : LEX_IDENT y
-        [2] : CatNode(2)
-          (0) : LEX_IDENT print
-          (1) : ParenNode(4)
-            (0) : LEX_STRING "Goodbye Beeps! %d"
-            (1) : LEX_IDENT y
-            (2) : LEX_OP +
-            (3) : LEX_INT 1
+          .val : ExprNode[1]
+            [0] : LEX_INT 7
+        [1] : ExprNode[1]
+          [0] : CatNode(2)
+            (0) : LEX_IDENT print
+            (1) : ParenNode(2)
+              (0) : ExprNode[1]
+                [0] : LEX_STRING "Hello world! %d\\n"
+              (1) : ExprNode[1]
+                [0] : LEX_IDENT y
+        [2] : ExprNode[1]
+          [0] : CatNode(2)
+            (0) : LEX_IDENT print
+            (1) : ParenNode(2)
+              (0) : ExprNode[1]
+                [0] : LEX_STRING "Goodbye Beeps! %d"
+              (1) : ExprNode[3]
+                [0] : LEX_IDENT y
+                [1] : LEX_OP +
+                [2] : LEX_INT 1
     [2] : CondNode{}
-      .condition : LEX_IDENT bloo
+      .condition : ExprNode[1]
+        [0] : LEX_IDENT bloo
       .then : BlockNode[0]
     [3] : CondNode{}
-      .condition : LEX_IDENT blah
+      .condition : ExprNode[1]
+        [0] : LEX_IDENT blah
       .then : AtomNode{}
         .name : LEX_IDENT a
         .dir : <None>
         .type : <None>
         .eq : LEX_OP =
-        .val : LEX_INT 7
+        .val : ExprNode[1]
+          [0] : LEX_INT 7
     [4] : CondNode{}
       .condition : <None>
       .then : BlockNode[0]

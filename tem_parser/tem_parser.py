@@ -24,17 +24,20 @@ class AtomNode(BaseNode):
 # fmt : off
 class BlockNode(list):        pass
 class BranchNode(list):       pass
+class ExprNode(list):         pass
+
+class CatNode(tuple):         pass
+class ParenNode(tuple):       pass
+
 class CallNode(BaseNode):     pass
 class CaseNode(BaseNode):     pass
-class CatNode(tuple):         pass
 class CondNode(BaseNode):     pass
 class DefaultNode(BaseNode):  pass
-class ExprNode(BaseNode):     pass
+class ForNode(BaseNode):      pass
 class IdentNode(BaseNode):    pass
 class LambdaNode(BaseNode):   pass
 class MarkerNode(BaseNode):   pass
 class MatchNode(BaseNode):    pass
-class ParenNode(tuple):       pass
 class ReturnNode(BaseNode):   pass
 class SectionNode(BaseNode):  pass
 class TypeNode(BaseNode):     pass
@@ -83,6 +86,7 @@ KW_ELSE       = lex_to_atom(LexemeType.LEX_KEYWORD, "else")
 KW_IF         = lex_to_atom(LexemeType.LEX_KEYWORD, "if")
 KW_SIGNED     = lex_to_atom(LexemeType.LEX_KEYWORD, "signed")
 KW_UNSIGNED   = lex_to_atom(LexemeType.LEX_KEYWORD, "unsigned")
+KW_FOR        = lex_to_atom(LexemeType.LEX_KEYWORD, "for")
 # fmt : on
 
 #---------------------------------------------------------------------------------------------------
@@ -181,7 +185,7 @@ parse_expr_unit = Oneof(
 )
 
 # unit op unit op unit...
-_node_expr = Seq(parse_expr_unit, Any(Seq(cap_binop, parse_expr_unit)))
+_node_expr = ListNode(ExprNode, Seq(parse_expr_unit, Any(Seq(cap_binop, parse_expr_unit))))
 
 node_cond = Node(CondNode, Seq(
   KeyVal("condition",    parse_paren_tuple),
@@ -230,6 +234,30 @@ node_type = Node(TypeNode, Seq(
   Opt(KeyVal("suffix", node_tuple))
 ))
 
+node_for = Node(ForNode, Seq(
+  KW_FOR,
+  PUNCT_LPAREN,
+  KeyVal("init", Opt(parse_stmt)),
+  PUNCT_SEMI,
+  KeyVal("cond", Opt(parse_stmt)),
+  PUNCT_SEMI,
+  KeyVal("step", Opt(parse_stmt)),
+  PUNCT_RPAREN,
+  KeyVal("body", stmt_delim_or_semi)
+  
+
+
+  #KW_FOR,
+  #PUNCT_LPAREN,
+  #KeyVal("init", Opt(parse_stmt)),
+  #PUNCT_SEMI,
+  #KeyVal("cond", Opt(parse_stmt)),
+  #PUNCT_SEMI,
+  #KeyVal("step", Opt(parse_stmt)),
+  #PUNCT_RPAREN,
+  #KeyVal("body", stmt_delim)
+))
+
 #----------------------------------------
 
 decl_name = KeyVal("name", cap_ident)
@@ -255,6 +283,7 @@ node_return = Node(ReturnNode, Seq(KW_RETURN,   KeyVal("val",  Opt(node_expr))))
 _parse_stmt = Oneof(
   # Order matters!
   node_if,
+  node_for,
   node_match,
   node_return,
   node_marker,
@@ -269,6 +298,60 @@ _parse_stmt = Oneof(
 
 def parse_lexemes(lexemes, ctx):
   return matcheroni.apply(lexemes, ctx, parse_stmt)
+
+#---------------------------------------------------------------------------------------------------
+
+def dump_indent(indent):
+  return "  " * indent
+
+def dump_node(node, indent = 0):
+  result = f"{node.__class__.__name__}{{}}\n"
+  for key, val in node.items():
+    result += dump_indent(indent + 1)
+    if isinstance(key, int):
+      result += f"[{key}] : "
+    else:
+      result += f".{key} : "
+    result += dump_variant(val, indent + 1)
+  return result
+
+def dump_array(array, indent = 0):
+  result = f"{array.__class__.__name__}[{len(array)}]\n"
+  for key, val in enumerate(array):
+    result += dump_indent(indent + 1)
+    result += f"[{key}] : "
+    result += dump_variant(val, indent + 1)
+  return result
+
+def dump_tuple(t, indent = 0):
+  result = f"{t.__class__.__name__}({len(t)})\n"
+  for key, val in enumerate(t):
+    result += dump_indent(indent + 1)
+    result += f"({key}) : "
+    result += dump_variant(val, indent + 1)
+  return result
+
+def dump_lexeme(lexeme, *_):
+  return f"{lexeme.lex_type.name} {repr(lexeme.text)[1:-1]}\n"
+
+def dump_variant(variant, indent = 0):
+  result = ""
+  if isinstance(variant, BaseNode):
+    result += dump_node(variant, indent)
+  elif isinstance(variant, list):
+    result += dump_array(variant, indent)
+  elif isinstance(variant, tuple):
+    result += dump_tuple(variant, indent)
+  elif isinstance(variant, Lexeme):
+    result += dump_lexeme(variant, indent)
+  elif variant is None:
+    result += "<None>\n"
+  else:
+    result +=  f"??? {variant}\n"
+  return result
+
+def dump_tree(tree):
+  return dump_variant(tree, 0).strip()
 
 #---------------------------------------------------------------------------------------------------
 
