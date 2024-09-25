@@ -156,7 +156,6 @@ stmt_delim_or_semi = Oneof(stmt_delim, stmt_semi)
 
 #---------------------------------------------------------------------------------------------------
 
-
 node_call = Node(CallNode, Seq(
   KeyVal("func",   Capture(Oneof(match_ident, ATOM_KEYWORD))),
   KeyVal("params", node_paren)
@@ -166,7 +165,6 @@ node_lambda = Node(LambdaNode, Seq(
   KeyVal("params", node_paren),
   KeyVal("body",   stmt_delim)
 ))
-
 
 cat_atom = Oneof(
   node_paren,

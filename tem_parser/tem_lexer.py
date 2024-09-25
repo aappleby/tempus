@@ -217,6 +217,7 @@ def next_lexeme(span, ctx2):
     match_to_lex(match_int,      LexemeType.LEX_INT),
     match_to_lex(match_affix,    LexemeType.LEX_AFFIX),
     match_to_lex(match_declop,   LexemeType.LEX_DECLOP),
+    match_to_lex(Lit("=="),      LexemeType.LEX_BINOP), # dammit FIXME
     match_to_lex(match_assignop, LexemeType.LEX_ASSIGNOP),
     match_to_lex(match_binop,    LexemeType.LEX_BINOP),
     match_to_lex(match_punct,    LexemeType.LEX_PUNCT),
