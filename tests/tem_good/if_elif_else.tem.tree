@@ -1,13 +1,15 @@
 list[3]
   [0] : BranchNode[3]
     [0] : CondNode{}
-      .condition : ExprNode[1]
-        [0] : LEX_IDENT foo
+      .condition : ParenNode(1)
+        (0) : ExprNode[1]
+          [0] : LEX_IDENT foo
       .then : ExprNode[1]
         [0] : LEX_INT 1
     [1] : CondNode{}
-      .condition : ExprNode[1]
-        [0] : LEX_IDENT bar
+      .condition : ParenNode(1)
+        (0) : ExprNode[1]
+          [0] : LEX_IDENT bar
       .then : ExprNode[1]
         [0] : LEX_INT 2
     [2] : CondNode{}
@@ -16,13 +18,15 @@ list[3]
         [0] : LEX_INT 3
   [1] : BranchNode[3]
     [0] : CondNode{}
-      .condition : ExprNode[1]
-        [0] : LEX_IDENT foo
+      .condition : ParenNode(1)
+        (0) : ExprNode[1]
+          [0] : LEX_IDENT foo
       .then : ExprNode[1]
         [0] : LEX_INT 1
     [1] : CondNode{}
-      .condition : ExprNode[1]
-        [0] : LEX_IDENT bar
+      .condition : ParenNode(1)
+        (0) : ExprNode[1]
+          [0] : LEX_IDENT bar
       .then : ExprNode[1]
         [0] : LEX_INT 2
     [2] : CondNode{}
@@ -31,14 +35,16 @@ list[3]
         [0] : LEX_INT 3
   [2] : BranchNode[3]
     [0] : CondNode{}
-      .condition : ExprNode[1]
-        [0] : LEX_IDENT foo
+      .condition : ParenNode(1)
+        (0) : ExprNode[1]
+          [0] : LEX_IDENT foo
       .then : BlockNode[1]
         [0] : ExprNode[1]
           [0] : LEX_INT 1
     [1] : CondNode{}
-      .condition : ExprNode[1]
-        [0] : LEX_IDENT bar
+      .condition : ParenNode(1)
+        (0) : ExprNode[1]
+          [0] : LEX_IDENT bar
       .then : BlockNode[1]
         [0] : ExprNode[1]
           [0] : LEX_INT 2

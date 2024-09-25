@@ -1,0 +1,3 @@
+text : u8[] = "foo bar baz";
+bar : int[sizeof(baz) - 1] = 777;
+three_dee : u32[64, 64, 64];

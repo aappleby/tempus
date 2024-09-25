@@ -18,10 +18,11 @@ list[3]
         (1) : BlockNode[1]
           [0] : BranchNode[2]
             [0] : CondNode{}
-              .condition : ExprNode[3]
-                [0] : LEX_IDENT a
-                [1] : LEX_BINOP >
-                [2] : LEX_IDENT b
+              .condition : ParenNode(1)
+                (0) : ExprNode[3]
+                  [0] : LEX_IDENT a
+                  [1] : LEX_BINOP >
+                  [2] : LEX_IDENT b
               .then : AtomNode{}
                 .name : LEX_PUNCT .
                 .eq : LEX_ASSIGNOP =

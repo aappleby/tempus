@@ -15,7 +15,7 @@ from tem_parser import matcheroni
 #---------------------------------------------------------------------------------------------------
 
 source = r"""
-1-- + ++2--++--++ + x;
+text : u8[10] = 1;
 """
 
 lex_ctx    = matcheroni.Context(matcheroni.default_atom_cmp)

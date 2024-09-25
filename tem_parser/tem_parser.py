@@ -29,6 +29,7 @@ class ExprNode(list):         pass
 
 class CatNode(tuple):         pass
 class ParenNode(tuple):       pass
+class BrackNode(tuple):       pass
 
 class CallNode(BaseNode):     pass
 class CaseNode(BaseNode):     pass
@@ -122,24 +123,28 @@ parse_expr_or_decl = Oneof(node_expr, node_decl)
 
 # Parenthesized, comma-delimited lists of mixed expressions and declarations. Trailing commas OK.
 # Examples: (348, "foo", x : u32 = 7), (), (1,)
-parse_paren_tuple = Railway({
-  None         : [PUNCT_LPAREN],
-  PUNCT_LPAREN : [node_expr, node_decl, PUNCT_RPAREN],
-  node_expr    : [PUNCT_COMMA,          PUNCT_RPAREN],
-  node_decl    : [PUNCT_COMMA,          PUNCT_RPAREN],
-  PUNCT_COMMA  : [node_expr, node_decl, PUNCT_RPAREN],
-  PUNCT_RPAREN : [None]
-})
+node_paren = TupleNode(ParenNode,
+  Railway({
+    None         : [PUNCT_LPAREN],
+    PUNCT_LPAREN : [node_expr, node_decl, PUNCT_RPAREN],
+    node_expr    : [PUNCT_COMMA,          PUNCT_RPAREN],
+    node_decl    : [PUNCT_COMMA,          PUNCT_RPAREN],
+    PUNCT_COMMA  : [node_expr, node_decl, PUNCT_RPAREN],
+    PUNCT_RPAREN : [None]
+  })
+)
 
 # Same as above except []
-parse_brace_tuple = Railway({
-  None         : [PUNCT_LBRACK],
-  PUNCT_LBRACK : [node_expr, node_decl, PUNCT_RBRACK],
-  node_expr    : [PUNCT_COMMA,          PUNCT_RBRACK],
-  node_decl    : [PUNCT_COMMA,          PUNCT_RBRACK],
-  PUNCT_COMMA  : [node_expr, node_decl, PUNCT_RPAREN],
-  PUNCT_RBRACK : [None]
-})
+node_brack = TupleNode(BrackNode,
+  Railway({
+    None         : [PUNCT_LBRACK],
+    PUNCT_LBRACK : [node_expr, node_decl, PUNCT_RBRACK],
+    node_expr    : [PUNCT_COMMA,          PUNCT_RBRACK],
+    node_decl    : [PUNCT_COMMA,          PUNCT_RBRACK],
+    PUNCT_COMMA  : [node_expr, node_decl, PUNCT_RPAREN],
+    PUNCT_RBRACK : [None]
+  })
+)
 
 # Curly-braced, semicolon-delimited lists of statements. Excess semicolons are OK. No semicolon
 # after the last statement is OK.
@@ -149,25 +154,23 @@ stmt_semi  = Seq(parse_stmt, PUNCT_SEMI)
 
 stmt_delim_or_semi = Oneof(stmt_delim, stmt_semi)
 
-node_tuple = Oneof(
-  TupleNode(ParenNode, parse_paren_tuple),
-  parse_brace_tuple
-)
-
 #---------------------------------------------------------------------------------------------------
+
 
 node_call = Node(CallNode, Seq(
   KeyVal("func",   Capture(Oneof(match_ident, ATOM_KEYWORD))),
-  KeyVal("params", node_tuple)
+  KeyVal("params", node_paren)
 ))
 
 node_lambda = Node(LambdaNode, Seq(
-  KeyVal("params", node_tuple),
+  KeyVal("params", node_paren),
   KeyVal("body",   stmt_delim)
 ))
 
+
 cat_atom = Oneof(
-  node_tuple,
+  node_paren,
+  node_brack,
   stmt_delim,
   cap_ident,
   #Capture(ATOM_KEYWORD),
@@ -191,7 +194,7 @@ parse_expr_unit = Seq(
 _node_expr = ListNode(ExprNode, Seq(parse_expr_unit, Any(Seq(cap_binop, parse_expr_unit))))
 
 node_cond = Node(CondNode, Seq(
-  KeyVal("condition",    parse_paren_tuple),
+  KeyVal("condition",    node_paren),
   KeyVal("then",         Seq(parse_stmt, Opt(PUNCT_SEMI))),
 ))
 
@@ -208,7 +211,7 @@ node_if = ListNode(BranchNode, Seq(
 
 node_case = Node(CaseNode, Seq(
   KW_CASE,
-  KeyVal("condition",  node_tuple),
+  KeyVal("condition",  node_paren),
   KeyVal("body",       Seq(parse_stmt, Opt(PUNCT_SEMI))),
 ))
 
@@ -219,7 +222,7 @@ node_default = Node(DefaultNode, Seq(
 
 node_match = Node(MatchNode, Seq(
   KW_MATCH,
-  KeyVal("condition", node_tuple),
+  KeyVal("condition", node_paren),
   PUNCT_LBRACE,
   KeyVal("body",
     ListNode(BlockNode, Any(Oneof(node_case, node_default)))
@@ -230,11 +233,11 @@ node_match = Node(MatchNode, Seq(
 node_type = Node(TypeNode, Seq(
   KeyVal("base", Oneof(
     node_call,
-    node_tuple,
+    node_paren,
     cap_ident,
     cap_keyword
   )),
-  Opt(KeyVal("suffix", node_tuple))
+  Opt(KeyVal("suffix", node_brack))
 ))
 
 node_for = Node(ForNode, Seq(
