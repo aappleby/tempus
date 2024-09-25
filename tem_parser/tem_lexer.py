@@ -65,7 +65,10 @@ LexemeType = Enum(
     "LEX_INT",
     "LEX_PUNCT",
     "LEX_CHAR",
-    "LEX_OP",
+    "LEX_BINOP",
+    "LEX_DECLOP",
+    "LEX_ASSIGNOP",
+    "LEX_AFFIX"
   ]
 )
 
@@ -81,7 +84,10 @@ def lex_to_color(lex_type):
     case LexemeType.LEX_INT      : return 0xFF8888
     case LexemeType.LEX_PUNCT    : return 0x808080
     case LexemeType.LEX_CHAR     : return 0x44DDDD
-    case LexemeType.LEX_OP       : return 0x888888
+    case LexemeType.LEX_BINOP    : return 0x888888
+    case LexemeType.LEX_DECLOP   : return 0x888888
+    case LexemeType.LEX_ASSIGNOP : return 0x888888
+    case LexemeType.LEX_AFFIX    : return 0x888888
   return 0xFF00FF
 
 #---------------------------------------------------------------------------------------------------
@@ -155,12 +161,18 @@ match_comment = Oneof(
 
 match_punct = Charset(",;.()[]{}@#")
 
-# pylint: disable=unused-argument
-def match_op(span, ctx2):
-  for op in tem_constants.tem_allops:
-    if span.startswith(op):
-      return span[len(op):]
-  return Fail(span)
+def make_match_op(ops):
+  def match(span, _):
+    for op in ops:
+      if span.startswith(op):
+        return span[len(op):]
+    return Fail(span)
+  return match
+
+match_binop    = make_match_op(tem_constants.tem_binops)
+match_declop   = make_match_op(tem_constants.tem_declops)
+match_assignop = make_match_op(tem_constants.tem_assignops)
+match_affix    = make_match_op(tem_constants.tem_affixes)
 
 match_char = Seq(
   Atom('\''),
@@ -203,7 +215,10 @@ def next_lexeme(span, ctx2):
     match_comment,
     match_to_lex(match_float,    LexemeType.LEX_FLOAT),
     match_to_lex(match_int,      LexemeType.LEX_INT),
-    match_to_lex(match_op,       LexemeType.LEX_OP),
+    match_to_lex(match_affix,    LexemeType.LEX_AFFIX),
+    match_to_lex(match_declop,   LexemeType.LEX_DECLOP),
+    match_to_lex(match_assignop, LexemeType.LEX_ASSIGNOP),
+    match_to_lex(match_binop,    LexemeType.LEX_BINOP),
     match_to_lex(match_punct,    LexemeType.LEX_PUNCT),
   ]
 

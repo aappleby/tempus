@@ -58,14 +58,14 @@ tem_binops = longest_first(
   "||",
 )
 
-tem_preops = longest_first(
-  "-",
-  "*",
-  "&",
-  "^",
-  "+",
-  "|",
-)
+#tem_preops = longest_first(
+#  "-",
+#  "*",
+#  "&",
+#  "^",
+#  "+",
+#  "|",
+#)
 
 tem_assignops = longest_first(
   "-=",
@@ -89,7 +89,10 @@ tem_declops = longest_first(
   ":>", # output port
 )
 
-tem_allops = longest_first(*(tem_binops + tem_assignops + tem_declops))
+tem_affixes = longest_first(
+  "++",
+  "--"
+)
 
 #------------------------------------------------------------------------------
 

@@ -1,0 +1,13 @@
+list[1]
+  [0] : ExprNode[11]
+    [0] : LEX_INT 1
+    [1] : LEX_AFFIX --
+    [2] : LEX_BINOP +
+    [3] : LEX_AFFIX ++
+    [4] : LEX_INT 2
+    [5] : LEX_AFFIX --
+    [6] : LEX_AFFIX ++
+    [7] : LEX_AFFIX --
+    [8] : LEX_AFFIX ++
+    [9] : LEX_BINOP +
+    [10] : LEX_IDENT x

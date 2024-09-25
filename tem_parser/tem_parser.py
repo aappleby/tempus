@@ -61,7 +61,10 @@ ATOM_COMMENT  = lex_to_atom(LexemeType.LEX_COMMENT)
 ATOM_FLOAT    = lex_to_atom(LexemeType.LEX_FLOAT)
 ATOM_INT      = lex_to_atom(LexemeType.LEX_INT)
 ATOM_PUNC     = lex_to_atom(LexemeType.LEX_PUNCT)
-ATOM_OP       = lex_to_atom(LexemeType.LEX_OP)
+ATOM_BINOP    = lex_to_atom(LexemeType.LEX_BINOP)
+ATOM_DECLOP   = lex_to_atom(LexemeType.LEX_DECLOP)
+ATOM_ASSIGNOP = lex_to_atom(LexemeType.LEX_ASSIGNOP)
+ATOM_AFFIX    = lex_to_atom(LexemeType.LEX_AFFIX)
 
 PUNCT_NEWLINE = lex_to_atom(LexemeType.LEX_NEWLINE)
 
@@ -92,19 +95,14 @@ KW_FOR        = lex_to_atom(LexemeType.LEX_KEYWORD, "for")
 
 #---------------------------------------------------------------------------------------------------
 
-#@cache
-def match_op_token(ops):
-  # pylint: disable=unused-argument
-  def match(span, ctx):
-    if len(span) and span[0].lex_type == LexemeType.LEX_OP and span[0].text in ops:
-      return span[1:]
-    return Fail(span)
-  return match
+cap_binop    = Capture(ATOM_BINOP)
+cap_declop   = Capture(ATOM_DECLOP)
+cap_assignop = Capture(ATOM_ASSIGNOP)
+cap_affix    = Capture(ATOM_AFFIX)
 
-cap_binop   = Capture(match_op_token(tem_constants.tem_binops))
-match_ident = Some(PUNCT_DOT, ATOM_IDENT)
-cap_ident   = Capture(match_ident)
-cap_keyword = Capture(ATOM_KEYWORD)
+match_ident  = Some(PUNCT_DOT, ATOM_IDENT)
+cap_ident    = Capture(match_ident)
+cap_keyword  = Capture(ATOM_KEYWORD)
 
 #---------------------------------------------------------------------------------------------------
 # Forward decls
@@ -177,12 +175,16 @@ cat_atom = Oneof(
 
 cat_list = TupleNode(CatNode, AtLeast(2, cat_atom))
 
-parse_expr_unit = Oneof(
-  cat_list,
-  cat_atom,
-  Capture(ATOM_INT),
-  Capture(ATOM_FLOAT),
-  Capture(ATOM_STRING),
+parse_expr_unit = Seq(
+  Any(cap_affix),
+  Oneof(
+    cat_list,
+    cat_atom,
+    Capture(ATOM_INT),
+    Capture(ATOM_FLOAT),
+    Capture(ATOM_STRING),
+  ),
+  Any(cap_affix)
 )
 
 # unit op unit op unit...
@@ -245,7 +247,7 @@ node_for = Node(ForNode, Seq(
   KeyVal("step", Opt(parse_stmt)),
   PUNCT_RPAREN,
   KeyVal("body", stmt_delim_or_semi)
-  
+
 
 
   #KW_FOR,
@@ -262,9 +264,9 @@ node_for = Node(ForNode, Seq(
 #----------------------------------------
 
 decl_name = KeyVal("name", cap_ident)
-decl_dir  = KeyVal("dir",  Capture(match_op_token(tem_declops)))
+decl_dir  = KeyVal("dir",  Capture(ATOM_DECLOP))
 decl_type = KeyVal("type", node_type)
-decl_eq   = KeyVal("eq",   Capture(match_op_token(tem_assignops)))
+decl_eq   = KeyVal("eq",   Capture(ATOM_ASSIGNOP))
 decl_val  = KeyVal("val",  node_expr)
 
 _node_decl = Node(AtomNode, Railway({
