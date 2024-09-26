@@ -23,11 +23,11 @@ tem_keywords = longest_first(
 "module",
 "port",
 "return",
-"signed",
+#"signed",
 "struct",
 "type",
 "union",
-"unsigned",
+#"unsigned",
 "void",
 "while",
 )

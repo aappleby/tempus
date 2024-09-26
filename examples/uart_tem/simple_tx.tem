@@ -1,29 +1,29 @@
 // Simple 8n1 UART transmitter in Metron
 
-[params]
+# params
 clocks_per_bit = 4;
 bits_per_byte = 10;
 delay_mid = clocks_per_bit / 2;
 delay_max = clocks_per_bit - 1;
 count_max = bits_per_byte - 1;
 
-[ports]
+# ports
 src.data  >: u8;
 src.valid >: u1;
 src.ready :> u1 = 0;
 dst.data  :> u1 = shift[0];
 
-[types]
-reg_delay = unsigned(delay_max);
-reg_count = unsigned(count_max);
-reg_shift = u10;
+# types
+reg_delay : unsigned(delay_max) = 0;
+reg_count : unsigned(count_max) = 0;
+reg_shift : u10 = 0;
 
-[regs]
+# regs
 delay : reg_delay = delay_max;
 count : reg_count = count_max;
 shift : reg_shift = dontcare;
 
-[update]
+# update
 match (true) {
   case (delay < delay_max) {
     @delay = delay + 1;

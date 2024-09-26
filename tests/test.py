@@ -43,7 +43,11 @@ class TestTempus(unittest.TestCase):
         file.write(tem_parser.dump_tree(tree))
 
   def test_uart(self):
-    pass
+    self.parse_file("../examples/uart_tem/simple_msg.tem")
+    self.parse_file("../examples/uart_tem/simple_sink.tem")
+    self.parse_file("../examples/uart_tem/simple_rx.tem")
+    self.parse_file("../examples/uart_tem/simple_tx.tem")
+    self.parse_file("../examples/uart_tem/simple_top.tem")
 
 #---------------------------------------------------------------------------------------------------
 
