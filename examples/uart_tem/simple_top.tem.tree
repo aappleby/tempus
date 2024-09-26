@@ -1,0 +1,142 @@
+list[15]
+  [0] : ExprNode[1]
+    [0] : CatNode(2)
+      (0) : BrackNode(1)
+        (0) : ExprNode[1]
+          [0] : IdentNode[1]
+            [0] : LEX_IDENT types
+      (1) : IdentNode[1]
+        [0] : LEX_IDENT simple_msg
+  [1] : AtomNode{}
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : CatNode(2)
+        (0) : IdentNode[1]
+          [0] : LEX_IDENT load
+        (1) : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : LEX_STRING "simple_msg.tem"
+  [2] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT simple_tx
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : CatNode(2)
+        (0) : IdentNode[1]
+          [0] : LEX_IDENT load
+        (1) : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : LEX_STRING "simple_tx.tem"
+  [3] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT simple_rx
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : CatNode(2)
+        (0) : IdentNode[1]
+          [0] : LEX_IDENT load
+        (1) : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : LEX_STRING "simple_rx.tem"
+  [4] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT simple_sink
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : CatNode(2)
+        (0) : IdentNode[1]
+          [0] : LEX_IDENT load
+        (1) : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : LEX_STRING "simple_sink.tem"
+  [5] : ExprNode[1]
+    [0] : CatNode(2)
+      (0) : BrackNode(1)
+        (0) : ExprNode[1]
+          [0] : IdentNode[1]
+            [0] : LEX_IDENT params
+      (1) : IdentNode[1]
+        [0] : LEX_IDENT clocks_per_bit
+  [6] : AtomNode{}
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : LEX_INT 1
+  [7] : ExprNode[1]
+    [0] : CatNode(2)
+      (0) : BrackNode(1)
+        (0) : ExprNode[1]
+          [0] : IdentNode[1]
+            [0] : LEX_IDENT state
+      (1) : IdentNode[1]
+        [0] : LEX_IDENT msg
+  [8] : AtomNode{}
+    .dir : LEX_DECLOP :
+    .type : TypeNode{}
+      .base : IdentNode[1]
+        [0] : LEX_IDENT simple_message
+  [9] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT tx
+    .dir : LEX_DECLOP :
+    .type : TypeNode{}
+      .base : CallNode{}
+        .func : IdentNode[1]
+          [0] : LEX_IDENT simple_tx
+        .params : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : IdentNode[1]
+              [0] : LEX_IDENT clocks_per_bit
+  [10] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT rx
+    .dir : LEX_DECLOP :
+    .type : TypeNode{}
+      .base : CallNode{}
+        .func : IdentNode[1]
+          [0] : LEX_IDENT simple_rx
+        .params : ParenNode(1)
+          (0) : ExprNode[1]
+            [0] : IdentNode[1]
+              [0] : LEX_IDENT clocks_per_bit
+  [11] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT sink
+    .dir : LEX_DECLOP :
+    .type : TypeNode{}
+      .base : IdentNode[1]
+        [0] : LEX_IDENT simple_sink
+  [12] : ExprNode[3]
+    [0] : CatNode(2)
+      (0) : BrackNode(1)
+        (0) : ExprNode[1]
+          [0] : IdentNode[1]
+            [0] : LEX_IDENT update
+      (1) : IdentNode[3]
+        [0] : LEX_IDENT msg
+        [1] : LEX_PUNCT .
+        [2] : LEX_IDENT out
+    [1] : LEX_BINOP <>
+    [2] : IdentNode[3]
+      [0] : LEX_IDENT tx
+      [1] : LEX_PUNCT .
+      [2] : LEX_IDENT in
+  [13] : ExprNode[3]
+    [0] : IdentNode[3]
+      [0] : LEX_IDENT tx
+      [1] : LEX_PUNCT .
+      [2] : LEX_IDENT out
+    [1] : LEX_BINOP <>
+    [2] : IdentNode[3]
+      [0] : LEX_IDENT rx
+      [1] : LEX_PUNCT .
+      [2] : LEX_IDENT in
+  [14] : ExprNode[3]
+    [0] : IdentNode[3]
+      [0] : LEX_IDENT rx
+      [1] : LEX_PUNCT .
+      [2] : LEX_IDENT out
+    [1] : LEX_BINOP <>
+    [2] : IdentNode[3]
+      [0] : LEX_IDENT sink
+      [1] : LEX_PUNCT .
+      [2] : LEX_IDENT in

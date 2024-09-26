@@ -1,26 +1,31 @@
 list[5]
   [0] : AtomNode{}
-    .name : LEX_IDENT a
+    .name : IdentNode[1]
+      [0] : LEX_IDENT a
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 1
   [1] : AtomNode{}
-    .name : LEX_IDENT @b
+    .name : IdentNode[1]
+      [0] : LEX_IDENT @b
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
   [2] : AtomNode{}
-    .name : LEX_IDENT c3
+    .name : IdentNode[1]
+      [0] : LEX_IDENT c3
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 3
   [3] : AtomNode{}
-    .name : LEX_IDENT _d
+    .name : IdentNode[1]
+      [0] : LEX_IDENT _d
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 4
   [4] : AtomNode{}
-    .name : LEX_IDENT ___
+    .name : IdentNode[1]
+      [0] : LEX_IDENT ___
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 5

@@ -1,28 +1,34 @@
 list[1]
   [0] : ForNode{}
     .init : AtomNode{}
-      .name : LEX_IDENT x
+      .name : IdentNode[1]
+        [0] : LEX_IDENT x
       .dir : LEX_DECLOP :
       .type : TypeNode{}
-        .base : LEX_IDENT int
+        .base : IdentNode[1]
+          [0] : LEX_IDENT int
       .eq : LEX_ASSIGNOP =
       .val : ExprNode[1]
         [0] : LEX_INT 1
     .cond : ExprNode[3]
-      [0] : LEX_IDENT x
+      [0] : IdentNode[1]
+        [0] : LEX_IDENT x
       [1] : LEX_BINOP <
       [2] : LEX_INT 2
     .step : AtomNode{}
-      .name : LEX_IDENT x
+      .name : IdentNode[1]
+        [0] : LEX_IDENT x
       .eq : LEX_ASSIGNOP =
       .val : ExprNode[3]
-        [0] : LEX_IDENT x
+        [0] : IdentNode[1]
+          [0] : LEX_IDENT x
         [1] : LEX_BINOP +
         [2] : LEX_INT 1
     .body : BlockNode[1]
       [0] : ExprNode[1]
         [0] : CatNode(2)
-          (0) : LEX_IDENT print
+          (0) : IdentNode[1]
+            [0] : LEX_IDENT print
           (1) : ParenNode(1)
             (0) : ExprNode[1]
               [0] : LEX_STRING "x"

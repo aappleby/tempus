@@ -26,6 +26,7 @@ class AtomNode(BaseNode):
 class BlockNode(list):        pass
 class BranchNode(list):       pass
 class ExprNode(list):         pass
+class IdentNode(list):        pass
 
 class CatNode(tuple):         pass
 class ParenNode(tuple):       pass
@@ -36,7 +37,6 @@ class CaseNode(BaseNode):     pass
 class CondNode(BaseNode):     pass
 class DefaultNode(BaseNode):  pass
 class ForNode(BaseNode):      pass
-class IdentNode(BaseNode):    pass
 class LambdaNode(BaseNode):   pass
 class MarkerNode(BaseNode):   pass
 class MatchNode(BaseNode):    pass
@@ -101,8 +101,11 @@ cap_declop   = Capture(ATOM_DECLOP)
 cap_assignop = Capture(ATOM_ASSIGNOP)
 cap_affix    = Capture(ATOM_AFFIX)
 
-match_ident  = Some(PUNCT_DOT, ATOM_IDENT)
-cap_ident    = Capture(match_ident)
+#match_ident  = Some(PUNCT_DOT, ATOM_IDENT)
+#cap_ident    = Capture(match_ident)
+
+node_ident = ListNode(IdentNode, Some(Capture(PUNCT_DOT), Capture(ATOM_IDENT)))
+
 cap_keyword  = Capture(ATOM_KEYWORD)
 
 #---------------------------------------------------------------------------------------------------
@@ -157,7 +160,7 @@ stmt_delim_or_semi = Oneof(stmt_delim, stmt_semi)
 #---------------------------------------------------------------------------------------------------
 
 node_call = Node(CallNode, Seq(
-  KeyVal("func",   Capture(Oneof(match_ident, ATOM_KEYWORD))),
+  KeyVal("func",   Oneof(node_ident, Capture(ATOM_KEYWORD))),
   KeyVal("params", node_paren)
 ))
 
@@ -170,7 +173,7 @@ cat_atom = Oneof(
   node_paren,
   node_brack,
   stmt_delim,
-  cap_ident,
+  node_ident,
   #Capture(ATOM_KEYWORD),
 )
 
@@ -232,7 +235,7 @@ node_type = Node(TypeNode, Seq(
   KeyVal("base", Oneof(
     node_call,
     node_paren,
-    cap_ident,
+    node_ident,
     cap_keyword
   )),
   Opt(KeyVal("suffix", node_brack))
@@ -264,7 +267,7 @@ node_for = Node(ForNode, Seq(
 
 #----------------------------------------
 
-decl_name = KeyVal("name", cap_ident)
+decl_name = KeyVal("name", node_ident)
 decl_dir  = KeyVal("dir",  Capture(ATOM_DECLOP))
 decl_type = KeyVal("type", node_type)
 decl_eq   = KeyVal("eq",   Capture(ATOM_ASSIGNOP))
@@ -320,11 +323,15 @@ def dump_node(node, indent = 0):
   return result
 
 def dump_array(array, indent = 0):
+  #base_list = array.__class__.__name__ == "list"
   result = f"{array.__class__.__name__}[{len(array)}]\n"
   for key, val in enumerate(array):
     result += dump_indent(indent + 1)
     result += f"[{key}] : "
     result += dump_variant(val, indent + 1)
+    #if base_list:
+    #    result += "\n"
+    #    result += dump_indent(indent)
   return result
 
 def dump_tuple(t, indent = 0):

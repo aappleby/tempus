@@ -422,15 +422,12 @@ def Delimited(ldelim, rdelim):
 @cache
 def Capture(pattern):
   """
-  Adds the span matched by 'pattern' to the context stack
+  Adds all tokens in the span matched by 'pattern' to the context stack
   """
   def match(span, ctx2):
     tail = pattern(span, ctx2)
     if not isinstance(tail, Fail):
-      token = span[:len(span) - len(tail)]
-      if len(token) == 1:
-        token = token[0]
-      ctx2.stack.append(token)
+      ctx2.stack.extend(span[:len(span) - len(tail)])
     return tail
   return match
 

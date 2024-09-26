@@ -1,0 +1,271 @@
+list[23]
+  [0] : MarkerNode{}
+    .name : LEX_IDENT top
+  [1] : MarkerNode{}
+    .name : LEX_IDENT params
+  [2] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT clocks_per_bit
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : LEX_INT 4
+  [3] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT bits_per_byte
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : LEX_INT 10
+  [4] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT delay_mid
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[3]
+      [0] : IdentNode[1]
+        [0] : LEX_IDENT clocks_per_bit
+      [1] : LEX_BINOP /
+      [2] : LEX_INT 2
+  [5] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT delay_max
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[3]
+      [0] : IdentNode[1]
+        [0] : LEX_IDENT clocks_per_bit
+      [1] : LEX_BINOP -
+      [2] : LEX_INT 1
+  [6] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT count_max
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[3]
+      [0] : IdentNode[1]
+        [0] : LEX_IDENT bits_per_byte
+      [1] : LEX_BINOP -
+      [2] : LEX_INT 1
+  [7] : MarkerNode{}
+    .name : LEX_IDENT types
+  [8] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT delay_reg
+    .dir : LEX_DECLOP :
+    .type : TypeNode{}
+      .base : CallNode{}
+        .func : IdentNode[1]
+          [0] : LEX_IDENT unsigned
+        .params : ParenNode(1)
+          (0) : AtomNode{}
+            .name : IdentNode[1]
+              [0] : LEX_IDENT max
+            .eq : LEX_ASSIGNOP =
+            .val : ExprNode[1]
+              [0] : IdentNode[1]
+                [0] : LEX_IDENT delay_max
+  [9] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT count_reg
+    .dir : LEX_DECLOP :
+    .type : TypeNode{}
+      .base : CallNode{}
+        .func : IdentNode[1]
+          [0] : LEX_IDENT unsigned
+        .params : ParenNode(1)
+          (0) : AtomNode{}
+            .name : IdentNode[1]
+              [0] : LEX_IDENT max
+            .eq : LEX_ASSIGNOP =
+            .val : ExprNode[1]
+              [0] : IdentNode[1]
+                [0] : LEX_IDENT count_max
+  [10] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT shift_reg
+    .dir : LEX_DECLOP :
+    .type : TypeNode{}
+      .base : IdentNode[1]
+        [0] : LEX_IDENT u8
+  [11] : MarkerNode{}
+    .name : LEX_IDENT ports
+  [12] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT src
+    .dir : LEX_DECLOP >:
+    .type : TypeNode{}
+      .base : IdentNode[1]
+        [0] : LEX_IDENT u1
+  [13] : AtomNode{}
+    .name : IdentNode[3]
+      [0] : LEX_IDENT dst
+      [1] : LEX_PUNCT .
+      [2] : LEX_IDENT data
+    .dir : LEX_DECLOP :>
+    .type : TypeNode{}
+      .base : IdentNode[1]
+        [0] : LEX_IDENT shift_reg
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : IdentNode[1]
+        [0] : LEX_IDENT shift
+  [14] : AtomNode{}
+    .name : IdentNode[3]
+      [0] : LEX_IDENT dst
+      [1] : LEX_PUNCT .
+      [2] : LEX_IDENT valid
+    .dir : LEX_DECLOP :>
+    .type : TypeNode{}
+      .base : IdentNode[1]
+        [0] : LEX_IDENT u1
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : LEX_INT 0
+  [15] : AtomNode{}
+    .name : IdentNode[3]
+      [0] : LEX_IDENT dst
+      [1] : LEX_PUNCT .
+      [2] : LEX_IDENT ready
+    .dir : LEX_DECLOP >:
+    .type : TypeNode{}
+      .base : IdentNode[1]
+        [0] : LEX_IDENT u1
+  [16] : MarkerNode{}
+    .name : LEX_IDENT state
+  [17] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT delay
+    .dir : LEX_DECLOP :
+    .type : TypeNode{}
+      .base : IdentNode[1]
+        [0] : LEX_IDENT delay_reg
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : IdentNode[1]
+        [0] : LEX_IDENT delay_max
+  [18] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT count
+    .dir : LEX_DECLOP :
+    .type : TypeNode{}
+      .base : IdentNode[1]
+        [0] : LEX_IDENT count_reg
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : IdentNode[1]
+        [0] : LEX_IDENT count_max
+  [19] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT shift
+    .dir : LEX_DECLOP :
+    .type : TypeNode{}
+      .base : IdentNode[1]
+        [0] : LEX_IDENT shift_reg
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : LEX_INT 0
+  [20] : MarkerNode{}
+    .name : LEX_IDENT update
+  [21] : MatchNode{}
+    .condition : ParenNode(1)
+      (0) : ExprNode[1]
+        [0] : IdentNode[1]
+          [0] : LEX_IDENT true
+    .body : BlockNode[3]
+      [0] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : ExprNode[3]
+            [0] : IdentNode[1]
+              [0] : LEX_IDENT delay
+            [1] : LEX_BINOP <
+            [2] : IdentNode[1]
+              [0] : LEX_IDENT delay_max
+        .body : BlockNode[1]
+          [0] : AtomNode{}
+            .name : IdentNode[1]
+              [0] : LEX_IDENT @delay
+            .eq : LEX_ASSIGNOP =
+            .val : ExprNode[3]
+              [0] : IdentNode[1]
+                [0] : LEX_IDENT delay
+              [1] : LEX_BINOP +
+              [2] : LEX_INT 1
+      [1] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : ExprNode[3]
+            [0] : IdentNode[1]
+              [0] : LEX_IDENT count
+            [1] : LEX_BINOP <
+            [2] : IdentNode[1]
+              [0] : LEX_IDENT count_max
+        .body : BlockNode[2]
+          [0] : AtomNode{}
+            .name : IdentNode[1]
+              [0] : LEX_IDENT @delay
+            .eq : LEX_ASSIGNOP =
+            .val : ExprNode[1]
+              [0] : LEX_INT 0
+          [1] : AtomNode{}
+            .name : IdentNode[1]
+              [0] : LEX_IDENT @count
+            .eq : LEX_ASSIGNOP =
+            .val : ExprNode[3]
+              [0] : IdentNode[1]
+                [0] : LEX_IDENT count
+              [1] : LEX_BINOP +
+              [2] : LEX_INT 1
+      [2] : CaseNode{}
+        .condition : ParenNode(1)
+          (0) : ExprNode[3]
+            [0] : IdentNode[1]
+              [0] : LEX_IDENT src
+            [1] : LEX_BINOP ==
+            [2] : LEX_INT 0
+        .body : BlockNode[2]
+          [0] : AtomNode{}
+            .name : IdentNode[1]
+              [0] : LEX_IDENT @delay
+            .eq : LEX_ASSIGNOP =
+            .val : ExprNode[1]
+              [0] : LEX_INT 0
+          [1] : AtomNode{}
+            .name : IdentNode[1]
+              [0] : LEX_IDENT @count
+            .eq : LEX_ASSIGNOP =
+            .val : ExprNode[1]
+              [0] : LEX_INT 0
+  [22] : BranchNode[1]
+    [0] : CondNode{}
+      .condition : ParenNode(1)
+        (0) : ExprNode[3]
+          [0] : IdentNode[1]
+            [0] : LEX_IDENT delay
+          [1] : LEX_BINOP ==
+          [2] : IdentNode[1]
+            [0] : LEX_IDENT delay_mid
+      .then : BlockNode[4]
+        [0] : AtomNode{}
+          .name : IdentNode[1]
+            [0] : LEX_IDENT @shift
+          .eq : LEX_ASSIGNOP =
+          .val : ExprNode[1]
+            [0] : IdentNode[1]
+              [0] : LEX_IDENT src
+        [1] : AtomNode{}
+          .dir : LEX_DECLOP :
+        [2] : AtomNode{}
+          .dir : LEX_DECLOP :
+          .type : TypeNode{}
+            .base : ParenNode(1)
+              (0) : ExprNode[3]
+                [0] : IdentNode[1]
+                  [0] : LEX_IDENT shift
+                [1] : LEX_BINOP >>
+                [2] : LEX_INT 1
+        [3] : AtomNode{}
+          .name : IdentNode[3]
+            [0] : LEX_IDENT dst
+            [1] : LEX_PUNCT .
+            [2] : LEX_IDENT valid
+          .eq : LEX_ASSIGNOP =
+          .val : ExprNode[3]
+            [0] : IdentNode[1]
+              [0] : LEX_IDENT @count
+            [1] : LEX_BINOP ==
+            [2] : LEX_INT 8

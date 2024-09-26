@@ -36,18 +36,21 @@ class TestTempus(unittest.TestCase):
       source = file.read()
       return self.parse_source(source)
 
+  def parse_and_write_tree(self, filename):
+    tree = self.parse_file(filename)
+    with open(filename + ".tree", "w", encoding="utf-8") as file:
+      file.write(tem_parser.dump_tree(tree))
+
   def test_tem_good(self):
     for filename in glob.glob("tem_good/*.tem"):
-      tree = self.parse_file(filename)
-      with open(filename + ".tree", "w", encoding="utf-8") as file:
-        file.write(tem_parser.dump_tree(tree))
+      self.parse_and_write_tree(filename)
 
   def test_uart(self):
-    self.parse_file("../examples/uart_tem/simple_msg.tem")
-    self.parse_file("../examples/uart_tem/simple_sink.tem")
-    self.parse_file("../examples/uart_tem/simple_rx.tem")
-    self.parse_file("../examples/uart_tem/simple_tx.tem")
-    self.parse_file("../examples/uart_tem/simple_top.tem")
+    self.parse_and_write_tree("../examples/uart_tem/simple_msg.tem")
+    self.parse_and_write_tree("../examples/uart_tem/simple_sink.tem")
+    self.parse_and_write_tree("../examples/uart_tem/simple_rx.tem")
+    self.parse_and_write_tree("../examples/uart_tem/simple_tx.tem")
+    self.parse_and_write_tree("../examples/uart_tem/simple_top.tem")
 
 #---------------------------------------------------------------------------------------------------
 

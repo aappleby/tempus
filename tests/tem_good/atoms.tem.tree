@@ -1,100 +1,128 @@
 list[17]
   [0] : AtomNode{}
-    .name : LEX_IDENT x
+    .name : IdentNode[1]
+      [0] : LEX_IDENT x
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT int
+      .base : IdentNode[1]
+        [0] : LEX_IDENT int
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
   [1] : AtomNode{}
-    .name : LEX_IDENT x
+    .name : IdentNode[1]
+      [0] : LEX_IDENT x
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT int
+      .base : IdentNode[1]
+        [0] : LEX_IDENT int
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
-      [0] : LEX_IDENT _
+      [0] : IdentNode[1]
+        [0] : LEX_IDENT _
   [2] : AtomNode{}
-    .name : LEX_IDENT x
+    .name : IdentNode[1]
+      [0] : LEX_IDENT x
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT _
+      .base : IdentNode[1]
+        [0] : LEX_IDENT _
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
   [3] : AtomNode{}
-    .name : LEX_IDENT x
+    .name : IdentNode[1]
+      [0] : LEX_IDENT x
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT _
+      .base : IdentNode[1]
+        [0] : LEX_IDENT _
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
-      [0] : LEX_IDENT _
+      [0] : IdentNode[1]
+        [0] : LEX_IDENT _
   [4] : AtomNode{}
-    .name : LEX_IDENT _
+    .name : IdentNode[1]
+      [0] : LEX_IDENT _
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT int
+      .base : IdentNode[1]
+        [0] : LEX_IDENT int
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
   [5] : AtomNode{}
-    .name : LEX_IDENT _
+    .name : IdentNode[1]
+      [0] : LEX_IDENT _
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT int
+      .base : IdentNode[1]
+        [0] : LEX_IDENT int
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
-      [0] : LEX_IDENT _
+      [0] : IdentNode[1]
+        [0] : LEX_IDENT _
   [6] : AtomNode{}
-    .name : LEX_IDENT _
+    .name : IdentNode[1]
+      [0] : LEX_IDENT _
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT _
+      .base : IdentNode[1]
+        [0] : LEX_IDENT _
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
   [7] : AtomNode{}
-    .name : LEX_IDENT _
+    .name : IdentNode[1]
+      [0] : LEX_IDENT _
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT _
+      .base : IdentNode[1]
+        [0] : LEX_IDENT _
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
-      [0] : LEX_IDENT _
+      [0] : IdentNode[1]
+        [0] : LEX_IDENT _
   [8] : AtomNode{}
-    .name : LEX_IDENT x
+    .name : IdentNode[1]
+      [0] : LEX_IDENT x
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT int
+      .base : IdentNode[1]
+        [0] : LEX_IDENT int
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
   [9] : AtomNode{}
-    .name : LEX_IDENT x
+    .name : IdentNode[1]
+      [0] : LEX_IDENT x
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT int
+      .base : IdentNode[1]
+        [0] : LEX_IDENT int
   [10] : AtomNode{}
-    .name : LEX_IDENT x
+    .name : IdentNode[1]
+      [0] : LEX_IDENT x
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
   [11] : AtomNode{}
-    .name : LEX_IDENT x
+    .name : IdentNode[1]
+      [0] : LEX_IDENT x
     .dir : LEX_DECLOP :
   [12] : AtomNode{}
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT int
+      .base : IdentNode[1]
+        [0] : LEX_IDENT int
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
   [13] : AtomNode{}
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT int
+      .base : IdentNode[1]
+        [0] : LEX_IDENT int
   [14] : AtomNode{}
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
@@ -102,42 +130,51 @@ list[17]
   [15] : AtomNode{}
     .dir : LEX_DECLOP :
   [16] : AtomNode{}
-    .name : LEX_IDENT a
+    .name : IdentNode[1]
+      [0] : LEX_IDENT a
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : ParenNode(8)
         (0) : AtomNode{}
-          .name : LEX_IDENT x
+          .name : IdentNode[1]
+            [0] : LEX_IDENT x
           .dir : LEX_DECLOP :
           .type : TypeNode{}
-            .base : LEX_IDENT int
+            .base : IdentNode[1]
+              [0] : LEX_IDENT int
           .eq : LEX_ASSIGNOP =
           .val : ExprNode[1]
             [0] : LEX_INT 2
         (1) : AtomNode{}
-          .name : LEX_IDENT x
+          .name : IdentNode[1]
+            [0] : LEX_IDENT x
           .dir : LEX_DECLOP :
           .type : TypeNode{}
-            .base : LEX_IDENT int
+            .base : IdentNode[1]
+              [0] : LEX_IDENT int
         (2) : AtomNode{}
-          .name : LEX_IDENT x
+          .name : IdentNode[1]
+            [0] : LEX_IDENT x
           .eq : LEX_ASSIGNOP =
           .val : ExprNode[1]
             [0] : LEX_INT 2
         (3) : AtomNode{}
-          .name : LEX_IDENT x
+          .name : IdentNode[1]
+            [0] : LEX_IDENT x
           .dir : LEX_DECLOP :
         (4) : AtomNode{}
           .dir : LEX_DECLOP :
           .type : TypeNode{}
-            .base : LEX_IDENT int
+            .base : IdentNode[1]
+              [0] : LEX_IDENT int
           .eq : LEX_ASSIGNOP =
           .val : ExprNode[1]
             [0] : LEX_INT 2
         (5) : AtomNode{}
           .dir : LEX_DECLOP :
           .type : TypeNode{}
-            .base : LEX_IDENT int
+            .base : IdentNode[1]
+              [0] : LEX_IDENT int
         (6) : AtomNode{}
           .eq : LEX_ASSIGNOP =
           .val : ExprNode[1]

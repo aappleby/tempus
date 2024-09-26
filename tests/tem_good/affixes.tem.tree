@@ -10,4 +10,5 @@ list[1]
     [7] : LEX_AFFIX --
     [8] : LEX_AFFIX ++
     [9] : LEX_BINOP +
-    [10] : LEX_IDENT x
+    [10] : IdentNode[1]
+      [0] : LEX_IDENT x

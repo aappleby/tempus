@@ -1,74 +1,91 @@
 list[4]
   [0] : AtomNode{}
-    .name : LEX_IDENT x
+    .name : IdentNode[1]
+      [0] : LEX_IDENT x
     .dir : LEX_DECLOP :
     .type : TypeNode{}
-      .base : LEX_IDENT int
+      .base : IdentNode[1]
+        [0] : LEX_IDENT int
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 7
   [1] : MatchNode{}
     .condition : ParenNode(1)
       (0) : ExprNode[1]
-        [0] : LEX_IDENT x
+        [0] : IdentNode[1]
+          [0] : LEX_IDENT x
     .body : BlockNode[3]
       [0] : CaseNode{}
         .condition : ParenNode(1)
           (0) : ExprNode[1]
             [0] : LEX_INT 1
         .body : ExprNode[3]
-          [0] : LEX_IDENT a
+          [0] : IdentNode[1]
+            [0] : LEX_IDENT a
           [1] : LEX_BINOP +
-          [2] : LEX_IDENT b
+          [2] : IdentNode[1]
+            [0] : LEX_IDENT b
       [1] : CaseNode{}
         .condition : ParenNode(1)
           (0) : ExprNode[1]
             [0] : LEX_INT 2
         .body : ExprNode[3]
-          [0] : LEX_IDENT z
+          [0] : IdentNode[1]
+            [0] : LEX_IDENT z
           [1] : LEX_BINOP +
-          [2] : LEX_IDENT c
+          [2] : IdentNode[1]
+            [0] : LEX_IDENT c
       [2] : CaseNode{}
         .condition : ParenNode(1)
           (0) : ExprNode[1]
             [0] : LEX_INT 3
         .body : ExprNode[3]
-          [0] : LEX_IDENT b
+          [0] : IdentNode[1]
+            [0] : LEX_IDENT b
           [1] : LEX_BINOP +
-          [2] : LEX_IDENT d
+          [2] : IdentNode[1]
+            [0] : LEX_IDENT d
   [2] : MatchNode{}
     .condition : ParenNode(1)
       (0) : ExprNode[1]
-        [0] : LEX_IDENT x
+        [0] : IdentNode[1]
+          [0] : LEX_IDENT x
     .body : BlockNode[3]
       [0] : CaseNode{}
         .condition : ParenNode(1)
           (0) : ExprNode[1]
             [0] : LEX_INT 1
         .body : ExprNode[3]
-          [0] : LEX_IDENT a
+          [0] : IdentNode[1]
+            [0] : LEX_IDENT a
           [1] : LEX_BINOP +
-          [2] : LEX_IDENT b
+          [2] : IdentNode[1]
+            [0] : LEX_IDENT b
       [1] : CaseNode{}
         .condition : ParenNode(1)
           (0) : ExprNode[1]
             [0] : LEX_INT 2
         .body : ExprNode[3]
-          [0] : LEX_IDENT z
+          [0] : IdentNode[1]
+            [0] : LEX_IDENT z
           [1] : LEX_BINOP +
-          [2] : LEX_IDENT c
+          [2] : IdentNode[1]
+            [0] : LEX_IDENT c
       [2] : CaseNode{}
         .condition : ParenNode(1)
           (0) : ExprNode[1]
             [0] : LEX_INT 3
         .body : ExprNode[3]
-          [0] : LEX_IDENT b
+          [0] : IdentNode[1]
+            [0] : LEX_IDENT b
           [1] : LEX_BINOP +
-          [2] : LEX_IDENT d
+          [2] : IdentNode[1]
+            [0] : LEX_IDENT d
   [3] : MatchNode{}
     .condition : ParenNode(1)
       (0) : ExprNode[1]
-        [0] : LEX_IDENT x
+        [0] : IdentNode[1]
+          [0] : LEX_IDENT x
     .body : BlockNode[3]
       [0] : CaseNode{}
         .condition : ParenNode(1)
@@ -76,24 +93,30 @@ list[4]
             [0] : LEX_INT 1
         .body : BlockNode[1]
           [0] : ExprNode[3]
-            [0] : LEX_IDENT a
+            [0] : IdentNode[1]
+              [0] : LEX_IDENT a
             [1] : LEX_BINOP +
-            [2] : LEX_IDENT b
+            [2] : IdentNode[1]
+              [0] : LEX_IDENT b
       [1] : CaseNode{}
         .condition : ParenNode(1)
           (0) : ExprNode[1]
             [0] : LEX_INT 2
         .body : BlockNode[1]
           [0] : ExprNode[3]
-            [0] : LEX_IDENT z
+            [0] : IdentNode[1]
+              [0] : LEX_IDENT z
             [1] : LEX_BINOP +
-            [2] : LEX_IDENT c
+            [2] : IdentNode[1]
+              [0] : LEX_IDENT c
       [2] : CaseNode{}
         .condition : ParenNode(1)
           (0) : ExprNode[1]
             [0] : LEX_INT 3
         .body : BlockNode[1]
           [0] : ExprNode[3]
-            [0] : LEX_IDENT b
+            [0] : IdentNode[1]
+              [0] : LEX_IDENT b
             [1] : LEX_BINOP +
-            [2] : LEX_IDENT d
+            [2] : IdentNode[1]
+              [0] : LEX_IDENT d
