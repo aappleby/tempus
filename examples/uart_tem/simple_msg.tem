@@ -3,7 +3,8 @@
 # consts
 max_delay  >: int = 20;
 max_cursor >: int = len(text) - 1;
-text       >: u8[] = read("ping.hex");
+filename   >: string = "ping.hex";
+text       >: u8[] = read(filename);
 
 # ports
 .dst.data  :> u8 = text[cursor];

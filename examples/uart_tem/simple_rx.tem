@@ -1,29 +1,24 @@
 # top
-// Simple 8n1 UART receiver in Metron
+// Simple 8n1 UART receiver in Tempus
 
 # params
-clocks_per_bit = 4;
-bits_per_byte = 10;
-delay_mid = clocks_per_bit / 2;
-delay_max = clocks_per_bit - 1;
-count_max = bits_per_byte - 1;
-
-# types
-delay_reg : unsigned(max = delay_max);
-count_reg : unsigned(max = count_max);
-shift_reg : u8;
+clocks_per_bit >: int = 4;
+bits_per_byte >: int = 10;
+delay_mid >: int = clocks_per_bit / 2;
+delay_max >: int = clocks_per_bit - 1;
+count_max >: int = bits_per_byte - 1;
 
 # ports
-src >: u1;
+.src >: u1;
 
-dst.data  :> shift_reg = shift;
-dst.valid :> u1 = 0;
-dst.ready >: u1;
+.dst.data  :> shift_reg = shift;
+.dst.valid :> u1 = 0;
+.dst.ready >: u1;
 
 # state
-delay : delay_reg = delay_max;
-count : count_reg = count_max;
-shift : shift_reg = 0;
+delay : counter(delay_max) = delay_max;
+count : counter(count_max) = count_max;
+shift : u8 = 0;
 
 # update
 match (true) {

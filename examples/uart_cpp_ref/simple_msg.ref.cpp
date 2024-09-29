@@ -26,16 +26,24 @@ public:
     cursor = 0;
   }
 
-  // update
-  void update() {
+  void tock() {
+  }
+
+  void tick() {
+    counter<max_delay> _delay = delay;
+    counter<max_cursor> _cursor;
+
     if (delay)
-      delay = delay - 1;
+      _delay = delay - 1;
     else if (dst.ready) {
       if (cursor == max_cursor) {
-        cursor = 0;
-        delay = max_delay;
+        _cursor = 0;
+        _delay = max_delay;
       }
-      else cursor = cursor + 1;
+      else _cursor = cursor + 1;
     }
+
+    delay = _delay;
+    cursor = _cursor;
   }
 };
