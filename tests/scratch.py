@@ -7,10 +7,10 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
-import tem_parser
-from tem_parser import tem_lexer
-from tem_parser import tem_parser
-from tem_parser import matcheroni
+import tempus
+from tempus import tem_lexer
+from tempus import tem_parser
+from tempus import matcheroni
 
 #---------------------------------------------------------------------------------------------------
 

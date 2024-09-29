@@ -180,7 +180,7 @@ match_char = Seq(
   Atom('\'')
 )
 
-match_ident = Seq(Opt(Atom('@')), nondigit, Any(dec_digit, nondigit))
+match_ident = Seq(nondigit, Any(dec_digit, nondigit))
 
 def match_keyword(span, ctx2):
   tail = match_ident(span, ctx2)

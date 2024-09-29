@@ -1,15 +1,12 @@
 #include "tem_helpers.hpp"
-// Simple message transmitter with a delay between transmissions
 
 struct simple_msg {
 public:
 
-  // consts
   static constexpr int max_delay = 20;
   static constexpr int max_cursor = 58 - 1;
   static constexpr const char* text = "asdkjflskjfs";
 
-  // ports
   struct _dst {
     u8 data;
     u1 valid;
@@ -17,7 +14,6 @@ public:
   };
   _dst dst;
 
-  // state
   counter<max_delay>  delay;
   counter<max_cursor> cursor;
 

@@ -11,6 +11,8 @@ def default_atom_cmp(a, b):
     a_value = ord(a) if isinstance(a, str) else a
     b_value = ord(b) if isinstance(b, str) else b
     return b_value - a_value
+  print(a)
+  print(b)
   raise ValueError(F"Don't know how to compare {type(a)} and {type(b)}")
 
 class Context:

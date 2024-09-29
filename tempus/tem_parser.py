@@ -101,10 +101,15 @@ cap_declop   = Capture(ATOM_DECLOP)
 cap_assignop = Capture(ATOM_ASSIGNOP)
 cap_affix    = Capture(ATOM_AFFIX)
 
-#match_ident  = Some(PUNCT_DOT, ATOM_IDENT)
-#cap_ident    = Capture(match_ident)
-
-node_ident = ListNode(IdentNode, Some(Capture(PUNCT_DOT), Capture(ATOM_IDENT)))
+node_ident = ListNode(IdentNode,
+  Seq(
+    Opt(Capture(PUNCT_AT)),
+    Some(
+      Capture(PUNCT_DOT),
+      Capture(ATOM_IDENT)
+    )
+  )
+)
 
 cap_keyword  = Capture(ATOM_KEYWORD)
 

@@ -1,27 +1,25 @@
 `default_nettype none
 `timescale 1 ns/1 ns
 
-//==============================================================================
-
-module byte_sink
+module simple_sink
 (
-  input logic      _clock,
-  input logic      _reset,
+  input logic      clock,
+  input logic      reset,
 
-  input logic[7:0] _in,
-  input logic      _in_valid,
-  output logic     _in_ready
+  input logic[7:0] src_data,
+  input logic      src_valid,
+  output logic     src_ready
 );
 
   logic[7:0] data = 0;
 
-  always_comb begin
-    _in_ready = !_reset;
-  end
+  assign src_ready = 1;
 
-  always @(posedge _clock) begin
-    if (_in_valid) begin
-      data <= _in;
+  always @(posedge clock) begin
+    if (reset) begin
+      data <= 0;
+    end else if (src_valid) begin
+      data <= src_data;
     end
   end
 
