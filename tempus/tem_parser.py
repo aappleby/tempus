@@ -100,6 +100,7 @@ cap_binop    = Capture(ATOM_BINOP)
 cap_declop   = Capture(ATOM_DECLOP)
 cap_assignop = Capture(ATOM_ASSIGNOP)
 cap_affix    = Capture(ATOM_AFFIX)
+cap_keyword  = Capture(ATOM_KEYWORD)
 
 node_ident = ListNode(IdentNode,
   Seq(
@@ -110,8 +111,6 @@ node_ident = ListNode(IdentNode,
     )
   )
 )
-
-cap_keyword  = Capture(ATOM_KEYWORD)
 
 #---------------------------------------------------------------------------------------------------
 # Forward decls
@@ -179,7 +178,6 @@ cat_atom = Oneof(
   node_brack,
   stmt_delim,
   node_ident,
-  #Capture(ATOM_KEYWORD),
 )
 
 cat_list = TupleNode(CatNode, AtLeast(2, cat_atom))
@@ -256,18 +254,6 @@ node_for = Node(ForNode, Seq(
   KeyVal("step", Opt(parse_stmt)),
   PUNCT_RPAREN,
   KeyVal("body", stmt_delim_or_semi)
-
-
-
-  #KW_FOR,
-  #PUNCT_LPAREN,
-  #KeyVal("init", Opt(parse_stmt)),
-  #PUNCT_SEMI,
-  #KeyVal("cond", Opt(parse_stmt)),
-  #PUNCT_SEMI,
-  #KeyVal("step", Opt(parse_stmt)),
-  #PUNCT_RPAREN,
-  #KeyVal("body", stmt_delim)
 ))
 
 #----------------------------------------

@@ -1,4 +1,4 @@
-list[13]
+list[14]
   [0] : MarkerNode{}
     .name : LEX_IDENT consts
   [1] : AtomNode{}
@@ -31,6 +31,16 @@ list[13]
       [2] : LEX_INT 1
   [3] : AtomNode{}
     .name : IdentNode[1]
+      [0] : LEX_IDENT filename
+    .dir : LEX_DECLOP >:
+    .type : TypeNode{}
+      .base : IdentNode[1]
+        [0] : LEX_IDENT string
+    .eq : LEX_ASSIGNOP =
+    .val : ExprNode[1]
+      [0] : LEX_STRING "ping.hex"
+  [4] : AtomNode{}
+    .name : IdentNode[1]
       [0] : LEX_IDENT text
     .dir : LEX_DECLOP >:
     .type : TypeNode{}
@@ -44,10 +54,11 @@ list[13]
           [0] : LEX_IDENT read
         (1) : ParenNode(1)
           (0) : ExprNode[1]
-            [0] : LEX_STRING "ping.hex"
-  [4] : MarkerNode{}
+            [0] : IdentNode[1]
+              [0] : LEX_IDENT filename
+  [5] : MarkerNode{}
     .name : LEX_IDENT ports
-  [5] : AtomNode{}
+  [6] : AtomNode{}
     .name : IdentNode[4]
       [0] : LEX_PUNCT .
       [1] : LEX_IDENT dst
@@ -66,7 +77,7 @@ list[13]
           (0) : ExprNode[1]
             [0] : IdentNode[1]
               [0] : LEX_IDENT cursor
-  [6] : AtomNode{}
+  [7] : AtomNode{}
     .name : IdentNode[4]
       [0] : LEX_PUNCT .
       [1] : LEX_IDENT dst
@@ -82,7 +93,7 @@ list[13]
         [0] : LEX_IDENT delay
       [1] : LEX_BINOP ==
       [2] : LEX_INT 0
-  [7] : AtomNode{}
+  [8] : AtomNode{}
     .name : IdentNode[4]
       [0] : LEX_PUNCT .
       [1] : LEX_IDENT dst
@@ -92,9 +103,9 @@ list[13]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u1
-  [8] : MarkerNode{}
+  [9] : MarkerNode{}
     .name : LEX_IDENT state
-  [9] : AtomNode{}
+  [10] : AtomNode{}
     .name : IdentNode[1]
       [0] : LEX_IDENT delay
     .dir : LEX_DECLOP :
@@ -110,7 +121,7 @@ list[13]
     .val : ExprNode[1]
       [0] : IdentNode[1]
         [0] : LEX_IDENT max_delay
-  [10] : AtomNode{}
+  [11] : AtomNode{}
     .name : IdentNode[1]
       [0] : LEX_IDENT cursor
     .dir : LEX_DECLOP :
@@ -125,17 +136,18 @@ list[13]
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 0
-  [11] : MarkerNode{}
+  [12] : MarkerNode{}
     .name : LEX_IDENT update
-  [12] : BranchNode[2]
+  [13] : BranchNode[2]
     [0] : CondNode{}
       .condition : ParenNode(1)
         (0) : ExprNode[1]
           [0] : IdentNode[1]
             [0] : LEX_IDENT delay
       .then : AtomNode{}
-        .name : IdentNode[1]
-          [0] : LEX_IDENT @delay
+        .name : IdentNode[2]
+          [0] : LEX_PUNCT @
+          [1] : LEX_IDENT delay
         .eq : LEX_ASSIGNOP =
         .val : ExprNode[3]
           [0] : IdentNode[1]
@@ -161,14 +173,16 @@ list[13]
                   [0] : LEX_IDENT max_cursor
             .then : BlockNode[2]
               [0] : AtomNode{}
-                .name : IdentNode[1]
-                  [0] : LEX_IDENT @cursor
+                .name : IdentNode[2]
+                  [0] : LEX_PUNCT @
+                  [1] : LEX_IDENT cursor
                 .eq : LEX_ASSIGNOP =
                 .val : ExprNode[1]
                   [0] : LEX_INT 0
               [1] : AtomNode{}
-                .name : IdentNode[1]
-                  [0] : LEX_IDENT @delay
+                .name : IdentNode[2]
+                  [0] : LEX_PUNCT @
+                  [1] : LEX_IDENT delay
                 .eq : LEX_ASSIGNOP =
                 .val : ExprNode[1]
                   [0] : IdentNode[1]
@@ -176,8 +190,9 @@ list[13]
           [1] : CondNode{}
             .condition : <None>
             .then : AtomNode{}
-              .name : IdentNode[1]
-                [0] : LEX_IDENT @cursor
+              .name : IdentNode[2]
+                [0] : LEX_PUNCT @
+                [1] : LEX_IDENT cursor
               .eq : LEX_ASSIGNOP =
               .val : ExprNode[3]
                 [0] : IdentNode[1]

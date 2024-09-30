@@ -2,14 +2,7 @@
 
 import glob
 import os
-import sys
 import unittest
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir)
-
-import tempus
 
 from tempus import tem_lexer
 from tempus import tem_parser
@@ -31,7 +24,7 @@ class TestTempus(unittest.TestCase):
     return parse_ctx.stack
 
   def parse_file(self, filename):
-    print(filename)
+    #print(filename)
     with open(filename, encoding="utf-8") as file:
       source = file.read()
       return self.parse_source(source)
@@ -42,15 +35,22 @@ class TestTempus(unittest.TestCase):
       file.write(tem_parser.dump_tree(tree))
 
   def test_tem_good(self):
-    for filename in glob.glob("tem_good/*.tem"):
+    for filename in glob.glob("tests/tem_good/*.tem"):
       self.parse_and_write_tree(filename)
 
   def test_uart(self):
-    self.parse_and_write_tree("../examples/uart_tem/simple_msg.tem")
-    self.parse_and_write_tree("../examples/uart_tem/simple_sink.tem")
-    self.parse_and_write_tree("../examples/uart_tem/simple_rx.tem")
-    self.parse_and_write_tree("../examples/uart_tem/simple_tx.tem")
-    self.parse_and_write_tree("../examples/uart_tem/simple_top.tem")
+    self.parse_and_write_tree("examples/uart_tem/simple_msg.tem")
+    self.parse_and_write_tree("examples/uart_tem/simple_sink.tem")
+    self.parse_and_write_tree("examples/uart_tem/simple_rx.tem")
+    self.parse_and_write_tree("examples/uart_tem/simple_tx.tem")
+    self.parse_and_write_tree("examples/uart_tem/simple_top.tem")
+
+  def test_ref_sv(self):
+    files = glob.glob("examples/uart_sv_ref/simple*.sv")
+    self.assertEqual(5, len(files))
+    for filename in files:
+      result = os.system(f"verilator -Iexamples/uart_sv_ref --lint-only {filename}")
+      self.assertEqual(0, result)
 
 #---------------------------------------------------------------------------------------------------
 

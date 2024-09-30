@@ -5,7 +5,7 @@
 
 module simple_rx
 #(
-  parameter logic[7:0] clocks_per_bit
+  parameter logic[7:0] clocks_per_bit = 12
 )
 (
   input logic       _clock,

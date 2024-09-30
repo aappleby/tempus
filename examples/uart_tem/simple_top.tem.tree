@@ -1,13 +1,9 @@
-list[15]
-  [0] : ExprNode[1]
-    [0] : CatNode(2)
-      (0) : BrackNode(1)
-        (0) : ExprNode[1]
-          [0] : IdentNode[1]
-            [0] : LEX_IDENT types
-      (1) : IdentNode[1]
-        [0] : LEX_IDENT simple_msg
+list[16]
+  [0] : MarkerNode{}
+    .name : LEX_IDENT types
   [1] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT simple_msg
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : CatNode(2)
@@ -49,27 +45,19 @@ list[15]
         (1) : ParenNode(1)
           (0) : ExprNode[1]
             [0] : LEX_STRING "simple_sink.tem"
-  [5] : ExprNode[1]
-    [0] : CatNode(2)
-      (0) : BrackNode(1)
-        (0) : ExprNode[1]
-          [0] : IdentNode[1]
-            [0] : LEX_IDENT params
-      (1) : IdentNode[1]
-        [0] : LEX_IDENT clocks_per_bit
+  [5] : MarkerNode{}
+    .name : LEX_IDENT params
   [6] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT clocks_per_bit
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 1
-  [7] : ExprNode[1]
-    [0] : CatNode(2)
-      (0) : BrackNode(1)
-        (0) : ExprNode[1]
-          [0] : IdentNode[1]
-            [0] : LEX_IDENT state
-      (1) : IdentNode[1]
-        [0] : LEX_IDENT msg
+  [7] : MarkerNode{}
+    .name : LEX_IDENT state
   [8] : AtomNode{}
+    .name : IdentNode[1]
+      [0] : LEX_IDENT msg
     .dir : LEX_DECLOP :
     .type : TypeNode{}
       .base : IdentNode[1]
@@ -105,22 +93,19 @@ list[15]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT simple_sink
-  [12] : ExprNode[3]
-    [0] : CatNode(2)
-      (0) : BrackNode(1)
-        (0) : ExprNode[1]
-          [0] : IdentNode[1]
-            [0] : LEX_IDENT update
-      (1) : IdentNode[3]
-        [0] : LEX_IDENT msg
-        [1] : LEX_PUNCT .
-        [2] : LEX_IDENT out
+  [12] : MarkerNode{}
+    .name : LEX_IDENT update
+  [13] : ExprNode[3]
+    [0] : IdentNode[3]
+      [0] : LEX_IDENT msg
+      [1] : LEX_PUNCT .
+      [2] : LEX_IDENT out
     [1] : LEX_BINOP <>
     [2] : IdentNode[3]
       [0] : LEX_IDENT tx
       [1] : LEX_PUNCT .
       [2] : LEX_IDENT in
-  [13] : ExprNode[3]
+  [14] : ExprNode[3]
     [0] : IdentNode[3]
       [0] : LEX_IDENT tx
       [1] : LEX_PUNCT .
@@ -130,7 +115,7 @@ list[15]
       [0] : LEX_IDENT rx
       [1] : LEX_PUNCT .
       [2] : LEX_IDENT in
-  [14] : ExprNode[3]
+  [15] : ExprNode[3]
     [0] : IdentNode[3]
       [0] : LEX_IDENT rx
       [1] : LEX_PUNCT .

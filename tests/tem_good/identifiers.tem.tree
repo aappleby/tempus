@@ -6,8 +6,9 @@ list[5]
     .val : ExprNode[1]
       [0] : LEX_INT 1
   [1] : AtomNode{}
-    .name : IdentNode[1]
-      [0] : LEX_IDENT @b
+    .name : IdentNode[2]
+      [0] : LEX_PUNCT @
+      [1] : LEX_IDENT b
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2

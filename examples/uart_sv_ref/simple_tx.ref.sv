@@ -3,7 +3,9 @@
 
 //==============================================================================
 
-module simple_tx #(parameter clocks_per_bit)
+module simple_tx #(
+  parameter clocks_per_bit = 12
+)
 (
   input logic      _clock,
   input logic      _reset,

@@ -1,33 +1,30 @@
-list[8]
-  [0] : ExprNode[1]
-    [0] : CatNode(2)
-      (0) : BrackNode(1)
-        (0) : ExprNode[1]
-          [0] : IdentNode[1]
-            [0] : LEX_IDENT ports
-      (1) : IdentNode[3]
-        [0] : LEX_IDENT src
-        [1] : LEX_PUNCT .
-        [2] : LEX_IDENT data
-  [1] : AtomNode{}
+list[5]
+  [0] : AtomNode{}
+    .name : IdentNode[4]
+      [0] : LEX_PUNCT .
+      [1] : LEX_IDENT src
+      [2] : LEX_PUNCT .
+      [3] : LEX_IDENT data
     .dir : LEX_DECLOP >:
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u8
-  [2] : AtomNode{}
-    .name : IdentNode[3]
-      [0] : LEX_IDENT src
-      [1] : LEX_PUNCT .
-      [2] : LEX_IDENT valid
+  [1] : AtomNode{}
+    .name : IdentNode[4]
+      [0] : LEX_PUNCT .
+      [1] : LEX_IDENT src
+      [2] : LEX_PUNCT .
+      [3] : LEX_IDENT valid
     .dir : LEX_DECLOP >:
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u1
-  [3] : AtomNode{}
-    .name : IdentNode[3]
-      [0] : LEX_IDENT src
-      [1] : LEX_PUNCT .
-      [2] : LEX_IDENT ready
+  [2] : AtomNode{}
+    .name : IdentNode[4]
+      [0] : LEX_PUNCT .
+      [1] : LEX_IDENT src
+      [2] : LEX_PUNCT .
+      [3] : LEX_IDENT ready
     .dir : LEX_DECLOP :>
     .type : TypeNode{}
       .base : IdentNode[1]
@@ -35,15 +32,10 @@ list[8]
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 1
-  [4] : ExprNode[1]
-    [0] : CatNode(2)
-      (0) : BrackNode(1)
-        (0) : ExprNode[1]
-          [0] : IdentNode[1]
-            [0] : LEX_IDENT state
-      (1) : IdentNode[1]
-        [0] : LEX_IDENT data
-  [5] : AtomNode{}
+  [3] : AtomNode{}
+    .name : IdentNode[2]
+      [0] : LEX_PUNCT .
+      [1] : LEX_IDENT data
     .dir : LEX_DECLOP :
     .type : TypeNode{}
       .base : IdentNode[1]
@@ -51,12 +43,7 @@ list[8]
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 0
-  [6] : ExprNode[1]
-    [0] : BrackNode(1)
-      (0) : ExprNode[1]
-        [0] : IdentNode[1]
-          [0] : LEX_IDENT update
-  [7] : BranchNode[1]
+  [4] : BranchNode[1]
     [0] : CondNode{}
       .condition : ParenNode(1)
         (0) : ExprNode[1]
@@ -66,11 +53,14 @@ list[8]
             [2] : LEX_IDENT valid
       .then : BlockNode[1]
         [0] : AtomNode{}
-          .name : IdentNode[1]
-            [0] : LEX_IDENT @data
+          .name : IdentNode[3]
+            [0] : LEX_PUNCT @
+            [1] : LEX_PUNCT .
+            [2] : LEX_IDENT data
           .eq : LEX_ASSIGNOP =
           .val : ExprNode[1]
-            [0] : IdentNode[3]
-              [0] : LEX_IDENT src
-              [1] : LEX_PUNCT .
-              [2] : LEX_IDENT data
+            [0] : IdentNode[4]
+              [0] : LEX_PUNCT .
+              [1] : LEX_IDENT src
+              [2] : LEX_PUNCT .
+              [3] : LEX_IDENT data

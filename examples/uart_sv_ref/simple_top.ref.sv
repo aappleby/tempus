@@ -1,14 +1,18 @@
 `default_nettype none
 `timescale 1 ns/1 ns
 
-`include "simple_rx.sv"
-`include "simple_tx.sv"
-`include "simple_msg.sv"
-`include "simple_sink.sv"
+`include "simple_rx.ref.sv"
+`include "simple_tx.ref.sv"
+`include "simple_msg.ref.sv"
+`include "simple_sink.ref.sv"
 
 //==============================================================================
 
-module simple_top #(parameter clocks_per_bit)
+module simple_top
+#(
+  // 1 mhz baud rate @ 12 mhz clock rate
+  parameter clocks_per_bit = 12
+)
 (
   input logic clock,
   input logic reset
@@ -50,12 +54,12 @@ module simple_top #(parameter clocks_per_bit)
     ._out_ready (rx_out_ready)
   );
 
-  byte_sink sink(
-    ._clock    (clock),
-    ._reset    (reset),
-    ._in       (rx_out),
-    ._in_valid (rx_out_valid),
-    ._in_ready (rx_out_ready)
+  simple_sink sink(
+    .clock    (clock),
+    .reset    (reset),
+    .src_data (rx_out),
+    .src_valid(rx_out_valid),
+    .src_ready(rx_out_ready)
   );
 
 endmodule
