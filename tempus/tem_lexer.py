@@ -31,6 +31,16 @@ class Lexeme:
       case _:
         return f"{self.lex_type.name}({span})"
 
+  def eq(self, x):
+    if isinstance(x, str):
+      return self.text == x
+    raise ValueError(f"Don't know how to eq a lexeme vs {type(x)} = {x}")
+
+  #def __eq__(self, x):
+  #  if isinstance(x, str):
+  #    return self.text == x
+  #  raise ValueError(f"Don't know how to eq a lexeme vs {type(x)} = {x}")
+
 #---------------------------------------------------------------------------------------------------
 
 def strcmp(str1, str2):
@@ -236,4 +246,4 @@ def lex_string(source, ctx):
 #---------------------------------------------------------------------------------------------------
 
 testresult = doctest.testmod(sys.modules[__name__])
-print(f"Testing {__name__} : {testresult}")
+#print(f"Testing {__name__} : {testresult}")

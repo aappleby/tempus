@@ -42,7 +42,12 @@ class MarkerNode(BaseNode):   pass
 class MatchNode(BaseNode):    pass
 class ReturnNode(BaseNode):   pass
 class SectionNode(BaseNode):  pass
-class TypeNode(BaseNode):     pass
+
+class TypeNode(BaseNode):
+  def __init__(self):
+    self.base = None
+    self.suffix = None
+
 # fmt : on
 
 #---------------------------------------------------------------------------------------------------
@@ -340,6 +345,8 @@ def dump_variant(variant, indent = 0):
   result = ""
   if isinstance(variant, BaseNode):
     result += dump_node(variant, indent)
+  elif isinstance(variant, dict):
+    result += dump_node(variant, indent)
   elif isinstance(variant, list):
     result += dump_array(variant, indent)
   elif isinstance(variant, tuple):
@@ -358,4 +365,4 @@ def dump_tree(tree):
 #---------------------------------------------------------------------------------------------------
 
 testresult = doctest.testmod(sys.modules[__name__])
-print(f"Testing {__name__} : {testresult}")
+#print(f"Testing {__name__} : {testresult}")

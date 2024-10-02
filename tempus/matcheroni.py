@@ -614,4 +614,4 @@ class BaseNode:
 #---------------------------------------------------------------------------------------------------
 
 testresult = doctest.testmod(sys.modules[__name__])
-print(f"Testing {__name__} : {testresult}")
+#print(f"Testing {__name__} : {testresult}")
