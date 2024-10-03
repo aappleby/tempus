@@ -13,14 +13,6 @@ from .tem_lexer import Lexeme, LexemeType
 
 #---------------------------------------------------------------------------------------------------
 
-class AtomNode(BaseNode):
-  def __init__(self):
-    #self.name = None
-    #self.dir  = None
-    #self.type = None
-    #self.eq   = None
-    #self.val  = None
-    pass
 
 # fmt : off
 class BlockNode(list):        pass
@@ -32,6 +24,8 @@ class CatNode(tuple):         pass
 class ParenNode(tuple):       pass
 class BrackNode(tuple):       pass
 
+class AssignNode(BaseNode):   pass
+class AtomNode(BaseNode):     pass
 class CallNode(BaseNode):     pass
 class CaseNode(BaseNode):     pass
 class CondNode(BaseNode):     pass
@@ -129,8 +123,6 @@ def node_expr(span, ctx2):
 def node_decl(span, ctx2):
   return _node_decl(span, ctx2)
 
-parse_expr_or_decl = Oneof(node_expr, node_decl)
-
 #---------------------------------------------------------------------------------------------------
 
 # Parenthesized, comma-delimited lists of mixed expressions and declarations. Trailing commas OK.
@@ -190,6 +182,7 @@ cat_list = TupleNode(CatNode, AtLeast(2, cat_atom))
 parse_expr_unit = Seq(
   Any(cap_affix),
   Oneof(
+    #node_call, # if you don't capture a call it'll just show up as a cat node
     cat_list,
     cat_atom,
     Capture(ATOM_INT),
@@ -269,6 +262,8 @@ decl_type = KeyVal("type", node_type)
 decl_eq   = KeyVal("eq",   Capture(ATOM_ASSIGNOP))
 decl_val  = KeyVal("val",  node_expr)
 
+#_node_assign = Node(AssignNode, Seq(decl_name, decl_eq, decl_val))
+
 _node_decl = Node(AtomNode, Railway({
   None      : [decl_name, decl_dir, decl_eq],
   decl_name : [decl_dir,  decl_eq],
@@ -277,6 +272,8 @@ _node_decl = Node(AtomNode, Railway({
   decl_eq   : [decl_val],
   decl_val  : [None]
 }))
+
+#_node_decl = Oneof(_node_assign, _node_decl2)
 
 #----------------------------------------
 
@@ -310,6 +307,8 @@ def dump_indent(indent):
 def dump_node(node, indent = 0):
   result = f"{node.__class__.__name__}{{}}\n"
   for key, val in node.items():
+    if key == "span":
+      continue
     result += dump_indent(indent + 1)
     if isinstance(key, int):
       result += f"[{key}] : "

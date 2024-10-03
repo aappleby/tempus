@@ -39,7 +39,7 @@ class Span:
     self.base  = base
     self.start = start if start is not None else 0
     self.stop  = stop  if stop  is not None else len(base)
-    
+
   def __getitem__(self, key):
     if isinstance(key, slice):
       base  = self.base
@@ -548,11 +548,6 @@ def Node(node_type, pattern):
       del ctx2.stack[top:]
       return tail
 
-    #match_span = span[0:len(span) - len(tail)]
-    #for s in match_span:
-    #  print(s.text, end="")
-    #print()
-
     values = ctx2.stack[top:]
     del ctx2.stack[top:]
 
@@ -561,6 +556,7 @@ def Node(node_type, pattern):
       assert len(val) == 2
 
     result = node_type()
+    result.span = Span(span.base, span.start, tail.start)
 
     for field in values:
       if not isinstance(field, tuple):

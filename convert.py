@@ -7,6 +7,12 @@ from tempus import tem_lexer
 from tempus import tem_parser
 from tempus import matcheroni
 
+def tok_span_to_text(span):
+  text   = span.base[span.start].span.base
+  text_a = span.base[span.start].span.start
+  text_b = span.base[span.stop-1].span.stop
+  return text[text_a:text_b]
+
 #==============================================================================
 
 class Cursor:
@@ -74,12 +80,12 @@ class Emitter:
     else:
       for key, val in port_type.items():
         self.emit_port_struct_decl(key, val)
-      self.emit(f"struct _{name} {{").newline().indent()
+      self.emit(f"struct {self.mod_name}_{name} {{").newline().indent()
       for key, val in port_type.items():
         if "type" in val:
-          self.emit(f"{val['type']['base'][0].text} {key};").newline()
+          self.emit(f"{val['type']['base'][0].to_str()} {key};").newline()
         else:
-          self.emit(f"_{key} {key};").newline()
+          self.emit(f"{self.mod_name}_{key} {key};").newline()
       self.dedent().emit("};").newline()
     return self
 
@@ -90,9 +96,9 @@ class Emitter:
       self.emit_port_struct_decl(key, val)
     for key, val in self.ports.items():
       if "type" in val:
-        self.emit(f"{val['type']['base'][0].text} {key};").newline()
+        self.emit(f"{val['type']['base'][0].to_str()} {key}, _{key};").newline()
       else:
-        self.emit(f"_{key} {key};").newline()
+        self.emit(f"{self.mod_name}_{key} {key}, _{key};").newline()
     return self.newline()
 
   #========================================
@@ -101,7 +107,7 @@ class Emitter:
     cursor = self.ports
     while len(path):
       assert(path[0].eq("."))
-      branch = path[1].text
+      branch = path[1].to_str()
       if branch not in cursor:
         cursor[branch] = {}
       cursor = cursor[branch]
@@ -122,7 +128,7 @@ class Emitter:
 
   def emit_expr(self, expr):
     if isinstance(expr, tem_lexer.Lexeme):
-      self.emit(expr.text)
+      self.emit(expr.to_str())
     elif isinstance(expr, tem_parser.ExprNode):
       for index, term in enumerate(expr):
         self.emit_expr(term)
@@ -139,10 +145,10 @@ class Emitter:
   def emit_reg_name(self, reg):
     assert isinstance(reg.name, tem_parser.IdentNode)
     name = list(reg.name)
-    if name[0].text == ".":
+    if name[0].to_str() == ".":
       name = name[1:]
     for n in name:
-      self.emit(n.text)
+      self.emit(n.to_str())
     return self
 
   #========================================
@@ -150,7 +156,7 @@ class Emitter:
   def collect_regs(self):
     for node in self.tree:
       if isinstance(node, tem_parser.AtomNode):
-        if node.dir.text == ":":
+        if "dir" in node and node.dir.to_str() == ":":
           self.regs.append(node)
 
   #========================================
@@ -169,6 +175,10 @@ class Emitter:
 
   def emit_tock(self):
     self.emit("void tock() {").newline().indent()
+
+    for key, _ in self.ports.items():
+      self.emit(f"_{key} = {key};").newline()
+
     self.dedent().emit("}").newline()
     self.newline()
     return self
@@ -177,6 +187,10 @@ class Emitter:
 
   def emit_tick(self):
     self.emit("void tick() {").newline().indent()
+
+    for key, _ in self.ports.items():
+      self.emit(f"{key} = _{key};").newline()
+
     self.dedent().emit("}").newline()
     self.newline()
     return self
@@ -203,13 +217,13 @@ class Emitter:
     print(tem_parser.dump_tree(self.tree))
     print()
 
-    mod_name = os.path.basename(filename)
-    mod_name = os.path.splitext(mod_name)[0]
+    self.mod_name = os.path.basename(filename)
+    self.mod_name = os.path.splitext(self.mod_name)[0]
 
     self.emit_divider().newline()
     self.emit("#include \"tem_helpers.hpp\"").newline().newline()
 
-    self.emit(f"struct {mod_name} {{").newline().indent()
+    self.emit(f"struct {self.mod_name} {{").newline().indent()
 
     self.emit_port_structs()
     self.emit_reset()
@@ -247,6 +261,28 @@ def main():
 
     emitter = Emitter()
     emitter.convert(flags.filename, parse_ctx.stack)
+
+    tock_terms = []
+
+    for node in parse_ctx.stack:
+      match node:
+        case tem_parser.AtomNode():
+          if not node.name[0].eq("."):
+            tock_terms.append(node)
+        case tem_parser.BranchNode():
+          tock_terms.append(node)
+        case tem_parser.MatchNode():
+          tock_terms.append(node)
+        case tem_parser.ExprNode():
+          tock_terms.append(node)
+        case tem_parser.CallNode():
+          tock_terms.append(node)
+        case _:
+          print(f"Node is a {node.__class__.__name__}")
+
+    print()
+    for node in tock_terms:
+      print(tem_parser.dump_variant(node))
 
 #==============================================================================
 
