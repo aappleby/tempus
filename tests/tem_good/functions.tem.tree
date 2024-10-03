@@ -13,6 +13,7 @@ list[3]
             .type : TypeNode{}
               .base : IdentNode[1]
                 [0] : LEX_IDENT int
+              .suffix : <None>
           (1) : AtomNode{}
             .name : IdentNode[1]
               [0] : LEX_IDENT b
@@ -20,6 +21,7 @@ list[3]
             .type : TypeNode{}
               .base : IdentNode[1]
                 [0] : LEX_IDENT int
+              .suffix : <None>
         (1) : BlockNode[1]
           [0] : BranchNode[2]
             [0] : CondNode{}

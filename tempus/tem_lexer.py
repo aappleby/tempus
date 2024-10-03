@@ -8,8 +8,7 @@ from functools import cache
 from . import matcheroni
 from . import tem_constants
 
-#from .matcheroni import *
-from .matcheroni import Some, Opt, Atoms, Atom, Seq, Oneof, Range, Any
+from .matcheroni import Span, Some, Opt, Atoms, Atom, Seq, Oneof, Range, Any
 from .matcheroni import Lit, NotAtom, Until, Charset, Fail, NotAtoms
 
 #---------------------------------------------------------------------------------------------------
@@ -17,11 +16,15 @@ from .matcheroni import Lit, NotAtom, Until, Charset, Fail, NotAtoms
 # pylint: disable=too-few-public-methods
 class Lexeme:
   def __init__(self, lex_type, span):
+    assert isinstance(span, Span)
     self.lex_type = lex_type
-    self.text = span
+    self.span = span
+
+  def to_str(self):
+    return str(self.span)
 
   def __repr__(self):
-    span = self.text.encode('unicode_escape').decode('utf-8')
+    span = self.to_str().encode('unicode_escape').decode('utf-8')
     if len(span) > 40:
       span = span[:40] + "..."
 
@@ -33,7 +36,7 @@ class Lexeme:
 
   def eq(self, x):
     if isinstance(x, str):
-      return self.text == x
+      return self.to_str() == x
     raise ValueError(f"Don't know how to eq a lexeme vs {type(x)} = {x}")
 
   #def __eq__(self, x):
@@ -54,7 +57,7 @@ def atom_cmp_tokens(a, b):
   if isinstance(a, Lexeme) and isinstance(b, Lexeme):
     if a.lex_type.value != b.lex_type.value:
       return b.lex_type.value - a.lex_type.value
-    return strcmp(a.text, b.text)
+    return strcmp(a.to_str(), b.to_str())
 
   if isinstance(a, Lexeme) and isinstance(b, Enum):
     return b.value - a.lex_type.value

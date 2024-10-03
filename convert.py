@@ -9,38 +9,93 @@ from tempus import matcheroni
 
 #==============================================================================
 
+class Cursor:
+  def __init__(self):
+    self.source_file = None
+    self.tok_cursor = None
+    self.str_out = ""
+    self.indent_level = 0
+    self.at_comma = False
+    self.line_dirty = False
+    self.line_elided = False
+    self.echo = False
+
+  def __call__(self, *args, **kwargs):
+    pass
+
+  def start_line(self):
+    pass
+
+#==============================================================================
+
 class Emitter:
 
   def __init__(self):
+    self.filename = None
+    self.tree = None
     self.ports = {}
+    self.regs = []
+    self.cursor = Cursor()
+    self.at_newline = True
 
   #========================================
 
-  def emit_port_struct_decl(self, name, type):
-    if "type" in type:
-      #print(f"{name} has a type")
+  def emit(self, *args, **kwargs):
+    if self.at_newline:
+      print("  " * self.cursor.indent_level, end="")
+      self.at_newline = False
+    print(*args, **kwargs, end="")
+    return self
+
+  def start_line(self):
+    if not self.at_newline:
+      self.newline()
+    return self
+
+  def newline(self):
+    print("")
+    self.at_newline = True
+    return self
+
+  #========================================
+
+  def emit_node(self, node):
+    match node:
+      case tem_parser.AtomNode():
+        pass
+      case _:
+        pass
+
+  #========================================
+
+  def emit_port_struct_decl(self, name, port_type):
+    if "type" in port_type:
       pass
     else:
-      for key, val in type.items():
+      for key, val in port_type.items():
         self.emit_port_struct_decl(key, val)
-      #print(f"{name} has no type")
-      print(f"  struct _{name} {{")
-      for key, val in type.items():
+      self.emit(f"struct _{name} {{").newline().indent()
+      for key, val in port_type.items():
         if "type" in val:
-          print(f"    {val['type']['base'][0].text} {key};")
+          self.emit(f"{val['type']['base'][0].text} {key};").newline()
         else:
-          print(f"    _{key} {key};")
-      print(f"  }};")
-      #print(tem_parser.dump_tree(type))
+          self.emit(f"_{key} {key};").newline()
+      self.dedent().emit("};").newline()
+    return self
+
+  #========================================
 
   def emit_port_struct_decls(self):
     for key, val in self.ports.items():
       self.emit_port_struct_decl(key, val)
     for key, val in self.ports.items():
       if "type" in val:
-        print(f"  {val['type']['base'][0].text} {key};")
+        self.emit(f"{val['type']['base'][0].text} {key};").newline()
       else:
-        print(f"  _{key} {key};")
+        self.emit(f"_{key} {key};").newline()
+    return self.newline()
+
+  #========================================
 
   def add_port_path(self, path):
     cursor = self.ports
@@ -53,44 +108,116 @@ class Emitter:
       path = path[2:]
     return cursor
 
-  def emit_port_structs(self, tree):
-    for node in tree:
+  #========================================
+
+  def emit_port_structs(self):
+    for node in self.tree:
       if isinstance(node, tem_parser.AtomNode):
         if node.name[0].eq("."):
           leaf = self.add_port_path(node.name)
           leaf["type"] = node.type
-          #print(leaf)
-          #self.ports[node.name[1]].append(node)
-    #print(tem_parser.dump_tree(self.ports))
-    #print(self.ports)
-    #for key, node in self.ports.items():
-    #  print(tem_parser.dump_tree(node))
-    self.emit_port_struct_decls()
+    return self.emit_port_struct_decls()
 
   #========================================
 
-  def emit(self, filename, trees):
-    print(tem_parser.dump_tree(trees))
-    print()
+  def emit_expr(self, expr):
+    if isinstance(expr, tem_lexer.Lexeme):
+      self.emit(expr.text)
+    elif isinstance(expr, tem_parser.ExprNode):
+      for index, term in enumerate(expr):
+        self.emit_expr(term)
+        if index == len(expr) - 1:
+          self.emit(";")
+        else:
+          self.emit(" ")
+    else:
+      self.emit("???")
+    return self
 
-    print("//------------------------------------------------------------------------------")
-    print()
-    print("#include \"tem_helpers.hpp\"")
+  #========================================
+
+  def emit_reg_name(self, reg):
+    assert isinstance(reg.name, tem_parser.IdentNode)
+    name = list(reg.name)
+    if name[0].text == ".":
+      name = name[1:]
+    for n in name:
+      self.emit(n.text)
+    return self
+
+  #========================================
+
+  def collect_regs(self):
+    for node in self.tree:
+      if isinstance(node, tem_parser.AtomNode):
+        if node.dir.text == ":":
+          self.regs.append(node)
+
+  #========================================
+
+  def emit_reset(self):
+    self.collect_regs()
+
+    self.emit("void reset() {").newline().indent()
+    for reg in self.regs:
+      self.emit_reg_name(reg).emit(" = ").emit_expr(reg.val).newline()
+    self.dedent().emit("}").newline()
+    self.newline()
+    return self
+
+  #========================================
+
+  def emit_tock(self):
+    self.emit("void tock() {").newline().indent()
+    self.dedent().emit("}").newline()
+    self.newline()
+    return self
+
+  #========================================
+
+  def emit_tick(self):
+    self.emit("void tick() {").newline().indent()
+    self.dedent().emit("}").newline()
+    self.newline()
+    return self
+
+  #========================================
+
+  def indent(self):
+    self.cursor.indent_level = self.cursor.indent_level + 1
+    return self
+
+  def dedent(self):
+    self.cursor.indent_level = self.cursor.indent_level - 1
+    return self
+
+  def emit_divider(self):
+    return self.emit("//" + "-" * 78).newline()
+
+  #========================================
+
+  def convert(self, filename, tree):
+    self.filename = filename
+    self.tree = tree
+
+    print(tem_parser.dump_tree(self.tree))
     print()
 
     mod_name = os.path.basename(filename)
     mod_name = os.path.splitext(mod_name)[0]
 
-    print(f"struct {mod_name} {{")
-    print()
+    self.emit_divider().newline()
+    self.emit("#include \"tem_helpers.hpp\"").newline().newline()
 
-    self.emit_port_structs(trees)
-    print()
+    self.emit(f"struct {mod_name} {{").newline().indent()
 
-    print("};")
-    print()
-    print("//------------------------------------------------------------------------------")
-    print()
+    self.emit_port_structs()
+    self.emit_reset()
+    self.emit_tock()
+    self.emit_tick()
+
+    self.dedent().emit("};").newline().newline()
+    self.emit_divider()
 
 #==============================================================================
 
@@ -113,18 +240,13 @@ def main():
     if lex_fail:
       raise ValueError("Lexing failed", lex_ctx.stack)
 
-    #print()
-    #print(tem_parser.dump_tree(lex_ctx.stack))
-
     parse_ctx  = matcheroni.Context(tem_lexer.atom_cmp_tokens)
     parse_fail = tem_parser.parse_lexemes(lex_ctx.stack, parse_ctx)
     if parse_fail:
       raise ValueError("Parsing failed", parse_ctx.stack)
 
-    #print()
-    #print(tem_parser.dump_tree(parse_ctx.stack))
     emitter = Emitter()
-    emitter.emit(flags.filename, parse_ctx.stack)
+    emitter.convert(flags.filename, parse_ctx.stack)
 
 #==============================================================================
 

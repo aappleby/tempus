@@ -7,7 +7,7 @@ import sys
 from . import tem_constants
 from . import matcheroni
 from .matcheroni import BaseNode, Atom, Fail, Capture, Some, Any, Railway, ListNode, Seq, Oneof
-from .matcheroni import Node, KeyVal, TupleNode, AtLeast, nothing, Opt
+from .matcheroni import Span, Node, KeyVal, TupleNode, AtLeast, nothing, Opt
 from .tem_constants import tem_declops, tem_assignops
 from .tem_lexer import Lexeme, LexemeType
 
@@ -56,7 +56,7 @@ class TypeNode(BaseNode):
 def lex_to_atom(lex_type, span = None):
   if span is None:
     return Atom(lex_type)
-  return Atom(Lexeme(lex_type, span))
+  return Atom(Lexeme(lex_type, Span(span)))
 
 # fmt : off
 ATOM_STRING   = lex_to_atom(LexemeType.LEX_STRING)
@@ -339,7 +339,7 @@ def dump_tuple(t, indent = 0):
   return result
 
 def dump_lexeme(lexeme, *_):
-  return f"{lexeme.lex_type.name} {repr(lexeme.text)[1:-1]}\n"
+  return f"{lexeme.lex_type.name} {lexeme.to_str()}\n"
 
 def dump_variant(variant, indent = 0):
   result = ""

@@ -6,6 +6,7 @@ list[4]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 7

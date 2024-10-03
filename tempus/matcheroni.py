@@ -15,8 +15,72 @@ def default_atom_cmp(a, b):
   print(b)
   raise ValueError(F"Don't know how to compare {type(a)} and {type(b)}")
 
+#---------------------------------------------------------------------------------------------------
+
+class Span:
+  """
+  >>> a = Span([1, 1, 1, 2, 3])
+  >>> a
+  [1, 1, 1, 2, 3]
+  >>> a[1:]
+  [1, 1, 2, 3]
+  >>> a[:-1]
+  [1, 1, 1, 2]
+  >>> c = Span("aaabc")
+  >>> c
+  aaabc
+  >>> c[1:]
+  aabc
+  >>> c[:-1]
+  aaab
+  """
+
+  def __init__(self, base, start = None, stop = None):
+    self.base  = base
+    self.start = start if start is not None else 0
+    self.stop  = stop  if stop  is not None else len(base)
+    
+  def __getitem__(self, key):
+    if isinstance(key, slice):
+      base  = self.base
+      start = self.start if key.start is None else self.start + key.start
+      stop  = self.stop  if key.stop  is None else self.start + key.stop
+      assert key.step is None
+      return Span(base, start, stop)
+
+    return self.base[self.start + key]
+
+  def __eq__(self, other):
+    if isinstance(other, Span):
+      return self.base == other.base and self.start == other.start and self.stop == other.stop
+    return str(self) == other
+
+  def to_list(self):
+    return self.base[self.start:self.stop]
+
+  def __list__(self):
+    return self.to_list()
+
+  def __iter__(self):
+    return (self.base[i] for i in range(self.start, self.stop))
+
+  def __len__(self):
+    return self.stop - self.start
+
+  def __repr__(self):
+    return str(self.to_list())
+
+  def __str__(self):
+    return str(self.to_list())
+
+  def startswith(self, text):
+    return self.to_list().startswith(text)
+
+
+#---------------------------------------------------------------------------------------------------
+
 class Context:
-  def __init__(self, cmp=default_atom_cmp):
+  def __init__(self, cmp = default_atom_cmp):
     self.stack = []
     self.cmp = cmp
 
@@ -24,20 +88,19 @@ class Context:
 
 class Fail:
   def __init__(self, span):
+    assert isinstance(span, Span)
     self.span = span
   def __repr__(self):
-    if isinstance(self.span, str):
-      span = self.span.encode('unicode_escape').decode('utf-8')
-    else:
-      span = str(self.span)
-    return f"Fail @ '{span}'"
+    text = str(self.span)
+    text = text.encode('unicode_escape').decode('utf-8')
+    return f"Fail @ '{text}'"
   def __bool__(self):
     return False
 
 #---------------------------------------------------------------------------------------------------
 
 def apply(source, ctx, pattern):
-  span = source
+  span = Span(source, 0, len(source))
   any_fail = False
   while span:
     tail = pattern(span, ctx)
@@ -52,17 +115,20 @@ def apply(source, ctx, pattern):
 
 # pylint: disable=unused-argument
 def nothing(span, ctx2):
+  assert isinstance(span, Span)
   return span
 
 @cache
 def And(pattern):
   r"""
-  >>> And(Atom('a'))('asdf', Context())
-  'asdf'
-  >>> And(Atom('a'))('qwer', Context())
+  >>> And(Atom('a'))(Span('asdf'), Context())
+  asdf
+  >>> And(Atom('a'))(Span('qwer'), Context())
   Fail @ 'qwer'
   """
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     tail = pattern(span, ctx2)
     return Fail(span) if isinstance(tail, Fail) else span
   return match
@@ -70,12 +136,14 @@ def And(pattern):
 @cache
 def Not(pattern):
   r"""
-  >>> Not(Atom('a'))('asdf', Context())
+  >>> Not(Atom('a'))(Span('asdf'), Context())
   Fail @ 'asdf'
-  >>> Not(Atom('a'))('qwer', Context())
-  'qwer'
+  >>> Not(Atom('a'))(Span('qwer'), Context())
+  qwer
   """
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     tail = pattern(span, ctx2)
     return span if isinstance(tail, Fail) else Fail(span)
   return match
@@ -85,14 +153,14 @@ def Not(pattern):
 @cache
 def Atom(const):
   r"""
-  >>> Atom('a')('asdf', Context())
-  'sdf'
-  >>> Atom('a')('qwer', Context())
+  >>> Atom('a')(Span('asdf'), Context())
+  sdf
+  >>> Atom('a')(Span('qwer'), Context())
   Fail @ 'qwer'
   """
   def match(span, ctx2):
-    assert(isinstance(span, (list, str)))
-    assert(isinstance(ctx2, Context))
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     return span[1:] if (span and not ctx2.cmp(span[0], const)) else Fail(span)
   return match
 
@@ -101,12 +169,14 @@ def Atom(const):
 @cache
 def NotAtom(const):
   r"""
-  >>> NotAtom('a')('asdf', Context())
+  >>> NotAtom('a')(Span('asdf'), Context())
   Fail @ 'asdf'
-  >>> NotAtom('a')('qwer', Context())
-  'wer'
+  >>> NotAtom('a')(Span('qwer'), Context())
+  wer
   """
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     return span[1:] if (span and ctx2.cmp(span[0], const)) else Fail(span)
   return match
 
@@ -115,14 +185,16 @@ def NotAtom(const):
 @cache
 def Atoms(*oneof):
   r"""
-  >>> Atoms('a', 'b')('asdf', Context())
-  'sdf'
-  >>> Atoms('b', 'a')('asdf', Context())
-  'sdf'
-  >>> Atoms('a', 'b')('qwer', Context())
+  >>> Atoms('a', 'b')(Span('asdf'), Context())
+  sdf
+  >>> Atoms('b', 'a')(Span('asdf'), Context())
+  sdf
+  >>> Atoms('a', 'b')(Span('qwer'), Context())
   Fail @ 'qwer'
   """
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     if not span:
       return Fail(span)
     for arg in oneof:
@@ -136,6 +208,8 @@ def Atoms(*oneof):
 @cache
 def NotAtoms(*seq):
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     for arg in seq:
       if not ctx2.cmp(span[0], arg):
         return Fail(span)
@@ -146,9 +220,9 @@ def NotAtoms(*seq):
 
 def AnyAtom(span, ctx2):
   r"""
-  >>> AnyAtom('asdf', Context())
-  'sdf'
-  >>> AnyAtom('', Context())
+  >>> AnyAtom(Span('asdf'), Context())
+  sdf
+  >>> AnyAtom(Span(''), Context())
   Fail @ ''
   """
   return span[1:] if span else Fail(span)
@@ -158,17 +232,19 @@ def AnyAtom(span, ctx2):
 @cache
 def Range(A, B):
   r"""
-  >>> Range('a', 'z')('asdf', Context())
-  'sdf'
-  >>> Range('b', 'y')('asdf', Context())
+  >>> Range('a', 'z')(Span('asdf'), Context())
+  sdf
+  >>> Range('b', 'y')(Span('asdf'), Context())
   Fail @ 'asdf'
-  >>> Range('a', 'z')('1234', Context())
+  >>> Range('a', 'z')(Span('1234'), Context())
   Fail @ '1234'
   """
   A = ord(A) if isinstance(A, str) else A
   B = ord(B) if isinstance(B, str) else B
 
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     if span and ctx2.cmp(A, span[0]) >= 0 and ctx2.cmp(span[0], B) >= 0:
       return span[1:]
     return Fail(span)
@@ -179,11 +255,11 @@ def Range(A, B):
 @cache
 def Ranges(*args):
   r"""
-  >>> Ranges('a', 'z', 'A', 'Z')('asdf', Context())
-  'sdf'
-  >>> Ranges('a', 'z', 'A', 'Z')('QWER', Context())
-  'WER'
-  >>> Ranges('a', 'z', 'A', 'Z')('1234', Context())
+  >>> Ranges('a', 'z', 'A', 'Z')(Span('asdf'), Context())
+  sdf
+  >>> Ranges('a', 'z', 'A', 'Z')(Span('QWER'), Context())
+  WER
+  >>> Ranges('a', 'z', 'A', 'Z')(Span('1234'), Context())
   Fail @ '1234'
   """
 
@@ -192,6 +268,8 @@ def Ranges(*args):
     ranges.append(Range(args[i+0], args[i+1]))
 
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     for r in ranges:
       tail = r(span, ctx2)
       if not isinstance(tail, Fail):
@@ -204,12 +282,14 @@ def Ranges(*args):
 @cache
 def Lit(lit):
   r"""
-  >>> Lit('foo')('foobar', Context())
-  'bar'
-  >>> Lit('foo')('barfoo', Context())
+  >>> Lit('foo')(Span('foobar'), Context())
+  bar
+  >>> Lit('foo')(Span('barfoo'), Context())
   Fail @ 'barfoo'
   """
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     if len(span) < len(lit):
       return Fail(span)
     for i, c in enumerate(lit):
@@ -223,6 +303,8 @@ def Lit(lit):
 @cache
 def Charset(lit):
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     return span[1:] if (span and span[0] in lit) else Fail(span)
   return match
 
@@ -231,14 +313,16 @@ def Charset(lit):
 @cache
 def Seq(*seq):
   r"""
-  >>> Seq(Atom('a'), Atom('s'))('asdf', Context())
-  'df'
-  >>> Seq(Atom('a'), Atom('s'))('a', Context())
+  >>> Seq(Atom('a'), Atom('s'))(Span('asdf'), Context())
+  df
+  >>> Seq(Atom('a'), Atom('s'))(Span('a'), Context())
   Fail @ ''
-  >>> Seq(Atom('a'), Atom('s'))('qwer', Context())
+  >>> Seq(Atom('a'), Atom('s'))(Span('qwer'), Context())
   Fail @ 'qwer'
   """
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     top = len(ctx2.stack)
     for arg in seq:
       tail = arg(span, ctx2)
@@ -254,14 +338,16 @@ def Seq(*seq):
 @cache
 def Oneof(*oneof):
   r"""
-  >>> Oneof(Atom('a'), Atom('b'))('asdf', Context())
-  'sdf'
-  >>> Oneof(Atom('b'), Atom('a'))('asdf', Context())
-  'sdf'
-  >>> Oneof(Atom('b'), Atom('a'))('qwer', Context())
+  >>> Oneof(Atom('a'), Atom('b'))(Span('asdf'), Context())
+  sdf
+  >>> Oneof(Atom('b'), Atom('a'))(Span('asdf'), Context())
+  sdf
+  >>> Oneof(Atom('b'), Atom('a'))(Span('qwer'), Context())
   Fail @ 'qwer'
   """
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     top = len(ctx2.stack)
     for arg in oneof:
       tail = arg(span, ctx2)
@@ -276,14 +362,16 @@ def Oneof(*oneof):
 @cache
 def Opt(*oneof):
   r"""
-  >>> Opt(Atom('a'))('asdf', Context())
-  'sdf'
-  >>> Opt(Atom('b'), Atom('a'))('asdf', Context())
-  'sdf'
-  >>> Opt(Atom('a'))('qwer', Context())
-  'qwer'
+  >>> Opt(Atom('a'))(Span('asdf'), Context())
+  sdf
+  >>> Opt(Atom('b'), Atom('a'))(Span('asdf'), Context())
+  sdf
+  >>> Opt(Atom('a'))(Span('qwer'), Context())
+  qwer
   """
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     for pattern in oneof:
       tail = pattern(span, ctx2)
       if not isinstance(tail, Fail):
@@ -300,13 +388,15 @@ def OptSeq(*seq):
 @cache
 def Any(*oneof):
   r"""
-  >>> Any(Atom('a'))('aaaasdf', Context())
-  'sdf'
-  >>> Any(Atom('a'))('baaaasdf', Context())
-  'baaaasdf'
+  >>> Any(Atom('a'))(Span('aaaasdf'), Context())
+  sdf
+  >>> Any(Atom('a'))(Span('baaaasdf'), Context())
+  baaaasdf
   """
   pattern = Oneof(*oneof)
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     while True:
       tail = pattern(span, ctx2)
       if isinstance(tail, Fail):
@@ -319,14 +409,16 @@ def Any(*oneof):
 @cache
 def Rep(count, pattern):
   r"""
-  >>> Rep(4, Atom('a'))('aaasdf', Context())
+  >>> Rep(4, Atom('a'))(Span('aaasdf'), Context())
   Fail @ 'sdf'
-  >>> Rep(4, Atom('a'))('aaaasdf', Context())
-  'sdf'
-  >>> Rep(4, Atom('a'))('aaaaasdf', Context())
-  'asdf'
+  >>> Rep(4, Atom('a'))(Span('aaaasdf'), Context())
+  sdf
+  >>> Rep(4, Atom('a'))(Span('aaaaasdf'), Context())
+  asdf
   """
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     top = len(ctx2.stack)
     for _ in range(count):
       tail = pattern(span, ctx2)
@@ -339,12 +431,12 @@ def Rep(count, pattern):
 
 def AtLeast(count, pattern):
   r"""
-  >>> AtLeast(4, Atom('a'))('aaasdf', Context())
+  >>> AtLeast(4, Atom('a'))(Span('aaasdf'), Context())
   Fail @ 'sdf'
-  >>> AtLeast(4, Atom('a'))('aaaasdf', Context())
-  'sdf'
-  >>> AtLeast(4, Atom('a'))('aaaaasdf', Context())
-  'sdf'
+  >>> AtLeast(4, Atom('a'))(Span('aaaasdf'), Context())
+  sdf
+  >>> AtLeast(4, Atom('a'))(Span('aaaaasdf'), Context())
+  sdf
   """
   return Seq(Rep(count, pattern), Any(pattern))
 
@@ -353,13 +445,17 @@ def AtLeast(count, pattern):
 @cache
 def Some(*oneof):
   r"""
-  >>> Some(Atom('a'))('aaaasdf', Context())
-  'sdf'
-  >>> Some(Atom('a'))('baaaasdf', Context())
+  >>> Some(Atom('a'))(Span('aaaasdf'), Context())
+  sdf
+  >>> Some(Atom('a'))(Span('baaaasdf'), Context())
   Fail @ 'baaaasdf'
+  >>> Some(Atom(1))(Span([1,1,1,2,3]), Context())
+  [2, 3]
   """
   pattern = Oneof(*oneof)
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     span = pattern(span, ctx2)
     if isinstance(span, Fail):
       return span
@@ -384,6 +480,8 @@ def Until(pattern):
 @cache
 def Cycle(*seq):
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     while True:
       for pattern in seq:
         tail = pattern(span, ctx2)
@@ -427,6 +525,8 @@ def Capture(pattern):
   Adds all tokens in the span matched by 'pattern' to the context stack
   """
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     tail = pattern(span, ctx2)
     if not isinstance(tail, Fail):
       ctx2.stack.extend(span[:len(span) - len(tail)])
@@ -439,7 +539,7 @@ def Node(node_type, pattern):
   Turns all (key, value) tuples added to the context stack after this matcher into a parse node.
   """
   def match(span, ctx2):
-    assert isinstance(span, (list, str))
+    assert isinstance(span, Span)
     assert isinstance(ctx2, Context)
 
     top = len(ctx2.stack)
@@ -448,16 +548,17 @@ def Node(node_type, pattern):
       del ctx2.stack[top:]
       return tail
 
+    #match_span = span[0:len(span) - len(tail)]
+    #for s in match_span:
+    #  print(s.text, end="")
+    #print()
+
     values = ctx2.stack[top:]
     del ctx2.stack[top:]
 
     for val in values:
       assert isinstance(val, tuple)
       assert len(val) == 2
-
-    #if len(values) == 0:
-    #  ctx2.stack.append(None)
-    #  return tail
 
     result = node_type()
 
@@ -478,6 +579,9 @@ def Node(node_type, pattern):
 @cache
 def TupleNode(tuple_type, pattern):
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
+
     top = len(ctx2.stack)
     tail = pattern(span, ctx2)
     if isinstance(tail, Fail):
@@ -493,6 +597,9 @@ def TupleNode(tuple_type, pattern):
 @cache
 def ListNode(list_type, pattern):
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
+
     top = len(ctx2.stack)
     tail = pattern(span, ctx2)
     if isinstance(tail, Fail):
@@ -512,6 +619,9 @@ def KeyVal(key, pattern):
   Turns the top of the context stack into a (name, value) tuple
   """
   def match(span, ctx2):
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
+
     top = len(ctx2.stack)
     tail = pattern(span, ctx2)
     if isinstance(tail, Fail):
@@ -579,7 +689,8 @@ def Railway(railway):
     return Fail(tail)
 
   def match(span, ctx2):
-    assert isinstance(span, (list, str))
+    assert isinstance(span, Span)
+    assert isinstance(ctx2, Context)
     return step(None, span, ctx2)
 
   return match

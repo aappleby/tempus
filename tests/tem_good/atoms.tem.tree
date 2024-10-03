@@ -6,6 +6,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
@@ -16,6 +17,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : IdentNode[1]
@@ -27,6 +29,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT _
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
@@ -37,6 +40,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT _
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : IdentNode[1]
@@ -48,6 +52,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
@@ -58,6 +63,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : IdentNode[1]
@@ -69,6 +75,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT _
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
@@ -79,6 +86,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT _
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : IdentNode[1]
@@ -90,6 +98,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
@@ -100,6 +109,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
   [10] : AtomNode{}
     .name : IdentNode[1]
       [0] : LEX_IDENT x
@@ -115,6 +125,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 2
@@ -123,6 +134,7 @@ list[17]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
   [14] : AtomNode{}
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
@@ -142,6 +154,7 @@ list[17]
           .type : TypeNode{}
             .base : IdentNode[1]
               [0] : LEX_IDENT int
+            .suffix : <None>
           .eq : LEX_ASSIGNOP =
           .val : ExprNode[1]
             [0] : LEX_INT 2
@@ -152,6 +165,7 @@ list[17]
           .type : TypeNode{}
             .base : IdentNode[1]
               [0] : LEX_IDENT int
+            .suffix : <None>
         (2) : AtomNode{}
           .name : IdentNode[1]
             [0] : LEX_IDENT x
@@ -167,6 +181,7 @@ list[17]
           .type : TypeNode{}
             .base : IdentNode[1]
               [0] : LEX_IDENT int
+            .suffix : <None>
           .eq : LEX_ASSIGNOP =
           .val : ExprNode[1]
             [0] : LEX_INT 2
@@ -175,6 +190,7 @@ list[17]
           .type : TypeNode{}
             .base : IdentNode[1]
               [0] : LEX_IDENT int
+            .suffix : <None>
         (6) : AtomNode{}
           .eq : LEX_ASSIGNOP =
           .val : ExprNode[1]
