@@ -62,6 +62,7 @@ list[16]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT simple_message
+      .suffix : <None>
   [9] : AtomNode{}
     .name : IdentNode[1]
       [0] : LEX_IDENT tx
@@ -74,6 +75,7 @@ list[16]
           (0) : ExprNode[1]
             [0] : IdentNode[1]
               [0] : LEX_IDENT clocks_per_bit
+      .suffix : <None>
   [10] : AtomNode{}
     .name : IdentNode[1]
       [0] : LEX_IDENT rx
@@ -86,6 +88,7 @@ list[16]
           (0) : ExprNode[1]
             [0] : IdentNode[1]
               [0] : LEX_IDENT clocks_per_bit
+      .suffix : <None>
   [11] : AtomNode{}
     .name : IdentNode[1]
       [0] : LEX_IDENT sink
@@ -93,6 +96,7 @@ list[16]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT simple_sink
+      .suffix : <None>
   [12] : MarkerNode{}
     .name : LEX_IDENT update
   [13] : ExprNode[3]

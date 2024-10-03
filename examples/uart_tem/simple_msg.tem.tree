@@ -8,6 +8,7 @@ list[14]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 20
@@ -18,6 +19,7 @@ list[14]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[3]
       [0] : CatNode(2)
@@ -36,6 +38,7 @@ list[14]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT string
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_STRING "ping.hex"
@@ -68,6 +71,7 @@ list[14]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u8
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : CatNode(2)
@@ -87,6 +91,7 @@ list[14]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u1
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[3]
       [0] : IdentNode[1]
@@ -103,6 +108,7 @@ list[14]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u1
+      .suffix : <None>
   [9] : MarkerNode{}
     .name : LEX_IDENT state
   [10] : AtomNode{}
@@ -117,6 +123,7 @@ list[14]
           (0) : ExprNode[1]
             [0] : IdentNode[1]
               [0] : LEX_IDENT max_delay
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : IdentNode[1]
@@ -133,6 +140,7 @@ list[14]
           (0) : ExprNode[1]
             [0] : IdentNode[1]
               [0] : LEX_IDENT max_cursor
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 0

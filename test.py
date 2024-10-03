@@ -52,10 +52,8 @@ class TestTempus(unittest.TestCase):
 
   def test_tem_good(self):
     for filename in glob.glob("tests/tem_good/*.tem"):
-      print(filename)
       self.parse_and_write_tree(filename)
 
-  """
   def test_uart(self):
     self.parse_and_write_tree("examples/uart_tem/simple_msg.tem")
     self.parse_and_write_tree("examples/uart_tem/simple_sink.tem")
@@ -69,7 +67,6 @@ class TestTempus(unittest.TestCase):
     for filename in files:
       result = os.system(f"verilator -Iexamples/uart_sv_ref --lint-only {filename}")
       self.assertEqual(0, result)
-  """
 
 #---------------------------------------------------------------------------------------------------
 

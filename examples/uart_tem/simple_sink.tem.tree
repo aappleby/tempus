@@ -9,6 +9,7 @@ list[5]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u8
+      .suffix : <None>
   [1] : AtomNode{}
     .name : IdentNode[4]
       [0] : LEX_PUNCT .
@@ -19,6 +20,7 @@ list[5]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u1
+      .suffix : <None>
   [2] : AtomNode{}
     .name : IdentNode[4]
       [0] : LEX_PUNCT .
@@ -29,6 +31,7 @@ list[5]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u1
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 1
@@ -40,9 +43,12 @@ list[5]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u8
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
-    .val : ExprNode[1]
+    .val : ExprNode[3]
       [0] : LEX_INT 0
+      [1] : LEX_BINOP +
+      [2] : LEX_INT 0
   [4] : BranchNode[1]
     [0] : CondNode{}
       .condition : ParenNode(1)

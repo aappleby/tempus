@@ -10,6 +10,7 @@ list[19]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 4
@@ -20,6 +21,7 @@ list[19]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 10
@@ -30,6 +32,7 @@ list[19]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[3]
       [0] : IdentNode[1]
@@ -43,6 +46,7 @@ list[19]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[3]
       [0] : IdentNode[1]
@@ -56,6 +60,7 @@ list[19]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT int
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[3]
       [0] : IdentNode[1]
@@ -72,6 +77,7 @@ list[19]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u1
+      .suffix : <None>
   [9] : AtomNode{}
     .name : IdentNode[4]
       [0] : LEX_PUNCT .
@@ -82,6 +88,7 @@ list[19]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT shift_reg
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : IdentNode[1]
@@ -96,6 +103,7 @@ list[19]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u1
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 0
@@ -109,6 +117,7 @@ list[19]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u1
+      .suffix : <None>
   [12] : MarkerNode{}
     .name : LEX_IDENT state
   [13] : AtomNode{}
@@ -123,6 +132,7 @@ list[19]
           (0) : ExprNode[1]
             [0] : IdentNode[1]
               [0] : LEX_IDENT delay_max
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : IdentNode[1]
@@ -139,6 +149,7 @@ list[19]
           (0) : ExprNode[1]
             [0] : IdentNode[1]
               [0] : LEX_IDENT count_max
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : IdentNode[1]
@@ -150,6 +161,7 @@ list[19]
     .type : TypeNode{}
       .base : IdentNode[1]
         [0] : LEX_IDENT u8
+      .suffix : <None>
     .eq : LEX_ASSIGNOP =
     .val : ExprNode[1]
       [0] : LEX_INT 0
@@ -257,6 +269,7 @@ list[19]
                   [0] : LEX_IDENT shift
                 [1] : LEX_BINOP >>
                 [2] : LEX_INT 1
+            .suffix : <None>
         [3] : AtomNode{}
           .name : IdentNode[3]
             [0] : LEX_IDENT dst
