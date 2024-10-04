@@ -40,6 +40,8 @@ class Emitter:
     self.filename = None
     self.tree = None
     self.ports = {}
+    self.ports_in = {}
+    self.ports_out = {}
     self.regs = []
     self.cursor = Cursor()
     self.at_newline = True
