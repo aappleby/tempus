@@ -2,14 +2,12 @@
 
 simple_sink = {
 
-  .src.data  >: u8;
-  .src.valid >: u1;
-  .src.ready :> u1 = 1;
+  .src.data  :> u8;
+  .src.valid :> u1;
+  .src.ready :< u1 = 1;
 
-  .data :> u8 = 0 + 0;
+  data : u8 = 0;
 
-  if (src.valid) {
-    @.data = .src.data;
-  }
+  if (.src.valid) @data = .src.data;
 
 }

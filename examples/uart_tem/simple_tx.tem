@@ -1,22 +1,23 @@
-// Simple 8n1 UART transmitter in Metron
+// Simple 8n1 UART transmitter in Tempus
 
 # params
-clocks_per_bit = 4;
-bits_per_byte = 10;
-delay_mid = clocks_per_bit / 2;
-delay_max = clocks_per_bit - 1;
-count_max = bits_per_byte - 1;
-
-# ports
-src.data  >: u8;
-src.valid >: u1;
-src.ready :> u1 = 0;
-dst.data  :> u1 = shift[0];
+clocks_per_bit := 4;
+bits_per_byte  := 10;
+delay_mid      := clocks_per_bit / 2;
+delay_max      := clocks_per_bit - 1;
+count_max      := bits_per_byte - 1;
 
 # types
-reg_delay : unsigned(delay_max) = 0;
-reg_count : unsigned(count_max) = 0;
-reg_shift : u10 = 0;
+reg_delay := unsigned(delay_max);
+reg_count := unsigned(count_max);
+reg_shift := u10;
+
+# ports
+.src.data  :> u8;
+.src.valid :> u1;
+.src.ready :< u1 = 0;
+
+.dst.data  :< u1 = shift[0];
 
 # regs
 delay : reg_delay = delay_max;
@@ -34,11 +35,11 @@ match (true) {
     @shift = 1u1 :: (shift >> 1);
   }
   default {
-    src.ready = 1;
-    if (src.valid) {
+    .src.ready = 1;
+    if (.src.valid) {
       @delay = 0;
       @count = 0;
-      @shift = 1u1 :: src.data :: 0u1;
+      @shift = 1u1 :: .src.data :: 0u1;
     }
   }
 }

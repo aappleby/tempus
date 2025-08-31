@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# pylint: disable=bad-indentation
 
 import glob
 import os

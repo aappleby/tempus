@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# pylint: disable=bad-indentation
 
 import argparse
 import os
@@ -45,6 +46,7 @@ class Emitter:
     self.regs = []
     self.cursor = Cursor()
     self.at_newline = True
+    self.mod_name = None
 
   #========================================
 
@@ -108,7 +110,7 @@ class Emitter:
   def add_port_path(self, path):
     cursor = self.ports
     while len(path):
-      assert(path[0].eq("."))
+      assert path[0].eq(".")
       branch = path[1].to_str()
       if branch not in cursor:
         cursor[branch] = {}
@@ -242,7 +244,7 @@ def main():
   args = argparse.ArgumentParser()
   args.add_argument("filename", type=str, default=None, nargs="?")
   args.add_argument("-o",       dest="out", type=str, default=None, nargs=1, required=True)
-  (flags, unknown) = args.parse_known_args()
+  (flags, _) = args.parse_known_args()
 
   if flags.filename is None:
     args.print_help()
